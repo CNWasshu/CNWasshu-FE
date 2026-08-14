@@ -1,0 +1,109 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { TimetableDayTabs } from '@/components/timetable/TimetableDayTabs';
+import { TimetableTimeline } from '@/components/timetable/TimetableTimeline';
+import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
+import type { TimetableDay } from '@/types/timetable';
+
+type TimetableCourseSectionProps = {
+  days: TimetableDay[];
+  onSelectDay: (dayId: string) => void;
+  selectedDayId: string;
+};
+
+export function TimetableCourseSection({
+  days,
+  onSelectDay,
+  selectedDayId,
+}: TimetableCourseSectionProps) {
+  return (
+    <View style={styles.container}>
+      <View style={styles.headingRow}>
+        <View style={styles.headingText}>
+          <Text style={styles.title}>시간대별 코스 설계</Text>
+          <Text style={styles.description}>기본 09:00~22:00, 시간 외 일정은 자동으로 확장됩니다.</Text>
+        </View>
+        <Pressable accessibilityRole="button" style={styles.addButton}>
+          <Ionicons color="#FFFFFF" name="add" size={17} />
+          <Text style={styles.addButtonText}>일정 추가</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.dayTabs}>
+        <TimetableDayTabs
+          days={days}
+          onSelectDay={onSelectDay}
+          selectedDayId={selectedDayId}
+        />
+      </View>
+
+      <TimetableTimeline />
+
+      <Pressable accessibilityRole="button" style={styles.saveButton}>
+        <Text style={styles.saveButtonText}>코스 저장하기</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  addButton: {
+    alignItems: 'center',
+    backgroundColor: TIMETABLE_COLORS.primary,
+    borderRadius: 999,
+    flexDirection: 'row',
+    paddingHorizontal: 13,
+    paddingVertical: 10,
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  container: {
+    backgroundColor: TIMETABLE_COLORS.card,
+    borderColor: TIMETABLE_COLORS.border,
+    borderRadius: 22,
+    borderWidth: 1,
+    marginHorizontal: 16,
+    marginTop: 14,
+    padding: 14,
+  },
+  dayTabs: {
+    marginHorizontal: -14,
+    marginVertical: 12,
+  },
+  description: {
+    color: TIMETABLE_COLORS.secondaryText,
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 3,
+  },
+  headingRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'space-between',
+  },
+  headingText: {
+    flex: 1,
+  },
+  saveButton: {
+    alignItems: 'center',
+    backgroundColor: TIMETABLE_COLORS.primary,
+    borderRadius: 14,
+    marginTop: 14,
+    paddingVertical: 14,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  title: {
+    color: TIMETABLE_COLORS.text,
+    fontSize: 18,
+    fontWeight: '800',
+  },
+});
