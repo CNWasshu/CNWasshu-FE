@@ -334,6 +334,13 @@ yarn.lock
 pnpm-lock.yaml
 ```
 
+---
+
+## 13. 기능 개발 예정 구조
+
+아래 구조는 기능 개발 과정에서 추가될 예정인 디렉터리와 파일입니다.
+
+```text
 CNWasshu-FE/
 ┣ 📂 app/                              # 화면 + 라우팅 (Expo Router)
 ┃ ┣ 📜 _layout.tsx                     # 전체 네비게이션 설정
@@ -434,3 +441,4 @@ CNWasshu-FE/
 ┣ 📜 package.json
 ┣ 📜 tsconfig.json
 ┗ 📜 .env                              # 환경변수
+```
