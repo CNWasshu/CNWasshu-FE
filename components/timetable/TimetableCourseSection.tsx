@@ -4,18 +4,20 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { TimetableDayTabs } from '@/components/timetable/TimetableDayTabs';
 import { TimetableTimeline } from '@/components/timetable/TimetableTimeline';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
-import type { TimetableDay } from '@/types/timetable';
+import type { TimetableDay, TimetableSchedule } from '@/types/timetable';
 
 type TimetableCourseSectionProps = {
   days: TimetableDay[];
   onSelectDay: (dayId: string) => void;
   selectedDayId: string;
+  selectedSchedules: TimetableSchedule[];
 };
 
 export function TimetableCourseSection({
   days,
   onSelectDay,
   selectedDayId,
+  selectedSchedules,
 }: TimetableCourseSectionProps) {
   return (
     <View style={styles.container}>
@@ -38,7 +40,7 @@ export function TimetableCourseSection({
         />
       </View>
 
-      <TimetableTimeline />
+      <TimetableTimeline schedules={selectedSchedules} />
 
       <Pressable accessibilityRole="button" style={styles.saveButton}>
         <Text style={styles.saveButtonText}>코스 저장하기</Text>

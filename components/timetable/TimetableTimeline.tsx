@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
+import type { TimetableSchedule } from '@/types/timetable';
 
 const START_HOUR = 9;
 const END_HOUR = 22;
@@ -9,10 +10,16 @@ const TIMELINE_HOURS = Array.from(
   (_, index) => START_HOUR + index
 );
 
-export function TimetableTimeline() {
+type TimetableTimelineProps = {
+  schedules: TimetableSchedule[];
+};
+
+export function TimetableTimeline({ schedules }: TimetableTimelineProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.emptyText}>아직 등록된 일정이 없습니다.</Text>
+      {schedules.length === 0 ? (
+        <Text style={styles.emptyText}>아직 등록된 일정이 없습니다.</Text>
+      ) : null}
       {TIMELINE_HOURS.map((hour) => (
         <View key={hour} style={styles.timeRow}>
           <Text style={styles.hour}>{String(hour).padStart(2, '0')}:00</Text>
