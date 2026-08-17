@@ -70,11 +70,10 @@ export function TimetableScheduleModal({
   };
 
   return (
-    <Modal animationType="slide" onRequestClose={onClose} transparent visible={visible}>
+    <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.overlay}>
-        <Pressable accessibilityLabel="일정 창 닫기" onPress={onClose} style={StyleSheet.absoluteFill} />
         <View accessibilityViewIsModal style={styles.sheet}>
           <View style={styles.handle} />
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">

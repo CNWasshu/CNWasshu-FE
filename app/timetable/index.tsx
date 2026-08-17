@@ -71,7 +71,10 @@ export default function TimetableScreen() {
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        scrollEnabled={!isScheduleModalVisible}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.screen}>
           <TimetableHeader />
           <TimetableDateRange
