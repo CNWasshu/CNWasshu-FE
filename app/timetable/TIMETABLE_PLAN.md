@@ -98,14 +98,31 @@ feat(timetable): 날짜별 일정 상태 관리 구현
 
 ## 후속 작업
 
+### PR 2 범위 확정
+
+`feature/timetable-schedule`에서는 자유 일정 관리에 필요한 UI와 상태만 구현합니다.
+
+- 바텀시트형 일정 추가·수정 UI
+- 웹 및 Android/iOS 시간 선택 UI
+- 자유 일정 입력과 기본 시간 검증
+- 선택한 Day의 자유 일정 추가·수정·삭제
+- 시간표 일정 카드와 모바일·웹 반응형
+
+다음 기능은 데이터 제공 화면과 API 계약이 준비된 후 별도 PR로 진행합니다.
+
+- 담아둔 체험 선택 및 일정 추가
+- 자유 일정과 체험 일정 카드 구분
+- 예약 완료 체험의 타임테이블 자동 반영
+- 예약 변경·취소 시 타임테이블 동기화
+
 ### 4. 일정 추가
 
-- [ ] 일정 추가 화면 또는 모달 구현
-- [ ] 자유 일정 입력 기능 구현
-- [ ] 시작 시간 및 종료 시간 입력
-- [ ] 일정 제목 입력
-- [ ] 입력값 검증
-- [ ] 선택한 Day에 일정 추가
+- [x] 일정 추가 화면 또는 모달 구현
+- [x] 자유 일정 입력 기능 구현
+- [x] 시작 시간 및 종료 시간 입력
+- [x] 일정 제목 입력
+- [x] 입력값 검증
+- [x] 선택한 Day에 일정 추가
 
 예정 커밋:
 
@@ -129,11 +146,11 @@ feat(timetable): 담아둔 체험 일정 추가 기능 구현
 
 ### 6. 일정 카드
 
-- [ ] 시간표에 일정 카드 표시
-- [ ] 일정 제목 및 시간 표시
+- [x] 시간표에 일정 카드 표시
+- [x] 일정 제목 및 시간 표시
 - [ ] 자유 일정과 체험 일정 구분
-- [ ] 모바일 화면에서 카드 크기 최적화
-- [ ] 접근성 속성 적용
+- [x] 모바일 화면에서 카드 크기 최적화
+- [x] 접근성 속성 적용
 
 예정 커밋:
 
@@ -143,11 +160,11 @@ feat(timetable): 시간표 일정 카드 구현
 
 ### 7. 일정 수정 및 삭제
 
-- [ ] 등록된 일정 선택 기능
-- [ ] 일정 수정 기능
-- [ ] 일정 삭제 기능
-- [ ] 수정 및 삭제 결과 즉시 반영
-- [ ] 삭제 확인 절차 검토
+- [x] 등록된 일정 선택 기능
+- [x] 일정 수정 기능
+- [x] 일정 삭제 기능
+- [x] 수정 및 삭제 결과 즉시 반영
+- [x] 삭제 확인 절차 적용
 
 예정 커밋:
 
@@ -155,9 +172,17 @@ feat(timetable): 시간표 일정 카드 구현
 feat(timetable): 일정 수정 및 삭제 기능 구현
 ```
 
+일정 관리 실제 커밋:
+
+```text
+feat(timetable): 일정 입력 바텀시트 및 시간 선택 구현
+feat(timetable): 일정 카드 및 CRUD 기능 연결
+docs(timetable): 일정 관리 작업 현황 갱신
+```
+
 ### 8. 시간 검증 및 시간표 확장
 
-- [ ] 종료 시간이 시작 시간보다 늦은지 검증
+- [x] 종료 시간이 시작 시간보다 늦은지 기본 검증
 - [ ] 같은 Day의 일정 시간 중복 검증
 - [ ] 체험 운영 시간 범위 검증
 - [ ] 09:00 이전 일정 표시
@@ -224,10 +249,12 @@ fix(timetable): 모바일 및 웹 반응형 레이아웃 오류 수정
 | PR | 범위 | 브랜치 예시 |
 | --- | --- | --- |
 | PR 1 | 기본 화면, 여행 기간, 날짜별 상태 관리 | `feature/timetable` |
-| PR 2 | 일정 추가·수정·삭제 및 일정 카드 | `feature/timetable-schedule` |
-| PR 3 | 시간 검증 및 시간표 자동 확장 | `feature/timetable-validation` |
-| PR 4 | 코스 저장 및 백엔드 API 연결 | `feature/timetable-api` |
-| PR 5 | 반응형·접근성·최종 리팩터링 | `refactor/timetable-ui` |
+| PR 2 | 자유 일정 추가·수정·삭제 및 일정 카드 | `feature/timetable-schedule` |
+| PR 3 | 담아둔 체험 선택 및 일정 추가 | `feature/timetable-activity` |
+| PR 4 | 시간 중복 검증 및 시간표 자동 확장 | `feature/timetable-validation` |
+| PR 5 | 코스 저장 및 백엔드 API 연결 | `feature/timetable-api` |
+| PR 6 | 예약 완료 체험 자동 반영 및 동기화 | `feature/timetable-reservation-sync` |
+| PR 7 | 반응형·접근성·최종 리팩터링 | `refactor/timetable-ui` |
 
 ## 라우트
 
@@ -252,6 +279,11 @@ components/
     ├── TimetableDateRange.web.tsx
     ├── TimetableDayTabs.tsx
     ├── TimetableHeader.tsx
+    ├── TimetableScheduleCard.tsx
+    ├── TimetableScheduleModal.tsx
+    ├── TimetableTimeInput.d.ts
+    ├── TimetableTimeInput.native.tsx
+    ├── TimetableTimeInput.web.tsx
     ├── TimetableTimeline.tsx
     └── timetable-colors.ts
 
@@ -264,7 +296,8 @@ types/
 
 utils/
 └── timetable/
-    └── date.ts
+    ├── date.ts
+    └── time.ts
 ```
 
 파일이 많아질 경우 책임이 명확할 때만 `sections/`, `ui/`, `modals/` 등의 하위 폴더로 분리합니다. 작업량을 보여주기 위한 불필요한 폴더 분리는 하지 않습니다.
@@ -274,6 +307,7 @@ utils/
 - [x] `npm run lint`
 - [x] `npx tsc --noEmit`
 - [x] Expo 웹 번들 생성
+- [x] 모바일 웹 화면 및 일정 추가·수정 흐름 확인
 - [ ] Expo Go 실제 기기 확인
 - [ ] Android 실제 기기 확인
 - [ ] iOS 실제 기기 확인

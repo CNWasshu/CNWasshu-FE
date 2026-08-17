@@ -8,14 +8,18 @@ import type { TimetableDay, TimetableSchedule } from '@/types/timetable';
 
 type TimetableCourseSectionProps = {
   days: TimetableDay[];
+  onAddSchedule: () => void;
   onSelectDay: (dayId: string) => void;
+  onSelectSchedule: (schedule: TimetableSchedule) => void;
   selectedDayId: string;
   selectedSchedules: TimetableSchedule[];
 };
 
 export function TimetableCourseSection({
   days,
+  onAddSchedule,
   onSelectDay,
+  onSelectSchedule,
   selectedDayId,
   selectedSchedules,
 }: TimetableCourseSectionProps) {
@@ -24,9 +28,9 @@ export function TimetableCourseSection({
       <View style={styles.headingRow}>
         <View style={styles.headingText}>
           <Text style={styles.title}>시간대별 코스 설계</Text>
-          <Text style={styles.description}>기본 09:00~22:00, 시간 외 일정은 자동으로 확장됩니다.</Text>
+          <Text style={styles.description}>09:00~22:00 사이에 자유 일정을 추가해 보세요.</Text>
         </View>
-        <Pressable accessibilityRole="button" style={styles.addButton}>
+        <Pressable accessibilityRole="button" onPress={onAddSchedule} style={styles.addButton}>
           <Ionicons color="#FFFFFF" name="add" size={17} />
           <Text style={styles.addButtonText}>일정 추가</Text>
         </Pressable>
@@ -40,7 +44,7 @@ export function TimetableCourseSection({
         />
       </View>
 
-      <TimetableTimeline schedules={selectedSchedules} />
+      <TimetableTimeline onSelectSchedule={onSelectSchedule} schedules={selectedSchedules} />
 
       <Pressable accessibilityRole="button" style={styles.saveButton}>
         <Text style={styles.saveButtonText}>코스 저장하기</Text>
