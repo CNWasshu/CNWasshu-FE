@@ -58,12 +58,14 @@ function addMinutes(time: string, minutesToAdd: number) {
   return `${String(Math.floor(totalMinutes / 60)).padStart(2, '0')}:${String(totalMinutes % 60).padStart(2, '0')}`;
 }
 
-function earlierTime(firstTime: string, secondTime: string) {
-  return firstTime < secondTime ? firstTime : secondTime;
+function getDurationMinutes(startTime: string, endTime: string) {
+  const [startHour, startMinute] = startTime.split(':').map(Number);
+  const [endHour, endMinute] = endTime.split(':').map(Number);
+  return endHour * 60 + endMinute - (startHour * 60 + startMinute);
 }
 
-function laterTime(firstTime: string, secondTime: string) {
-  return firstTime > secondTime ? firstTime : secondTime;
+function earlierTime(firstTime: string, secondTime: string) {
+  return firstTime < secondTime ? firstTime : secondTime;
 }
 
 export function TimetableScheduleModal({
@@ -96,8 +98,8 @@ export function TimetableScheduleModal({
     ?? (isActivitySchedule ? schedule.operatingEndTime : '22:00');
   const activityOperatingType = selectedActivity?.operatingType
     ?? (isActivitySchedule ? schedule.operatingType : null);
-  const latestStartTime = earlierTime(activityOperatingEndTime, addMinutes(endTime, -5));
-  const earliestEndTime = laterTime(activityOperatingStartTime, addMinutes(startTime, 5));
+  const latestStartTime = addMinutes(activityOperatingEndTime, -5);
+  const earliestEndTime = addMinutes(startTime, 5);
 
   useEffect(() => {
     if (!visible) {
@@ -148,6 +150,25 @@ export function TimetableScheduleModal({
     setEndTime(INITIAL_END_TIME);
     setErrorMessage(null);
     setIsActivityListVisible(true);
+  };
+
+  const handleChangeStartTime = (nextStartTime: string) => {
+    if (nextStartTime >= endTime) {
+      const currentDuration = Math.max(5, getDurationMinutes(startTime, endTime));
+      const nextEndTime = earlierTime(
+        addMinutes(nextStartTime, currentDuration),
+        activityOperatingEndTime
+      );
+      setEndTime(nextEndTime);
+    }
+
+    setStartTime(nextStartTime);
+    setErrorMessage(null);
+  };
+
+  const handleChangeEndTime = (nextEndTime: string) => {
+    setEndTime(nextEndTime);
+    setErrorMessage(null);
   };
 
   const handleSubmit = () => {
@@ -206,8 +227,8 @@ export function TimetableScheduleModal({
               />
 
               <View style={styles.timeRow}>
-                <TimetableTimeInput label="시작 시간" maximumTime={latestStartTime} minimumTime={activityOperatingStartTime} onChangeTime={setStartTime} value={startTime} />
-                <TimetableTimeInput label="종료 시간" maximumTime={activityOperatingEndTime} minimumTime={earliestEndTime} onChangeTime={setEndTime} value={endTime} />
+                <TimetableTimeInput label="시작 시간" maximumTime={latestStartTime} minimumTime={activityOperatingStartTime} onChangeTime={handleChangeStartTime} value={startTime} />
+                <TimetableTimeInput label="종료 시간" maximumTime={activityOperatingEndTime} minimumTime={earliestEndTime} onChangeTime={handleChangeEndTime} value={endTime} />
               </View>
               <Text style={styles.hint}>
                 {activityOperatingType === 'always'
