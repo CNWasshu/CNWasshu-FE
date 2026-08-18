@@ -5,14 +5,37 @@ export type TimetableDay = {
   weekDay: string;
 };
 
-export type TimetableScheduleKind = 'activity' | 'free';
-
-export type TimetableSchedule = {
+type TimetableScheduleBase = {
   endTime: string;
   id: string;
-  kind: TimetableScheduleKind;
   startTime: string;
   title: string;
 };
+
+export type SavedActivity = {
+  endTime: string;
+  id: string;
+  requiresReservation: boolean;
+  startTime: string;
+  title: string;
+};
+
+export type TimetableFreeSchedule = TimetableScheduleBase & {
+  kind: 'free';
+};
+
+export type TimetableActivitySchedule = TimetableScheduleBase & {
+  activityId: SavedActivity['id'];
+  kind: 'activity';
+  operatingEndTime: string;
+  operatingStartTime: string;
+  requiresReservation: boolean;
+};
+
+export type TimetableSchedule =
+  | TimetableActivitySchedule
+  | TimetableFreeSchedule;
+
+export type TimetableScheduleKind = TimetableSchedule['kind'];
 
 export type TimetableSchedulesByDay = Record<string, TimetableSchedule[]>;
