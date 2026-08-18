@@ -1,20 +1,37 @@
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 
 type TimetableTimeInputProps = {
+  disabled?: boolean;
   label: string;
+  maximumTime?: string;
+  minimumTime?: string;
   onChangeTime: (time: string) => void;
   value: string;
 };
 
-export function TimetableTimeInput({ label, onChangeTime, value }: TimetableTimeInputProps) {
+export function TimetableTimeInput({
+  disabled,
+  label,
+  maximumTime = '22:00',
+  minimumTime = '09:00',
+  onChangeTime,
+  value,
+}: TimetableTimeInputProps) {
+  const handleChangeTime = (time: string) => {
+    if (time >= minimumTime && time <= maximumTime) {
+      onChangeTime(time);
+    }
+  };
+
   return (
     <label style={styles.field}>
       <span style={styles.label}>{label}</span>
       <input
         aria-label={label}
-        max="22:00"
-        min="09:00"
-        onChange={(event) => onChangeTime(event.currentTarget.value)}
+        disabled={disabled}
+        max={maximumTime}
+        min={minimumTime}
+        onChange={(event) => handleChangeTime(event.currentTarget.value)}
         step={300}
         style={styles.input}
         type="time"
