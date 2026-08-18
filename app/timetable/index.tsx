@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
@@ -95,14 +95,6 @@ export default function TimetableScreen() {
     closeScheduleModal();
   };
 
-  const handleRequestReservation = (activity: (typeof activities)[number]) => {
-    Alert.alert(
-      '예약이 필요한 체험입니다',
-      `${activity.title}은(는) 예약 페이지에서 시간을 확정한 후 일정에 추가할 수 있습니다.`,
-      [{ text: '확인' }]
-    );
-  };
-
   const browseMoreActivities = () => {
     closeScheduleModal();
     router.push('/');
@@ -142,7 +134,7 @@ export default function TimetableScreen() {
         onClearActivity={clearSelectedActivity}
         onClose={closeScheduleModal}
         onDelete={confirmDeleteSchedule}
-        onRequestReservation={handleRequestReservation}
+        onRequestReservation={browseMoreActivities}
         onSelectActivity={selectActivity}
         onSubmit={handleSubmitSchedule}
         schedule={editingSchedule}

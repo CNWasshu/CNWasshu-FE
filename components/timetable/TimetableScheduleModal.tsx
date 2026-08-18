@@ -26,7 +26,7 @@ type TimetableScheduleModalProps = {
   onBrowseActivities: () => void;
   onClose: () => void;
   onDelete?: () => void;
-  onRequestReservation: (activity: SavedActivity) => void;
+  onRequestReservation: () => void;
   onSelectActivity: (activityId: string) => void;
   onSubmit: (value: ScheduleFormValue) => void;
   schedule?: TimetableSchedule | null;
@@ -89,6 +89,7 @@ export function TimetableScheduleModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [isActivityListVisible, setIsActivityListVisible] = useState(false);
+  const [reservationActivity, setReservationActivity] = useState<SavedActivity | null>(null);
   const isEditing = Boolean(schedule);
   const isActivitySchedule = schedule?.kind === 'activity';
   const isActivityTitleLocked = Boolean(selectedActivity) || isActivitySchedule;
@@ -112,6 +113,7 @@ export function TimetableScheduleModal({
     setErrorMessage(null);
     setIsDeleteConfirmationVisible(false);
     setIsActivityListVisible(false);
+    setReservationActivity(null);
   }, [schedule, visible]);
 
   useEffect(() => {
@@ -136,7 +138,7 @@ export function TimetableScheduleModal({
 
   const handleSelectActivity = (activity: SavedActivity) => {
     if (activity.requiresReservation) {
-      onRequestReservation(activity);
+      setReservationActivity(activity);
       return;
     }
 
@@ -372,6 +374,39 @@ export function TimetableScheduleModal({
             </View>
           </View>
         ) : null}
+
+        {reservationActivity ? (
+          <View accessibilityViewIsModal style={styles.confirmationOverlay}>
+            <Pressable
+              accessibilityLabel="예약 안내 창 닫기"
+              onPress={() => setReservationActivity(null)}
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={styles.confirmationCard}>
+              <View style={styles.reservationIcon}>
+                <Ionicons color={TIMETABLE_COLORS.primary} name="calendar-outline" size={23} />
+              </View>
+              <Text style={styles.confirmationTitle}>예약이 필요한 체험입니다</Text>
+              <Text style={styles.confirmationDescription}>
+                {reservationActivity.title}은(는) 예약 페이지에서 시간을 확정한 후 일정에 추가할 수 있습니다.
+              </Text>
+              <View style={styles.confirmationButtons}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setReservationActivity(null)}
+                  style={styles.cancelButton}>
+                  <Text numberOfLines={1} style={styles.cancelButtonText}>나중에</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onRequestReservation}
+                  style={styles.reservationButton}>
+                  <Text numberOfLines={1} style={styles.reservationButtonText}>홈에서 예약하기</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        ) : null}
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -421,6 +456,9 @@ const styles = StyleSheet.create({
   moreActivitiesButton: { alignItems: 'center', backgroundColor: '#F2E8D5', borderRadius: 13, marginTop: 12, paddingVertical: 13 },
   moreActivitiesButtonText: { color: TIMETABLE_COLORS.text, fontSize: 13, fontWeight: '800' },
   overlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.48)', flex: 1, justifyContent: 'flex-end' },
+  reservationButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, flexBasis: 0, justifyContent: 'center', minHeight: 46, paddingHorizontal: 10 },
+  reservationButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
+  reservationIcon: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primaryLight, borderRadius: 24, height: 48, justifyContent: 'center', width: 48 },
   selectActivityButton: { borderColor: '#9FC9AD', borderRadius: 12, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 9 },
   selectActivityButtonText: { color: TIMETABLE_COLORS.primary, fontSize: 12, fontWeight: '800' },
   selectedActivitySummary: { alignItems: 'center', backgroundColor: '#F4FAF2', borderColor: '#BDD7BF', borderRadius: 16, borderWidth: 1, flexDirection: 'row', gap: 10, marginTop: 10, padding: 10 },
