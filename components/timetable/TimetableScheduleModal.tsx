@@ -14,29 +14,69 @@ import {
 
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { TimetableTimeInput } from '@/components/timetable/TimetableTimeInput';
-import type { TimetableSchedule } from '@/types/timetable';
+import type { SavedActivity, TimetableSchedule } from '@/types/timetable';
 import { validateScheduleInput } from '@/utils/timetable/time';
 
 type ScheduleFormValue = Pick<TimetableSchedule, 'endTime' | 'startTime' | 'title'>;
 
 type TimetableScheduleModalProps = {
+  activities: SavedActivity[];
   dayLabel: string;
+  onClearActivity: () => void;
   onClose: () => void;
   onDelete?: () => void;
+  onRequestReservation: (activity: SavedActivity) => void;
+  onSelectActivity: (activityId: string) => void;
   onSubmit: (value: ScheduleFormValue) => void;
   schedule?: TimetableSchedule | null;
+  selectedActivity: SavedActivity | null;
+  selectedActivityId: string | null;
   visible: boolean;
 };
 
 const INITIAL_START_TIME = '09:00';
 const INITIAL_END_TIME = '10:00';
 
+function formatDuration(startTime: string, endTime: string) {
+  const [startHour, startMinute] = startTime.split(':').map(Number);
+  const [endHour, endMinute] = endTime.split(':').map(Number);
+  const durationMinutes = endHour * 60 + endMinute - (startHour * 60 + startMinute);
+  const hours = Math.floor(durationMinutes / 60);
+  const minutes = durationMinutes % 60;
+
+  if (hours === 0) {
+    return `약 ${minutes}분`;
+  }
+
+  return minutes === 0 ? `약 ${hours}시간` : `약 ${hours}시간 ${minutes}분`;
+}
+
+function addMinutes(time: string, minutesToAdd: number) {
+  const [hour, minute] = time.split(':').map(Number);
+  const totalMinutes = hour * 60 + minute + minutesToAdd;
+  return `${String(Math.floor(totalMinutes / 60)).padStart(2, '0')}:${String(totalMinutes % 60).padStart(2, '0')}`;
+}
+
+function earlierTime(firstTime: string, secondTime: string) {
+  return firstTime < secondTime ? firstTime : secondTime;
+}
+
+function laterTime(firstTime: string, secondTime: string) {
+  return firstTime > secondTime ? firstTime : secondTime;
+}
+
 export function TimetableScheduleModal({
+  activities,
   dayLabel,
+  onClearActivity,
   onClose,
   onDelete,
+  onRequestReservation,
+  onSelectActivity,
   onSubmit,
   schedule,
+  selectedActivity,
+  selectedActivityId,
   visible,
 }: TimetableScheduleModalProps) {
   const [title, setTitle] = useState('');
@@ -44,7 +84,18 @@ export function TimetableScheduleModal({
   const [endTime, setEndTime] = useState(INITIAL_END_TIME);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
+  const [isActivityListVisible, setIsActivityListVisible] = useState(false);
   const isEditing = Boolean(schedule);
+  const isActivitySchedule = schedule?.kind === 'activity';
+  const isActivityTitleLocked = Boolean(selectedActivity) || isActivitySchedule;
+  const activityOperatingStartTime = selectedActivity?.startTime
+    ?? (isActivitySchedule ? schedule.operatingStartTime : INITIAL_START_TIME);
+  const activityOperatingEndTime = selectedActivity?.endTime
+    ?? (isActivitySchedule ? schedule.operatingEndTime : '22:00');
+  const activityOperatingType = selectedActivity?.operatingType
+    ?? (isActivitySchedule ? schedule.operatingType : null);
+  const latestStartTime = earlierTime(activityOperatingEndTime, addMinutes(endTime, -5));
+  const earliestEndTime = laterTime(activityOperatingStartTime, addMinutes(startTime, 5));
 
   useEffect(() => {
     if (!visible) {
@@ -56,13 +107,56 @@ export function TimetableScheduleModal({
     setEndTime(schedule?.endTime ?? INITIAL_END_TIME);
     setErrorMessage(null);
     setIsDeleteConfirmationVisible(false);
+    setIsActivityListVisible(false);
   }, [schedule, visible]);
+
+  useEffect(() => {
+    if (!selectedActivity || !visible) {
+      return;
+    }
+
+    setTitle(selectedActivity.title);
+    setStartTime(
+      selectedActivity.operatingType === 'always'
+        ? INITIAL_START_TIME
+        : selectedActivity.startTime
+    );
+    setEndTime(
+      selectedActivity.operatingType === 'always'
+        ? INITIAL_END_TIME
+        : selectedActivity.endTime
+    );
+    setErrorMessage(null);
+    setIsActivityListVisible(false);
+  }, [selectedActivity, visible]);
+
+  const handleSelectActivity = (activity: SavedActivity) => {
+    if (activity.requiresReservation) {
+      onRequestReservation(activity);
+      return;
+    }
+
+    onSelectActivity(activity.id);
+  };
+
+  const handleClearActivity = () => {
+    onClearActivity();
+    setTitle('');
+    setStartTime(INITIAL_START_TIME);
+    setEndTime(INITIAL_END_TIME);
+    setErrorMessage(null);
+    setIsActivityListVisible(true);
+  };
 
   const handleSubmit = () => {
     const validationMessage = validateScheduleInput(title, startTime, endTime);
-    setErrorMessage(validationMessage);
+    const activityTimeErrorMessage = activityOperatingType
+      && (startTime < activityOperatingStartTime || endTime > activityOperatingEndTime)
+      ? `체험 운영 시간 ${activityOperatingStartTime}~${activityOperatingEndTime} 안에서 선택해 주세요.`
+      : null;
+    setErrorMessage(validationMessage ?? activityTimeErrorMessage);
 
-    if (validationMessage) {
+    if (validationMessage || activityTimeErrorMessage) {
       return;
     }
 
@@ -93,6 +187,7 @@ export function TimetableScheduleModal({
               <Text style={styles.label}>일정 제목</Text>
               <TextInput
                 accessibilityLabel="일정 제목"
+                editable={!isActivityTitleLocked}
                 maxLength={40}
                 onChangeText={setTitle}
                 placeholder="예: 7시 출발, 점심 식사, 카페 휴식"
@@ -103,12 +198,86 @@ export function TimetableScheduleModal({
               />
 
               <View style={styles.timeRow}>
-                <TimetableTimeInput label="시작 시간" onChangeTime={setStartTime} value={startTime} />
-                <TimetableTimeInput label="종료 시간" onChangeTime={setEndTime} value={endTime} />
+                <TimetableTimeInput label="시작 시간" maximumTime={latestStartTime} minimumTime={activityOperatingStartTime} onChangeTime={setStartTime} value={startTime} />
+                <TimetableTimeInput label="종료 시간" maximumTime={activityOperatingEndTime} minimumTime={earliestEndTime} onChangeTime={setEndTime} value={endTime} />
               </View>
-              <Text style={styles.hint}>09:00~22:00 사이에서 5분 단위로 선택할 수 있습니다.</Text>
+              <Text style={styles.hint}>
+                {activityOperatingType === 'always'
+                  ? '상시 운영 체험은 09:00~22:00 사이에서 원하는 시간을 선택할 수 있습니다.'
+                  : activityOperatingType === 'hours'
+                    ? `운영 시간 ${activityOperatingStartTime}~${activityOperatingEndTime} 안에서 원하는 시간을 선택할 수 있습니다.`
+                  : '09:00~22:00 사이에서 5분 단위로 선택할 수 있습니다.'}
+              </Text>
               {errorMessage ? <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text> : null}
             </View>
+
+            {!isEditing ? (
+              <View style={styles.activitySection}>
+                {!selectedActivity ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => setIsActivityListVisible((current) => !current)}
+                    style={styles.activityToggle}>
+                    <Text style={styles.activityToggleText}>체험 선택</Text>
+                    <Ionicons color={TIMETABLE_COLORS.primary} name={isActivityListVisible ? 'chevron-up' : 'chevron-down'} size={18} />
+                  </Pressable>
+                ) : null}
+
+                {selectedActivity && !isActivityListVisible ? (
+                  <View style={styles.selectedActivitySummary}>
+                    <View style={styles.activityIcon}>
+                      <Ionicons color={TIMETABLE_COLORS.primary} name="leaf-outline" size={22} />
+                    </View>
+                    <View style={styles.activityText}>
+                      <Text style={styles.activityTitle}>{selectedActivity.title}</Text>
+                      <Text style={styles.activityMetadata}>
+                        {selectedActivity.location} · 운영 {selectedActivity.operatingType === 'always'
+                          ? '상시 운영'
+                          : `${selectedActivity.startTime}~${selectedActivity.endTime}`} · {formatDuration(startTime, endTime)}
+                      </Text>
+                      <Text style={styles.activityNotice}>일정 추가하기를 누르면 이 체험이 타임테이블에 들어갑니다.</Text>
+                    </View>
+                    <Pressable accessibilityRole="button" onPress={handleClearActivity}>
+                      <Text style={styles.clearActivityText}>선택 취소</Text>
+                    </Pressable>
+                  </View>
+                ) : null}
+
+                {isActivityListVisible ? (
+                  <View style={styles.activityListContainer}>
+                    <Text style={styles.activityDescription}>
+                      장바구니에 담아둔 체험만 선택할 수 있어요. 더 담고 싶다면 홈에서 하트를 눌러주세요.
+                    </Text>
+                    <View style={styles.activityList}>
+                      {activities.map((activity) => (
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: activity.id === selectedActivityId }}
+                          key={activity.id}
+                          onPress={() => handleSelectActivity(activity)}
+                          style={styles.activityCard}>
+                          <View style={styles.activityIcon}>
+                            <Ionicons color={TIMETABLE_COLORS.primary} name="leaf-outline" size={22} />
+                          </View>
+                          <View style={styles.activityText}>
+                            <Text style={styles.activityTitle}>{activity.title}</Text>
+                            <Text style={styles.activityMetadata}>
+                              {activity.location} · {activity.operatingType === 'always'
+                                ? '상시 운영'
+                                : `${activity.startTime}~${activity.endTime}`}
+                              {activity.requiresReservation ? ' · 예약 필요' : ''}
+                            </Text>
+                          </View>
+                          <View style={styles.selectActivityButton}>
+                            <Text style={styles.selectActivityButtonText}>선택</Text>
+                          </View>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                ) : null}
+              </View>
+            ) : null}
 
             <View style={styles.buttonRow}>
               {isEditing && onDelete ? (
@@ -161,6 +330,18 @@ export function TimetableScheduleModal({
 }
 
 const styles = StyleSheet.create({
+  activityCard: { alignItems: 'center', backgroundColor: '#F4FAF2', borderColor: '#BDD7BF', borderRadius: 18, borderWidth: 1, flexDirection: 'row', gap: 10, padding: 10 },
+  activityDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16 },
+  activityIcon: { alignItems: 'center', backgroundColor: '#DDEFD9', borderRadius: 14, height: 44, justifyContent: 'center', width: 44 },
+  activityList: { gap: 9, marginTop: 10 },
+  activityListContainer: { marginTop: 12 },
+  activityMetadata: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 3 },
+  activityNotice: { color: '#527041', fontSize: 10, lineHeight: 15, marginTop: 4 },
+  activitySection: { marginTop: 14 },
+  activityText: { flex: 1 },
+  activityTitle: { color: TIMETABLE_COLORS.text, fontSize: 13, fontWeight: '800', lineHeight: 19 },
+  activityToggle: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#A8D2A7', borderRadius: 13, borderWidth: 1, flexDirection: 'row', justifyContent: 'center', paddingVertical: 13 },
+  activityToggleText: { color: TIMETABLE_COLORS.primary, fontSize: 13, fontWeight: '800', marginRight: 6 },
   buttonRow: { flexDirection: 'row', gap: 10, marginTop: 28 },
   cancelButton: { alignItems: 'center', backgroundColor: '#F4EFE6', borderRadius: 12, flex: 1, flexBasis: 0, justifyContent: 'center', minHeight: 46, paddingHorizontal: 12 },
   cancelButtonText: { color: TIMETABLE_COLORS.text, fontSize: 14, fontWeight: '800' },
@@ -172,6 +353,7 @@ const styles = StyleSheet.create({
   confirmationOverlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.58)', bottom: 0, justifyContent: 'center', left: 0, position: 'absolute', right: 0, top: 0, zIndex: 10 },
   confirmationTitle: { color: TIMETABLE_COLORS.text, fontSize: 18, fontWeight: '800', marginTop: 12 },
   content: { paddingBottom: 20, paddingHorizontal: 14 },
+  clearActivityText: { color: TIMETABLE_COLORS.primary, fontSize: 11, fontWeight: '800' },
   deleteButton: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#C95A4A', borderRadius: 12, borderWidth: 1, justifyContent: 'center', paddingHorizontal: 22 },
   deleteButtonText: { color: '#B84738', fontSize: 14, fontWeight: '800' },
   description: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19, marginTop: 5 },
@@ -185,6 +367,9 @@ const styles = StyleSheet.create({
   input: { backgroundColor: '#FFFCF6', borderColor: TIMETABLE_COLORS.border, borderRadius: 12, borderWidth: 1, color: TIMETABLE_COLORS.text, fontSize: 15, marginTop: 7, paddingHorizontal: 13, paddingVertical: 12 },
   label: { color: TIMETABLE_COLORS.text, fontSize: 12, fontWeight: '700' },
   overlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.48)', flex: 1, justifyContent: 'flex-end' },
+  selectActivityButton: { borderColor: '#9FC9AD', borderRadius: 12, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 9 },
+  selectActivityButtonText: { color: TIMETABLE_COLORS.primary, fontSize: 12, fontWeight: '800' },
+  selectedActivitySummary: { alignItems: 'center', backgroundColor: '#F4FAF2', borderColor: '#BDD7BF', borderRadius: 16, borderWidth: 1, flexDirection: 'row', gap: 10, marginTop: 10, padding: 10 },
   sheet: { backgroundColor: TIMETABLE_COLORS.background, borderTopLeftRadius: 26, borderTopRightRadius: 26, maxHeight: '92%', maxWidth: 430, paddingTop: 4, width: '100%' },
   submitButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, paddingVertical: 14 },
   submitButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },

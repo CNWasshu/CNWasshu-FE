@@ -15,6 +15,8 @@ type TimetableScheduleBase = {
 export type SavedActivity = {
   endTime: string;
   id: string;
+  location: string;
+  operatingType: 'always' | 'hours';
   requiresReservation: boolean;
   startTime: string;
   title: string;
@@ -29,6 +31,7 @@ export type TimetableActivitySchedule = TimetableScheduleBase & {
   kind: 'activity';
   operatingEndTime: string;
   operatingStartTime: string;
+  operatingType: SavedActivity['operatingType'];
   requiresReservation: boolean;
 };
 

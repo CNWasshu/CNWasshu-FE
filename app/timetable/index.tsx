@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TimetableDateRange } from '@/components/timetable/TimetableDateRange';
@@ -7,6 +7,7 @@ import { TimetableCourseSection } from '@/components/timetable/TimetableCourseSe
 import { TimetableHeader } from '@/components/timetable/TimetableHeader';
 import { TimetableScheduleModal } from '@/components/timetable/TimetableScheduleModal';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
+import { useSavedActivities } from '@/hooks/timetable/use-saved-activities';
 import { useTimetable } from '@/hooks/timetable/use-timetable';
 import type { TimetableSchedule } from '@/types/timetable';
 
@@ -17,6 +18,13 @@ function createScheduleId() {
 export default function TimetableScreen() {
   const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<TimetableSchedule | null>(null);
+  const {
+    activities,
+    clearSelectedActivity,
+    selectedActivity,
+    selectedActivityId,
+    selectActivity,
+  } = useSavedActivities();
   const {
     addSchedule,
     dateErrorMessage,
@@ -34,13 +42,16 @@ export default function TimetableScreen() {
     updateSchedule,
   } = useTimetable();
   const selectedDay = days.find((day) => day.id === selectedDayId);
+  const selectedDayLabel = `${selectedDay?.dayLabel ?? ''} (${selectedDay?.date ?? ''})`;
 
   const closeScheduleModal = () => {
     setIsScheduleModalVisible(false);
     setEditingSchedule(null);
+    clearSelectedActivity();
   };
 
   const openAddScheduleModal = () => {
+    clearSelectedActivity();
     setEditingSchedule(null);
     setIsScheduleModalVisible(true);
   };
@@ -53,6 +64,17 @@ export default function TimetableScreen() {
   const handleSubmitSchedule = (value: Pick<TimetableSchedule, 'endTime' | 'startTime' | 'title'>) => {
     if (editingSchedule) {
       updateSchedule(selectedDayId, { ...editingSchedule, ...value });
+    } else if (selectedActivity) {
+      addSchedule(selectedDayId, {
+        activityId: selectedActivity.id,
+        ...value,
+        id: createScheduleId(),
+        kind: 'activity',
+        operatingEndTime: selectedActivity.endTime,
+        operatingStartTime: selectedActivity.startTime,
+        operatingType: selectedActivity.operatingType,
+        requiresReservation: selectedActivity.requiresReservation,
+      });
     } else {
       addSchedule(selectedDayId, { ...value, id: createScheduleId(), kind: 'free' });
     }
@@ -67,6 +89,14 @@ export default function TimetableScreen() {
 
     removeSchedule(selectedDayId, editingSchedule.id);
     closeScheduleModal();
+  };
+
+  const handleRequestReservation = (activity: (typeof activities)[number]) => {
+    Alert.alert(
+      '예약이 필요한 체험입니다',
+      `${activity.title}은(는) 예약 페이지에서 시간을 확정한 후 일정에 추가할 수 있습니다.`,
+      [{ text: '확인' }]
+    );
   };
 
   return (
@@ -97,11 +127,17 @@ export default function TimetableScreen() {
         </View>
       </ScrollView>
       <TimetableScheduleModal
-        dayLabel={`${selectedDay?.dayLabel ?? ''} (${selectedDay?.date ?? ''})`}
+        activities={activities}
+        dayLabel={selectedDayLabel}
+        onClearActivity={clearSelectedActivity}
         onClose={closeScheduleModal}
         onDelete={confirmDeleteSchedule}
+        onRequestReservation={handleRequestReservation}
+        onSelectActivity={selectActivity}
         onSubmit={handleSubmitSchedule}
         schedule={editingSchedule}
+        selectedActivity={selectedActivity}
+        selectedActivityId={selectedActivityId}
         visible={isScheduleModalVisible}
       />
     </SafeAreaView>

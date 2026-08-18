@@ -28,7 +28,7 @@ export function TimetableCourseSection({
       <View style={styles.headingRow}>
         <View style={styles.headingText}>
           <Text style={styles.title}>시간대별 코스 설계</Text>
-          <Text style={styles.description}>09:00~22:00 사이에 자유 일정을 추가해 보세요.</Text>
+          <Text style={styles.description}>09:00~22:00 사이에 자유 일정이나 체험을 추가해 보세요.</Text>
         </View>
         <Pressable accessibilityRole="button" onPress={onAddSchedule} style={styles.addButton}>
           <Ionicons color="#FFFFFF" name="add" size={17} />
