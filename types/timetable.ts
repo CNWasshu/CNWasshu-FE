@@ -29,7 +29,9 @@ export type TimetableFreeSchedule = TimetableScheduleBase & {
 
 export type TimetableActivitySchedule = TimetableScheduleBase & {
   activityId: SavedActivity['id'];
+  activityIcon: SavedActivity['icon'];
   kind: 'activity';
+  location: SavedActivity['location'];
   operatingEndTime: string;
   operatingStartTime: string;
   operatingType: SavedActivity['operatingType'];

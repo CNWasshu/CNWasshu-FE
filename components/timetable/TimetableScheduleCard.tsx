@@ -18,49 +18,56 @@ export function TimetableScheduleCard({ onPress, schedule, style }: TimetableSch
   const accessibilityDetails = isActivity
     ? `체험 일정, ${operatingTimeLabel}${schedule.requiresReservation ? ', 예약 필요' : ', 예약 불필요'}`
     : '자유 일정';
+  const metadata = isActivity
+    ? `${schedule.startTime}~${schedule.endTime} · ${schedule.location} · ${operatingTimeLabel}${schedule.requiresReservation ? ' · 예약 필요' : ''}`
+    : `${schedule.startTime}~${schedule.endTime} · 직접 입력 · 자유 일정`;
 
   return (
-    <Pressable
-      accessibilityHint="일정을 수정하거나 삭제합니다."
-      accessibilityLabel={`${schedule.title}, ${schedule.startTime}부터 ${schedule.endTime}까지, ${accessibilityDetails}`}
-      accessibilityRole="button"
-      onPress={onPress}
-      style={[styles.card, isActivity ? styles.activityCard : styles.freeCard, style]}>
-      <View style={styles.headingRow}>
-        <Text numberOfLines={1} style={[styles.title, isActivity && styles.activityTitle]}>
-          {schedule.title}
-        </Text>
-        <View style={[styles.kindBadge, isActivity ? styles.activityBadge : styles.freeBadge]}>
-          <Text style={[styles.kindBadgeText, isActivity ? styles.activityBadgeText : styles.freeBadgeText]}>
-            {isActivity ? '체험' : '자유 일정'}
+    <View style={[styles.card, isActivity ? styles.activityCard : styles.freeCard, style]}>
+      <Pressable
+        accessibilityHint="일정을 수정하거나 삭제합니다."
+        accessibilityLabel={`${schedule.title}, ${schedule.startTime}부터 ${schedule.endTime}까지, ${accessibilityDetails}`}
+        accessibilityRole="button"
+        onPress={onPress}
+        style={styles.cardContent}>
+        <View style={[styles.icon, isActivity ? styles.activityIcon : styles.freeIcon]}>
+          <Text style={styles.iconText}>{isActivity ? schedule.activityIcon : '🚩'}</Text>
+        </View>
+        <View style={styles.textContent}>
+          <Text numberOfLines={1} style={[styles.title, isActivity && styles.activityTitle]}>
+            {schedule.title}
+          </Text>
+          <Text numberOfLines={1} style={[styles.metadata, isActivity && styles.activityMetadata]}>
+            {metadata}
           </Text>
         </View>
-      </View>
-      <Text numberOfLines={1} style={[styles.time, isActivity && styles.activityTime]}>
-        {schedule.startTime}~{schedule.endTime}
-        {operatingTimeLabel ? ` · ${operatingTimeLabel}` : ''}
-      </Text>
-      {isActivity && schedule.requiresReservation ? (
-        <Text numberOfLines={1} style={styles.reservation}>예약 필요</Text>
-      ) : null}
-    </Pressable>
+      </Pressable>
+      <Pressable
+        accessibilityHint="수정 또는 삭제 화면을 엽니다."
+        accessibilityLabel={`${schedule.title} 일정 관리`}
+        accessibilityRole="button"
+        onPress={onPress}
+        style={styles.manageButton}>
+        <Text style={styles.manageButtonText}>−</Text>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  activityBadge: { backgroundColor: '#DCEBFA' },
-  activityBadgeText: { color: '#315F88' },
-  activityCard: { backgroundColor: '#EDF6FF', borderColor: '#78A7CF' },
-  activityTime: { color: '#496D8C' },
-  activityTitle: { color: '#234E70' },
-  card: { borderLeftWidth: 4, borderRadius: 10, left: 62, minHeight: 48, overflow: 'hidden', paddingHorizontal: 9, paddingVertical: 5, position: 'absolute', right: 12, zIndex: 1 },
-  freeBadge: { backgroundColor: '#D8EBCF' },
-  freeBadgeText: { color: '#3F6832' },
-  freeCard: { backgroundColor: '#E5F2DD', borderColor: '#8AB276' },
-  headingRow: { alignItems: 'center', flexDirection: 'row', gap: 6 },
-  kindBadge: { borderRadius: 999, paddingHorizontal: 6, paddingVertical: 2 },
-  kindBadgeText: { fontSize: 9, fontWeight: '800' },
-  reservation: { color: '#9A5A20', fontSize: 9, fontWeight: '800', marginTop: 1 },
-  time: { color: '#527041', fontSize: 11, fontWeight: '700', marginTop: 2 },
-  title: { color: '#294B2C', flex: 1, fontSize: 13, fontWeight: '800' },
+  activityCard: { backgroundColor: '#F1FAEE', borderColor: '#8BC783' },
+  activityIcon: { backgroundColor: '#DDF1D8' },
+  activityMetadata: { color: '#527348' },
+  activityTitle: { color: '#244C2A' },
+  card: { alignItems: 'center', borderRadius: 14, borderWidth: 1, flexDirection: 'row', left: 62, minHeight: 56, overflow: 'hidden', paddingHorizontal: 8, position: 'absolute', right: 12, zIndex: 1 },
+  cardContent: { alignItems: 'center', flex: 1, flexDirection: 'row', gap: 9, minWidth: 0, paddingVertical: 6 },
+  freeCard: { backgroundColor: '#FFFAF0', borderColor: '#D8C39B' },
+  freeIcon: { backgroundColor: '#F3E8D2' },
+  icon: { alignItems: 'center', borderRadius: 11, height: 34, justifyContent: 'center', width: 34 },
+  iconText: { fontSize: 17 },
+  manageButton: { alignItems: 'center', backgroundColor: '#F3E8D2', borderRadius: 10, height: 36, justifyContent: 'center', marginLeft: 7, width: 30 },
+  manageButtonText: { color: '#806E4F', fontSize: 17, lineHeight: 19 },
+  metadata: { color: '#7B6D57', fontSize: 10, lineHeight: 15, marginTop: 2 },
+  textContent: { flex: 1, minWidth: 0 },
+  title: { color: '#3F3526', fontSize: 13, fontWeight: '800', lineHeight: 18 },
 });

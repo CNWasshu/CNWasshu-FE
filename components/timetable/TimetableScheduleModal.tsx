@@ -172,7 +172,11 @@ export function TimetableScheduleModal({
         style={styles.overlay}>
         <View accessibilityViewIsModal style={styles.sheet}>
           <View style={styles.handle} />
-          <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          <ScrollView
+            contentContainerStyle={styles.content}
+            keyboardShouldPersistTaps="handled"
+            scrollEnabled={!isActivityListVisible}
+            showsVerticalScrollIndicator={false}>
             <View style={styles.headingRow}>
               <View style={styles.headingText}>
                 <Text style={styles.title}>{isEditing ? '일정 수정' : '일정 추가'}</Text>
@@ -252,10 +256,14 @@ export function TimetableScheduleModal({
                     <Text style={styles.activityDescription}>
                       장바구니에 담아둔 체험만 선택할 수 있어요. 더 담고 싶다면 홈에서 하트를 눌러주세요.
                     </Text>
+                    <View style={styles.activityListHeading}>
+                      <Text style={styles.activityCount}>담아둔 체험 {activities.length}개</Text>
+                    </View>
                     <ScrollView
                       contentContainerStyle={styles.activityListContent}
+                      keyboardShouldPersistTaps="handled"
                       nestedScrollEnabled
-                      showsVerticalScrollIndicator
+                      showsVerticalScrollIndicator={false}
                       style={styles.activityList}>
                       {activities.map((activity) => (
                         <Pressable
@@ -350,12 +358,14 @@ export function TimetableScheduleModal({
 
 const styles = StyleSheet.create({
   activityCard: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: TIMETABLE_COLORS.border, borderRadius: 18, borderWidth: 1, flexDirection: 'row', gap: 10, padding: 10 },
-  activityDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16 },
+  activityCount: { color: TIMETABLE_COLORS.text, fontSize: 13, fontWeight: '800', lineHeight: 19 },
+  activityDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19 },
   activityEmoji: { fontSize: 22 },
   activityIcon: { alignItems: 'center', backgroundColor: '#DDEFD9', borderRadius: 14, height: 44, justifyContent: 'center', width: 44 },
-  activityList: { marginTop: 10, maxHeight: 210 },
-  activityListContent: { gap: 9 },
+  activityList: { backgroundColor: '#F8F2E7', borderColor: '#EFE2CD', borderRadius: 18, borderWidth: 1, height: 110, marginTop: 7 },
+  activityListContent: { gap: 9, padding: 6 },
   activityListContainer: { marginTop: 12 },
+  activityListHeading: { marginTop: 10, paddingHorizontal: 2 },
   activityMetadata: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 3 },
   activityNotice: { color: '#527041', fontSize: 10, lineHeight: 15, marginTop: 4 },
   activitySection: { marginTop: 14 },

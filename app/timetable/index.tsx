@@ -69,9 +69,11 @@ export default function TimetableScreen() {
     } else if (selectedActivity) {
       addSchedule(selectedDayId, {
         activityId: selectedActivity.id,
+        activityIcon: selectedActivity.icon,
         ...value,
         id: createScheduleId(),
         kind: 'activity',
+        location: selectedActivity.location,
         operatingEndTime: selectedActivity.endTime,
         operatingStartTime: selectedActivity.startTime,
         operatingType: selectedActivity.operatingType,
