@@ -34,7 +34,11 @@ export function TimetableTimeline({ onSelectSchedule, schedules }: TimetableTime
         const startMinutes = timeToMinutes(schedule.startTime) ?? START_HOUR * 60;
         const endMinutes = timeToMinutes(schedule.endTime) ?? startMinutes + 60;
         const top = 16 + ((startMinutes - START_HOUR * 60) / 60) * HOUR_ROW_HEIGHT;
-        const height = Math.max(36, ((endMinutes - startMinutes) / 60) * HOUR_ROW_HEIGHT - 4);
+        const minimumCardHeight = schedule.kind === 'activity' ? 54 : 48;
+        const height = Math.max(
+          minimumCardHeight,
+          ((endMinutes - startMinutes) / 60) * HOUR_ROW_HEIGHT - 4
+        );
 
         return (
           <TimetableScheduleCard
