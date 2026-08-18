@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { TimetableTimeInput } from '@/components/timetable/TimetableTimeInput';
@@ -83,6 +84,7 @@ export function TimetableScheduleModal({
   selectedActivityId,
   visible,
 }: TimetableScheduleModalProps) {
+  const insets = useSafeAreaInsets();
   const [title, setTitle] = useState('');
   const [startTime, setStartTime] = useState(INITIAL_START_TIME);
   const [endTime, setEndTime] = useState(INITIAL_END_TIME);
@@ -191,7 +193,7 @@ export function TimetableScheduleModal({
   return (
     <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.overlay}>
         <View accessibilityViewIsModal style={styles.sheet}>
           <View style={styles.handle} />
@@ -329,6 +331,8 @@ export function TimetableScheduleModal({
               </View>
             ) : null}
 
+          </ScrollView>
+          <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
             <View style={styles.buttonRow}>
               {isEditing && onDelete ? (
                 <Pressable
@@ -342,7 +346,7 @@ export function TimetableScheduleModal({
                 <Text style={styles.submitButtonText}>{isEditing ? '수정 완료' : '일정 추가하기'}</Text>
               </Pressable>
             </View>
-          </ScrollView>
+          </View>
         </View>
 
         {isDeleteConfirmationVisible && onDelete ? (
@@ -429,7 +433,7 @@ const styles = StyleSheet.create({
   activityTitle: { color: TIMETABLE_COLORS.text, fontSize: 13, fontWeight: '800', lineHeight: 19 },
   activityToggle: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#A8D2A7', borderRadius: 13, borderWidth: 1, flexDirection: 'row', justifyContent: 'center', paddingVertical: 13 },
   activityToggleText: { color: TIMETABLE_COLORS.primary, fontSize: 13, fontWeight: '800', marginRight: 6 },
-  buttonRow: { flexDirection: 'row', gap: 10, marginTop: 28 },
+  buttonRow: { flexDirection: 'row', gap: 10 },
   cancelButton: { alignItems: 'center', backgroundColor: '#F4EFE6', borderRadius: 12, flex: 1, flexBasis: 0, justifyContent: 'center', minHeight: 46, paddingHorizontal: 12 },
   cancelButtonText: { color: TIMETABLE_COLORS.text, fontSize: 14, fontWeight: '800' },
   confirmDeleteButton: { alignItems: 'center', backgroundColor: '#B84738', borderRadius: 12, flex: 1, flexBasis: 0, justifyContent: 'center', minHeight: 46, paddingHorizontal: 12 },
@@ -439,13 +443,14 @@ const styles = StyleSheet.create({
   confirmationDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19, marginTop: 7, textAlign: 'center' },
   confirmationOverlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.58)', bottom: 0, justifyContent: 'center', left: 0, position: 'absolute', right: 0, top: 0, zIndex: 10 },
   confirmationTitle: { color: TIMETABLE_COLORS.text, fontSize: 18, fontWeight: '800', marginTop: 12 },
-  content: { paddingBottom: 20, paddingHorizontal: 14 },
+  content: { paddingBottom: 14, paddingHorizontal: 14 },
   clearActivityText: { color: TIMETABLE_COLORS.primary, fontSize: 11, fontWeight: '800' },
   deleteButton: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#C95A4A', borderRadius: 12, borderWidth: 1, justifyContent: 'center', paddingHorizontal: 22 },
   deleteButtonText: { color: '#B84738', fontSize: 14, fontWeight: '800' },
   description: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19, marginTop: 5 },
   error: { color: '#B84738', fontSize: 12, lineHeight: 17, marginTop: 7 },
   formCard: { backgroundColor: '#FFFFFF', borderColor: TIMETABLE_COLORS.border, borderRadius: 20, borderWidth: 1, marginTop: 16, padding: 14 },
+  footer: { backgroundColor: TIMETABLE_COLORS.background, borderTopColor: TIMETABLE_COLORS.border, borderTopWidth: 1, paddingHorizontal: 14, paddingTop: 12 },
   handle: { alignSelf: 'center', backgroundColor: '#CDBFA8', borderRadius: 999, height: 5, marginBottom: 12, marginTop: 8, width: 42 },
   headingRow: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between' },
   headingText: { flex: 1, paddingRight: 12 },
@@ -462,7 +467,7 @@ const styles = StyleSheet.create({
   selectActivityButton: { borderColor: '#9FC9AD', borderRadius: 12, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 9 },
   selectActivityButtonText: { color: TIMETABLE_COLORS.primary, fontSize: 12, fontWeight: '800' },
   selectedActivitySummary: { alignItems: 'center', backgroundColor: '#F4FAF2', borderColor: '#BDD7BF', borderRadius: 16, borderWidth: 1, flexDirection: 'row', gap: 10, marginTop: 10, padding: 10 },
-  sheet: { backgroundColor: TIMETABLE_COLORS.background, borderTopLeftRadius: 26, borderTopRightRadius: 26, maxHeight: '92%', maxWidth: 430, paddingTop: 4, width: '100%' },
+  sheet: { backgroundColor: TIMETABLE_COLORS.background, borderTopLeftRadius: 26, borderTopRightRadius: 26, maxHeight: '92%', maxWidth: 430, overflow: 'hidden', paddingTop: 4, width: '100%' },
   submitButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, paddingVertical: 14 },
   submitButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   timeRow: { flexDirection: 'row', gap: 10, marginTop: 14 },
