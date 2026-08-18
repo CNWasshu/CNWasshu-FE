@@ -14,6 +14,7 @@ type TimetableScheduleBase = {
 
 export type SavedActivity = {
   endTime: string;
+  icon: string;
   id: string;
   location: string;
   operatingType: 'always' | 'hours';

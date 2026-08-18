@@ -3,6 +3,7 @@ import type { SavedActivity } from '@/types/timetable';
 export const SAVED_ACTIVITIES: SavedActivity[] = [
   {
     endTime: '11:30',
+    icon: '🍓',
     id: 'activity-strawberry-picking',
     location: '논산',
     operatingType: 'hours',
@@ -12,6 +13,7 @@ export const SAVED_ACTIVITIES: SavedActivity[] = [
   },
   {
     endTime: '15:00',
+    icon: '🏺',
     id: 'activity-pottery',
     location: '공주',
     operatingType: 'hours',
@@ -21,6 +23,7 @@ export const SAVED_ACTIVITIES: SavedActivity[] = [
   },
   {
     endTime: '22:00',
+    icon: '🌸',
     id: 'activity-forest-walk',
     location: '부여',
     operatingType: 'always',

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 import { TimetableDateRange } from '@/components/timetable/TimetableDateRange';
 import { TimetableCourseSection } from '@/components/timetable/TimetableCourseSection';
@@ -16,6 +17,7 @@ function createScheduleId() {
 }
 
 export default function TimetableScreen() {
+  const router = useRouter();
   const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<TimetableSchedule | null>(null);
   const {
@@ -99,6 +101,11 @@ export default function TimetableScreen() {
     );
   };
 
+  const browseMoreActivities = () => {
+    closeScheduleModal();
+    router.push('/');
+  };
+
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <ScrollView
@@ -129,6 +136,7 @@ export default function TimetableScreen() {
       <TimetableScheduleModal
         activities={activities}
         dayLabel={selectedDayLabel}
+        onBrowseActivities={browseMoreActivities}
         onClearActivity={clearSelectedActivity}
         onClose={closeScheduleModal}
         onDelete={confirmDeleteSchedule}
