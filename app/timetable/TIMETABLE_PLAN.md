@@ -321,8 +321,8 @@ utils/
 - [x] `npx tsc --noEmit`
 - [x] Expo 웹 번들 생성
 - [x] 모바일 웹 화면 및 일정 추가·수정 흐름 확인
-- [ ] Expo Go 실제 기기 확인
-- [ ] Android 실제 기기 확인
+- [x] Expo Go 실제 기기 확인
+- [x] Android 실제 기기 확인
 - [ ] iOS 실제 기기 확인
 - [ ] 모바일 화면 규격별 확인
 
