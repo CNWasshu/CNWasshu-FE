@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   screen: {
     backgroundColor: TIMETABLE_COLORS.background,
     flex: 1,
-    maxWidth: 720,
+    maxWidth: 430,
     paddingBottom: 32,
     width: '100%',
   },

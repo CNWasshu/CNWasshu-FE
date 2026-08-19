@@ -25,10 +25,9 @@ export function TimetableCourseSection({
 }: TimetableCourseSectionProps) {
   const { width } = useWindowDimensions();
   const isCompact = width < 360;
-  const isWide = width >= 768;
 
   return (
-    <View style={[styles.container, isWide && styles.wideContainer]}>
+    <View style={styles.container}>
       <View style={[styles.headingRow, isCompact && styles.compactHeadingRow]}>
         <View style={[styles.headingText, isCompact && styles.compactHeadingText]}>
           <Text style={styles.title}>시간대별 코스 설계</Text>
@@ -43,7 +42,7 @@ export function TimetableCourseSection({
         </Pressable>
       </View>
 
-      <View style={[styles.dayTabs, isWide && styles.wideDayTabs]}>
+      <View style={styles.dayTabs}>
         <TimetableDayTabs
           days={days}
           onSelectDay={onSelectDay}
@@ -129,12 +128,5 @@ const styles = StyleSheet.create({
     color: TIMETABLE_COLORS.text,
     fontSize: 18,
     fontWeight: '800',
-  },
-  wideContainer: {
-    marginHorizontal: 24,
-    padding: 20,
-  },
-  wideDayTabs: {
-    marginHorizontal: -20,
   },
 });
