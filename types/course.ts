@@ -59,6 +59,9 @@ export interface CourseItemSaveRequest {
   dayNo: number;
   startTime: string;
   endTime: string;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
   memo: string | null;
   sortOrder: number;
 }

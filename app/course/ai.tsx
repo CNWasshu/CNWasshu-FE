@@ -35,8 +35,8 @@ export default function AiCourseScreen() {
         withChild: conditions.travelStyle === 'WITH_CHILD',
         startDate: conditions.startDate,
         endDate: conditions.endDate,
-        items: result.items.map(({ activityId, reservationId, title, dayNo, startTime, endTime, memo, sortOrder }) => ({
-          activityId, reservationId, title, dayNo, startTime, endTime, memo, sortOrder,
+        items: result.items.map(({ activityId, reservationId, title, dayNo, startTime, endTime, address, latitude, longitude, memo, sortOrder }) => ({
+          activityId, reservationId, title, dayNo, startTime, endTime, address, latitude, longitude, memo, sortOrder,
         })),
       });
       setSaved(true);

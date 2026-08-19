@@ -1,9 +1,14 @@
 import type { CourseItem } from '@/types/course';
 import { CourseColors } from '@/constants/course-colors';
-import { StyleSheet, Text, View } from 'react-native';
+import { getGoogleMapsDirectionsUrl, getGoogleMapsPlaceUrl, openExternalMap } from '@/utils/courseMaps';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 function displayTime(time: string) {
   return time.slice(0, 5);
+}
+
+function openMap(url: string) {
+  void openExternalMap(url).catch(() => Alert.alert('지도를 열 수 없습니다', '잠시 후 다시 시도해 주세요.'));
 }
 
 export function CourseSchedule({ items }: { items: CourseItem[] }) {
@@ -29,11 +34,17 @@ export function CourseSchedule({ items }: { items: CourseItem[] }) {
               </View>
               <View style={styles.item}>
                 <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.time}>{displayTime(item.startTime)}~{displayTime(item.endTime)}{item.address ? ` · ${item.address}` : ''}</Text>
+                <Text style={styles.time}>{displayTime(item.startTime)} ~ {displayTime(item.endTime)}</Text>
+                {item.address ? <Text style={styles.address}>{item.address}</Text> : null}
                 {item.memo ? <Text style={styles.memo}>{item.memo}</Text> : null}
+                <Pressable onPress={() => openMap(getGoogleMapsPlaceUrl(item))} style={styles.mapButton}><Text style={styles.mapButtonText}>Google 지도에서 보기 ↗</Text></Pressable>
               </View>
             </View>
           ))}
+          {dayItems.length > 1 ? <Pressable onPress={() => {
+            const url = getGoogleMapsDirectionsUrl(dayItems);
+            if (url) openMap(url);
+          }} style={styles.routeButton}><Text style={styles.routeButtonText}>Day {dayNo} 전체 코스 Google 지도에서 보기</Text><Text style={styles.routeArrow}>→</Text></Pressable> : null}
         </View>
       ))}
     </View>
@@ -45,6 +56,6 @@ const styles = StyleSheet.create({
   routeRow: { flexDirection: 'row', gap: 12, alignItems: 'stretch' }, rail: { width: 32, alignItems: 'center' }, connector: { width: 2, flex: 1, minHeight: 18, backgroundColor: '#B9D1B5', marginTop: 5, marginBottom: -17 },
   item: { flex: 1, backgroundColor: CourseColors.white, borderRadius: 18, borderWidth: 1, borderColor: CourseColors.border, padding: 16, gap: 6, shadowColor: '#5A4932', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 1 },
   number: { width: 31, height: 31, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: CourseColors.primary },
-  numberText: { color: CourseColors.white, fontWeight: '900' }, time: { color: CourseColors.primary, fontWeight: '800', fontSize: 13 }, title: { color: CourseColors.text, fontSize: 17, fontWeight: '800', lineHeight: 23 },
-  memo: { color: CourseColors.muted, lineHeight: 20, fontSize: 14 }, empty: { color: CourseColors.muted, textAlign: 'center', paddingVertical: 24 },
+  numberText: { color: CourseColors.white, fontWeight: '900' }, time: { color: CourseColors.primary, fontWeight: '800', fontSize: 13 }, title: { color: CourseColors.text, fontSize: 17, fontWeight: '800', lineHeight: 23 }, address: { color: '#766B5D', fontSize: 13, lineHeight: 18 },
+  memo: { color: CourseColors.muted, lineHeight: 20, fontSize: 14 }, mapButton: { alignSelf: 'flex-start', marginTop: 4, paddingVertical: 6, paddingRight: 8 }, mapButtonText: { color: CourseColors.primary, fontSize: 12, fontWeight: '900' }, routeButton: { marginLeft: 44, minHeight: 48, borderRadius: 15, borderWidth: 1, borderColor: CourseColors.primary, backgroundColor: CourseColors.primarySoft, paddingHorizontal: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }, routeButtonText: { color: CourseColors.primaryDark, fontSize: 13, fontWeight: '900', textAlign: 'center' }, routeArrow: { color: CourseColors.primary, fontSize: 17, fontWeight: '900' }, empty: { color: CourseColors.muted, textAlign: 'center', paddingVertical: 24 },
 });
