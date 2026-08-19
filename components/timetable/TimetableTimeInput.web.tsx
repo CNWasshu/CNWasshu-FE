@@ -1,4 +1,5 @@
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
+import { DAY_END_TIME, DAY_START_TIME } from '@/utils/timetable/time';
 
 type TimetableTimeInputProps = {
   disabled?: boolean;
@@ -12,8 +13,8 @@ type TimetableTimeInputProps = {
 export function TimetableTimeInput({
   disabled,
   label,
-  maximumTime = '22:00',
-  minimumTime = '09:00',
+  maximumTime = DAY_END_TIME,
+  minimumTime = DAY_START_TIME,
   onChangeTime,
   value,
 }: TimetableTimeInputProps) {

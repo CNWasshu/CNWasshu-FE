@@ -16,7 +16,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { TimetableTimeInput } from '@/components/timetable/TimetableTimeInput';
 import type { SavedActivity, TimetableSchedule } from '@/types/timetable';
-import { findOverlappingSchedule, validateScheduleInput } from '@/utils/timetable/time';
+import {
+  DAY_END_TIME,
+  DAY_START_TIME,
+  findOverlappingSchedule,
+  validateScheduleInput,
+} from '@/utils/timetable/time';
 
 type ScheduleFormValue = Pick<TimetableSchedule, 'endTime' | 'startTime' | 'title'>;
 
@@ -97,12 +102,14 @@ export function TimetableScheduleModal({
   const isEditing = Boolean(schedule);
   const isActivitySchedule = schedule?.kind === 'activity';
   const isActivityTitleLocked = Boolean(selectedActivity) || isActivitySchedule;
-  const activityOperatingStartTime = selectedActivity?.startTime
-    ?? (isActivitySchedule ? schedule.operatingStartTime : INITIAL_START_TIME);
-  const activityOperatingEndTime = selectedActivity?.endTime
-    ?? (isActivitySchedule ? schedule.operatingEndTime : '22:00');
   const activityOperatingType = selectedActivity?.operatingType
     ?? (isActivitySchedule ? schedule.operatingType : null);
+  const activityOperatingStartTime = activityOperatingType === 'hours'
+    ? selectedActivity?.startTime ?? (isActivitySchedule ? schedule.operatingStartTime : DAY_START_TIME)
+    : DAY_START_TIME;
+  const activityOperatingEndTime = activityOperatingType === 'hours'
+    ? selectedActivity?.endTime ?? (isActivitySchedule ? schedule.operatingEndTime : DAY_END_TIME)
+    : DAY_END_TIME;
   const latestStartTime = addMinutes(activityOperatingEndTime, -5);
   const earliestEndTime = addMinutes(startTime, 5);
 
@@ -179,7 +186,7 @@ export function TimetableScheduleModal({
 
   const handleSubmit = () => {
     const validationMessage = validateScheduleInput(title, startTime, endTime);
-    const activityTimeErrorMessage = activityOperatingType
+    const activityTimeErrorMessage = activityOperatingType === 'hours'
       && (startTime < activityOperatingStartTime || endTime > activityOperatingEndTime)
       ? `체험 운영 시간 ${activityOperatingStartTime}~${activityOperatingEndTime} 안에서 선택해 주세요.`
       : null;
@@ -248,10 +255,10 @@ export function TimetableScheduleModal({
               </View>
               <Text style={styles.hint}>
                 {activityOperatingType === 'always'
-                  ? '상시 운영 체험은 09:00~22:00 사이에서 원하는 시간을 선택할 수 있습니다.'
+                  ? '상시 운영 체험은 원하는 시간을 선택할 수 있습니다.'
                   : activityOperatingType === 'hours'
                     ? `운영 시간 ${activityOperatingStartTime}~${activityOperatingEndTime} 안에서 원하는 시간을 선택할 수 있습니다.`
-                  : '09:00~22:00 사이에서 5분 단위로 선택할 수 있습니다.'}
+                    : '하루 안에서 5분 단위로 원하는 시간을 선택할 수 있습니다.'}
               </Text>
               {errorMessage ? <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text> : null}
             </View>
