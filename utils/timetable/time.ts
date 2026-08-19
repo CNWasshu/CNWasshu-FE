@@ -1,3 +1,5 @@
+import type { TimetableSchedule } from '@/types/timetable';
+
 export const TIMETABLE_START_TIME = '09:00';
 export const TIMETABLE_END_TIME = '22:00';
 
@@ -22,6 +24,36 @@ export function timeToMinutes(time: string) {
   }
 
   return Number(match[1]) * 60 + Number(match[2]);
+}
+
+type ScheduleTimeRange = Pick<TimetableSchedule, 'endTime' | 'startTime'>;
+
+export function findOverlappingSchedule(
+  schedules: TimetableSchedule[],
+  candidate: ScheduleTimeRange,
+  excludedScheduleId?: string
+) {
+  const candidateStart = timeToMinutes(candidate.startTime);
+  const candidateEnd = timeToMinutes(candidate.endTime);
+
+  if (candidateStart === null || candidateEnd === null) {
+    return null;
+  }
+
+  return schedules.find((schedule) => {
+    if (schedule.id === excludedScheduleId) {
+      return false;
+    }
+
+    const scheduleStart = timeToMinutes(schedule.startTime);
+    const scheduleEnd = timeToMinutes(schedule.endTime);
+
+    if (scheduleStart === null || scheduleEnd === null) {
+      return false;
+    }
+
+    return candidateStart < scheduleEnd && scheduleStart < candidateEnd;
+  }) ?? null;
 }
 
 export function validateScheduleInput(title: string, startTime: string, endTime: string) {

@@ -138,6 +138,7 @@ export default function TimetableScreen() {
         onSelectActivity={selectActivity}
         onSubmit={handleSubmitSchedule}
         schedule={editingSchedule}
+        schedules={selectedSchedules}
         selectedActivity={selectedActivity}
         selectedActivityId={selectedActivityId}
         visible={isScheduleModalVisible}

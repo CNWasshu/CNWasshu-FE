@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { TimetableTimeInput } from '@/components/timetable/TimetableTimeInput';
 import type { SavedActivity, TimetableSchedule } from '@/types/timetable';
-import { validateScheduleInput } from '@/utils/timetable/time';
+import { findOverlappingSchedule, validateScheduleInput } from '@/utils/timetable/time';
 
 type ScheduleFormValue = Pick<TimetableSchedule, 'endTime' | 'startTime' | 'title'>;
 
@@ -31,6 +31,7 @@ type TimetableScheduleModalProps = {
   onSelectActivity: (activityId: string) => void;
   onSubmit: (value: ScheduleFormValue) => void;
   schedule?: TimetableSchedule | null;
+  schedules: TimetableSchedule[];
   selectedActivity: SavedActivity | null;
   selectedActivityId: string | null;
   visible: boolean;
@@ -80,6 +81,7 @@ export function TimetableScheduleModal({
   onSelectActivity,
   onSubmit,
   schedule,
+  schedules,
   selectedActivity,
   selectedActivityId,
   visible,
@@ -181,9 +183,19 @@ export function TimetableScheduleModal({
       && (startTime < activityOperatingStartTime || endTime > activityOperatingEndTime)
       ? `체험 운영 시간 ${activityOperatingStartTime}~${activityOperatingEndTime} 안에서 선택해 주세요.`
       : null;
-    setErrorMessage(validationMessage ?? activityTimeErrorMessage);
+    const overlappingSchedule = validationMessage || activityTimeErrorMessage
+      ? null
+      : findOverlappingSchedule(
+          schedules,
+          { endTime, startTime },
+          schedule?.id
+        );
+    const overlapErrorMessage = overlappingSchedule
+      ? `${overlappingSchedule.startTime}~${overlappingSchedule.endTime} '${overlappingSchedule.title}' 일정과 시간이 겹칩니다.`
+      : null;
+    setErrorMessage(validationMessage ?? activityTimeErrorMessage ?? overlapErrorMessage);
 
-    if (validationMessage || activityTimeErrorMessage) {
+    if (validationMessage || activityTimeErrorMessage || overlapErrorMessage) {
       return;
     }
 
