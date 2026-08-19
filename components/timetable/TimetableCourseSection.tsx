@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { TimetableDayTabs } from '@/components/timetable/TimetableDayTabs';
 import { TimetableTimeline } from '@/components/timetable/TimetableTimeline';
@@ -23,20 +23,27 @@ export function TimetableCourseSection({
   selectedDayId,
   selectedSchedules,
 }: TimetableCourseSectionProps) {
+  const { width } = useWindowDimensions();
+  const isCompact = width < 360;
+  const isWide = width >= 768;
+
   return (
-    <View style={styles.container}>
-      <View style={styles.headingRow}>
-        <View style={styles.headingText}>
+    <View style={[styles.container, isWide && styles.wideContainer]}>
+      <View style={[styles.headingRow, isCompact && styles.compactHeadingRow]}>
+        <View style={[styles.headingText, isCompact && styles.compactHeadingText]}>
           <Text style={styles.title}>시간대별 코스 설계</Text>
           <Text style={styles.description}>일정 시간에 맞춰 자유 일정이나 체험을 추가해 보세요.</Text>
         </View>
-        <Pressable accessibilityRole="button" onPress={onAddSchedule} style={styles.addButton}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={onAddSchedule}
+          style={[styles.addButton, isCompact && styles.compactAddButton]}>
           <Ionicons color="#FFFFFF" name="add" size={17} />
           <Text style={styles.addButtonText}>일정 추가</Text>
         </Pressable>
       </View>
 
-      <View style={styles.dayTabs}>
+      <View style={[styles.dayTabs, isWide && styles.wideDayTabs]}>
         <TimetableDayTabs
           days={days}
           onSelectDay={onSelectDay}
@@ -76,6 +83,15 @@ const styles = StyleSheet.create({
     marginTop: 14,
     padding: 14,
   },
+  compactAddButton: {
+    alignSelf: 'flex-end',
+  },
+  compactHeadingRow: {
+    alignItems: 'stretch',
+  },
+  compactHeadingText: {
+    flexBasis: '100%',
+  },
   dayTabs: {
     marginHorizontal: -14,
     marginVertical: 12,
@@ -89,11 +105,13 @@ const styles = StyleSheet.create({
   headingRow: {
     alignItems: 'center',
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 10,
     justifyContent: 'space-between',
   },
   headingText: {
     flex: 1,
+    minWidth: 180,
   },
   saveButton: {
     alignItems: 'center',
@@ -111,5 +129,12 @@ const styles = StyleSheet.create({
     color: TIMETABLE_COLORS.text,
     fontSize: 18,
     fontWeight: '800',
+  },
+  wideContainer: {
+    marginHorizontal: 24,
+    padding: 20,
+  },
+  wideDayTabs: {
+    marginHorizontal: -20,
   },
 });

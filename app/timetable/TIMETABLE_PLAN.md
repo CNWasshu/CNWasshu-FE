@@ -193,12 +193,14 @@ docs(timetable): 일정 관리 작업 현황 갱신
 - [x] 09:00 이전 일정 표시
 - [x] 22:00 이후 일정 표시
 - [x] 시간 외 일정에 따른 시간표 자동 확장
+- [x] 확장 시간표의 모바일·웹 반응형 적용
 
-예정 커밋:
+커밋:
 
 ```text
 feat(timetable): 일정 시간 중복 검증 구현
 feat(timetable): 일정 시간에 따른 시간표 자동 확장 구현
+fix(timetable): 확장 시간표 반응형 레이아웃 개선
 ```
 
 ### 9. 코스 저장 및 백엔드 API
@@ -257,7 +259,7 @@ fix(timetable): 모바일 및 웹 반응형 레이아웃 오류 수정
 | PR 1 | 기본 화면, 여행 기간, 날짜별 상태 관리 | `feature/timetable` |
 | PR 2 | 자유 일정 추가·수정·삭제 및 일정 카드 | `feature/timetable-schedule` |
 | PR 3 | 담아둔 체험 선택 및 일정 추가 | `feature/timetable-activity` |
-| PR 4 | 시간 중복 검증 및 시간표 자동 확장 | `feature/timetable-validation` |
+| PR 4 | 시간 중복 검증, 시간표 자동 확장 및 반응형 적용 | `feature/timetable-validation` |
 | PR 5 | 코스 저장 및 백엔드 API 연결 | `feature/timetable-api` |
 | PR 6 | 예약 완료 체험 자동 반영 및 동기화 | `feature/timetable-reservation-sync` |
 | PR 7 | 반응형·접근성·최종 리팩터링 | `refactor/timetable-ui` |
@@ -295,7 +297,12 @@ components/
 
 hooks/
 └── timetable/
+    ├── use-saved-activities.ts
     └── use-timetable.ts
+
+data/
+└── timetable/
+    └── saved-activities.ts
 
 types/
 └── timetable.ts
