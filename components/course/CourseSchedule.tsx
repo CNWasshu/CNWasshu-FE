@@ -1,4 +1,5 @@
 import type { CourseItem } from '@/types/course';
+import { CourseColors } from '@/constants/course-colors';
 import { StyleSheet, Text, View } from 'react-native';
 
 function displayTime(time: string) {
@@ -19,14 +20,16 @@ export function CourseSchedule({ items }: { items: CourseItem[] }) {
     <View style={styles.container}>
       {[...groups.entries()].map(([dayNo, dayItems]) => (
         <View key={dayNo} style={styles.day}>
-          <Text style={styles.dayTitle}>Day {dayNo}</Text>
-          {dayItems.map((item) => (
-            <View key={`${item.dayNo}-${item.sortOrder}-${item.title}`} style={styles.item}>
-              <View style={styles.number}><Text style={styles.numberText}>{item.sortOrder}</Text></View>
-              <View style={styles.content}>
-                <Text style={styles.time}>{displayTime(item.startTime)}~{displayTime(item.endTime)}</Text>
+          <View style={styles.dayHeading}><Text style={styles.dayTitle}>Day {dayNo}</Text><View style={styles.dayLine} /></View>
+          {dayItems.map((item, index) => (
+            <View key={`${item.dayNo}-${item.sortOrder}-${item.title}`} style={styles.routeRow}>
+              <View style={styles.rail}>
+                <View style={styles.number}><Text style={styles.numberText}>{item.sortOrder}</Text></View>
+                {index < dayItems.length - 1 ? <View style={styles.connector} /> : null}
+              </View>
+              <View style={styles.item}>
                 <Text style={styles.title}>{item.title}</Text>
-                {item.address ? <Text style={styles.address}>{item.address}</Text> : null}
+                <Text style={styles.time}>{displayTime(item.startTime)}~{displayTime(item.endTime)}{item.address ? ` · ${item.address}` : ''}</Text>
                 {item.memo ? <Text style={styles.memo}>{item.memo}</Text> : null}
               </View>
             </View>
@@ -38,10 +41,10 @@ export function CourseSchedule({ items }: { items: CourseItem[] }) {
 }
 
 const styles = StyleSheet.create({
-  container: { gap: 24 }, day: { gap: 12 }, dayTitle: { fontSize: 20, fontWeight: '800', color: '#1F2937' },
-  item: { flexDirection: 'row', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16 },
-  number: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: '#2F80ED' },
-  numberText: { color: '#FFFFFF', fontWeight: '800' }, content: { flex: 1, gap: 4 },
-  time: { color: '#2F80ED', fontWeight: '700' }, title: { color: '#111827', fontSize: 17, fontWeight: '700' },
-  address: { color: '#6B7280', fontSize: 13 }, memo: { color: '#4B5563', lineHeight: 20 }, empty: { color: '#6B7280' },
+  container: { gap: 30 }, day: { gap: 12 }, dayHeading: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 2 }, dayTitle: { fontSize: 20, fontWeight: '900', color: CourseColors.text }, dayLine: { flex: 1, height: 1, backgroundColor: CourseColors.border },
+  routeRow: { flexDirection: 'row', gap: 12, alignItems: 'stretch' }, rail: { width: 32, alignItems: 'center' }, connector: { width: 2, flex: 1, minHeight: 18, backgroundColor: '#B9D1B5', marginTop: 5, marginBottom: -17 },
+  item: { flex: 1, backgroundColor: CourseColors.white, borderRadius: 18, borderWidth: 1, borderColor: CourseColors.border, padding: 16, gap: 6, shadowColor: '#5A4932', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 1 },
+  number: { width: 31, height: 31, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: CourseColors.primary },
+  numberText: { color: CourseColors.white, fontWeight: '900' }, time: { color: CourseColors.primary, fontWeight: '800', fontSize: 13 }, title: { color: CourseColors.text, fontSize: 17, fontWeight: '800', lineHeight: 23 },
+  memo: { color: CourseColors.muted, lineHeight: 20, fontSize: 14 }, empty: { color: CourseColors.muted, textAlign: 'center', paddingVertical: 24 },
 });
