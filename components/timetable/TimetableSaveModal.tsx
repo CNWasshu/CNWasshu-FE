@@ -18,6 +18,8 @@ type TimetableSaveModalProps = {
   courseName: string;
   endDate: Date;
   errorMessage: string | null;
+  isSaving: boolean;
+  isSuccess: boolean;
   onChangeCourseName: (name: string) => void;
   onClose: () => void;
   onSave: () => void;
@@ -30,6 +32,8 @@ export function TimetableSaveModal({
   courseName,
   endDate,
   errorMessage,
+  isSaving,
+  isSuccess,
   onChangeCourseName,
   onClose,
   onSave,
@@ -40,7 +44,15 @@ export function TimetableSaveModal({
   const insets = useSafeAreaInsets();
 
   return (
-    <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}>
+    <Modal
+      animationType="fade"
+      onRequestClose={() => {
+        if (!isSaving) {
+          onClose();
+        }
+      }}
+      transparent
+      visible={visible}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.overlay}>
@@ -56,8 +68,9 @@ export function TimetableSaveModal({
             <Pressable
               accessibilityLabel="닫기"
               accessibilityRole="button"
+              disabled={isSaving}
               onPress={onClose}
-              style={styles.closeButton}>
+              style={[styles.closeButton, isSaving && styles.disabled]}>
               <Ionicons color={TIMETABLE_COLORS.secondaryText} name="close" size={17} />
             </Pressable>
           </View>
@@ -67,6 +80,7 @@ export function TimetableSaveModal({
             <TextInput
               accessibilityLabel="코스 이름"
               autoFocus
+              editable={!isSaving && !isSuccess}
               maxLength={100}
               onChangeText={onChangeCourseName}
               placeholder="예: 부여 가족 체험 코스"
@@ -83,11 +97,25 @@ export function TimetableSaveModal({
                 {errorMessage}
               </Text>
             ) : null}
+            {isSuccess ? (
+              <Text accessibilityRole="alert" style={styles.success}>
+                코스를 저장했습니다.
+              </Text>
+            ) : null}
           </View>
 
           <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 14) }]}>
-            <Pressable accessibilityRole="button" onPress={onSave} style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>저장하기</Text>
+            <Pressable
+              accessibilityRole="button"
+              disabled={isSaving || isSuccess}
+              onPress={onSave}
+              style={[
+                styles.saveButton,
+                (isSaving || isSuccess) && styles.disabled,
+              ]}>
+              <Text style={styles.saveButtonText}>
+                {isSaving ? '저장 중...' : isSuccess ? '저장 완료' : '저장하기'}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -99,6 +127,7 @@ export function TimetableSaveModal({
 const styles = StyleSheet.create({
   closeButton: { alignItems: 'center', backgroundColor: '#F2EADB', borderRadius: 20, height: 40, justifyContent: 'center', width: 40 },
   description: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19, marginTop: 5 },
+  disabled: { opacity: 0.55 },
   error: { color: '#B84738', fontSize: 12, lineHeight: 17, marginTop: 8 },
   footer: { marginTop: 28 },
   formCard: { backgroundColor: '#FFFFFF', borderColor: TIMETABLE_COLORS.border, borderRadius: 20, borderWidth: 1, marginTop: 16, padding: 14 },
@@ -112,5 +141,6 @@ const styles = StyleSheet.create({
   saveButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   sheet: { backgroundColor: TIMETABLE_COLORS.background, borderTopLeftRadius: 26, borderTopRightRadius: 26, maxWidth: 430, paddingHorizontal: 17, paddingTop: 14, width: '100%' },
   summary: { color: TIMETABLE_COLORS.secondaryText, fontSize: 12, lineHeight: 18, marginTop: 10 },
+  success: { color: TIMETABLE_COLORS.primary, fontSize: 12, fontWeight: '800', lineHeight: 18, marginTop: 8 },
   title: { color: TIMETABLE_COLORS.text, fontSize: 20, fontWeight: '800' },
 });

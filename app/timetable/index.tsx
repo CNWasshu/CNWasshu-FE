@@ -10,6 +10,7 @@ import { TimetableScheduleModal } from '@/components/timetable/TimetableSchedule
 import { TimetableSaveModal } from '@/components/timetable/TimetableSaveModal';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { useSavedActivities } from '@/hooks/timetable/use-saved-activities';
+import { useSaveTimetable } from '@/hooks/timetable/use-save-timetable';
 import { useTimetable } from '@/hooks/timetable/use-timetable';
 import type { TimetableSchedule } from '@/types/timetable';
 
@@ -22,6 +23,13 @@ export default function TimetableScreen() {
   const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
   const [isSaveModalVisible, setIsSaveModalVisible] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<TimetableSchedule | null>(null);
+  const {
+    errorMessage: saveApiErrorMessage,
+    isSubmitting: isSaving,
+    isSuccess: isSaveSuccess,
+    reset: resetSave,
+    save: saveTimetable,
+  } = useSaveTimetable();
   const {
     activities,
     clearSelectedActivity,
@@ -121,6 +129,21 @@ export default function TimetableScreen() {
   const closeSaveModal = () => {
     setIsSaveModalVisible(false);
     clearSaveError();
+    resetSave();
+  };
+
+  const handleChangeCourseNameForSave = (name: string) => {
+    handleChangeTimetableName(name);
+    resetSave();
+  };
+
+  const handleSaveTimetable = async () => {
+    const request = prepareSaveRequest();
+    if (!request) {
+      return;
+    }
+
+    await saveTimetable(request);
   };
 
   return (
@@ -174,10 +197,12 @@ export default function TimetableScreen() {
       <TimetableSaveModal
         courseName={timetableName}
         endDate={endDate}
-        errorMessage={saveErrorMessage}
-        onChangeCourseName={handleChangeTimetableName}
+        errorMessage={saveErrorMessage ?? saveApiErrorMessage}
+        isSaving={isSaving}
+        isSuccess={isSaveSuccess}
+        onChangeCourseName={handleChangeCourseNameForSave}
         onClose={closeSaveModal}
-        onSave={() => void prepareSaveRequest()}
+        onSave={() => void handleSaveTimetable()}
         scheduleCount={scheduleCount}
         startDate={startDate}
         visible={isSaveModalVisible}
