@@ -23,6 +23,9 @@ export default function TimetableScreen() {
   const {
     activities,
     clearSelectedActivity,
+    error: activitiesError,
+    isLoading: activitiesLoading,
+    refetch: refetchActivities,
     selectedActivity,
     selectedActivityId,
     selectActivity,
@@ -129,12 +132,15 @@ export default function TimetableScreen() {
       </ScrollView>
       <TimetableScheduleModal
         activities={activities}
+        activitiesError={activitiesError}
+        activitiesLoading={activitiesLoading}
         dayLabel={selectedDayLabel}
         onBrowseActivities={browseMoreActivities}
         onClearActivity={clearSelectedActivity}
         onClose={closeScheduleModal}
         onDelete={confirmDeleteSchedule}
         onRequestReservation={browseMoreActivities}
+        onRetryActivities={() => void refetchActivities()}
         onSelectActivity={selectActivity}
         onSubmit={handleSubmitSchedule}
         schedule={editingSchedule}
