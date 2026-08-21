@@ -21,6 +21,7 @@ export default function RootLayout() {
         <Stack.Screen name="course/ai" options={{ title: 'AI 코스 추천' }} />
         <Stack.Screen name="timetable/index" options={{ headerShown: false }} />
         <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+        <Stack.Screen name="auth/mypage" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
