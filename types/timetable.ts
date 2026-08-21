@@ -13,6 +13,7 @@ type TimetableScheduleBase = {
 };
 
 export type SavedActivity = {
+  durationMinutes: number | null;
   endTime: string;
   icon: string;
   id: string;
@@ -20,6 +21,7 @@ export type SavedActivity = {
   operatingType: 'always' | 'hours';
   requiresReservation: boolean;
   startTime: string;
+  thumbnailUrl: string | null;
   title: string;
 };
 
@@ -101,17 +103,28 @@ export interface TimetableDetailResponse {
   timetableName: string;
 }
 
-export interface SavedActivityResponse {
+type SavedActivityResponseBase = {
   activityId: number;
   durationMinutes: number | null;
-  operatingEndTime: string | null;
-  operatingStartTime: string | null;
-  operatingType: ActivityOperatingType;
   region: string;
   reservationRequired: boolean;
   thumbnailUrl: string | null;
   title: string;
-}
+};
+
+export type SavedActivityResponse = SavedActivityResponseBase &
+  (
+    | {
+        operatingEndTime: null;
+        operatingStartTime: null;
+        operatingType: Extract<ActivityOperatingType, 'ALWAYS'>;
+      }
+    | {
+        operatingEndTime: string;
+        operatingStartTime: string;
+        operatingType: Extract<ActivityOperatingType, 'HOURS'>;
+      }
+  );
 
 export interface SavedActivityListResponse {
   items: SavedActivityResponse[];
