@@ -13,6 +13,10 @@ import {
   startOfDay,
   validateTravelPeriod,
 } from '@/utils/timetable/date';
+import {
+  createTimetableSaveRequest,
+  validateTimetableSaveInput,
+} from '@/utils/timetable/request';
 
 function synchronizeSchedules(
   days: TimetableDay[],
@@ -28,6 +32,8 @@ export function useTimetable() {
   const [startDate, setStartDate] = useState(minimumStartDate);
   const [endDate, setEndDate] = useState(minimumStartDate);
   const [dateErrorMessage, setDateErrorMessage] = useState<string | null>(null);
+  const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
+  const [timetableName, setTimetableName] = useState('');
   const days = useMemo(() => createTimetableDays(startDate, endDate), [endDate, startDate]);
   const [selectedDayId, setSelectedDayId] = useState(formatDate(minimumStartDate));
   const [schedulesByDay, setSchedulesByDay] = useState<TimetableSchedulesByDay>(() =>
@@ -46,6 +52,7 @@ export function useTimetable() {
     setStartDate(nextStartDate);
     setEndDate(nextStartDate);
     setDateErrorMessage(null);
+    setSaveErrorMessage(null);
     setSelectedDayId(formatDate(nextStartDate));
     setSchedulesByDay((currentSchedules) =>
       synchronizeSchedules(nextDays, currentSchedules)
@@ -61,6 +68,8 @@ export function useTimetable() {
       return;
     }
 
+    setSaveErrorMessage(null);
+
     const nextDays = createTimetableDays(startDate, nextEndDate);
     setEndDate(nextEndDate);
     setSchedulesByDay((currentSchedules) =>
@@ -74,6 +83,7 @@ export function useTimetable() {
   };
 
   const addSchedule = (dayId: string, schedule: TimetableSchedule) => {
+    setSaveErrorMessage(null);
     setSchedulesByDay((currentSchedules) => ({
       ...currentSchedules,
       [dayId]: [...(currentSchedules[dayId] ?? []), schedule],
@@ -81,6 +91,7 @@ export function useTimetable() {
   };
 
   const updateSchedule = (dayId: string, schedule: TimetableSchedule) => {
+    setSaveErrorMessage(null);
     setSchedulesByDay((currentSchedules) => ({
       ...currentSchedules,
       [dayId]: (currentSchedules[dayId] ?? []).map((currentSchedule) =>
@@ -90,6 +101,7 @@ export function useTimetable() {
   };
 
   const removeSchedule = (dayId: string, scheduleId: string) => {
+    setSaveErrorMessage(null);
     setSchedulesByDay((currentSchedules) => ({
       ...currentSchedules,
       [dayId]: (currentSchedules[dayId] ?? []).filter(
@@ -98,20 +110,72 @@ export function useTimetable() {
     }));
   };
 
+  const handleChangeTimetableName = (name: string) => {
+    setTimetableName(name);
+    setSaveErrorMessage(null);
+  };
+
+  const prepareSaveRequest = () => {
+    const validationMessage = validateTimetableSaveInput(
+      timetableName,
+      schedulesByDay
+    );
+    setSaveErrorMessage(validationMessage);
+
+    if (validationMessage) {
+      return null;
+    }
+
+    return createTimetableSaveRequest({
+      days,
+      endDate,
+      schedulesByDay,
+      startDate,
+      timetableName,
+    });
+  };
+
+  const validateSchedulesForSave = () => {
+    const hasSchedule = Object.values(schedulesByDay).some(
+      (schedules) => schedules.length > 0
+    );
+    const validationMessage = hasSchedule
+      ? null
+      : '저장할 일정을 한 개 이상 추가해 주세요.';
+    setSaveErrorMessage(validationMessage);
+    return hasSchedule;
+  };
+
+  const clearSaveError = () => {
+    setSaveErrorMessage(null);
+  };
+
+  const scheduleCount = Object.values(schedulesByDay).reduce(
+    (count, schedules) => count + schedules.length,
+    0
+  );
+
   return {
     addSchedule,
+    clearSaveError,
     dateErrorMessage,
     days,
     endDate,
     handleChangeEndDate,
     handleChangeStartDate,
+    handleChangeTimetableName,
     maximumEndDate,
     minimumStartDate,
     removeSchedule,
+    prepareSaveRequest,
+    saveErrorMessage,
+    scheduleCount,
     selectedDayId,
     selectedSchedules,
     setSelectedDayId,
     startDate,
+    timetableName,
     updateSchedule,
+    validateSchedulesForSave,
   };
 }

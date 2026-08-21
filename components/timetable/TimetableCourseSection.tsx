@@ -9,19 +9,23 @@ import type { TimetableDay, TimetableSchedule } from '@/types/timetable';
 type TimetableCourseSectionProps = {
   days: TimetableDay[];
   onAddSchedule: () => void;
+  onSave: () => void;
   onSelectDay: (dayId: string) => void;
   onSelectSchedule: (schedule: TimetableSchedule) => void;
   selectedDayId: string;
   selectedSchedules: TimetableSchedule[];
+  saveErrorMessage: string | null;
 };
 
 export function TimetableCourseSection({
   days,
   onAddSchedule,
+  onSave,
   onSelectDay,
   onSelectSchedule,
   selectedDayId,
   selectedSchedules,
+  saveErrorMessage,
 }: TimetableCourseSectionProps) {
   const { width } = useWindowDimensions();
   const isCompact = width < 360;
@@ -52,7 +56,13 @@ export function TimetableCourseSection({
 
       <TimetableTimeline onSelectSchedule={onSelectSchedule} schedules={selectedSchedules} />
 
-      <Pressable accessibilityRole="button" style={styles.saveButton}>
+      {saveErrorMessage ? (
+        <Text accessibilityRole="alert" style={styles.saveError}>
+          {saveErrorMessage}
+        </Text>
+      ) : null}
+
+      <Pressable accessibilityRole="button" onPress={onSave} style={styles.saveButton}>
         <Text style={styles.saveButtonText}>코스 저장하기</Text>
       </Pressable>
     </View>
@@ -123,6 +133,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '800',
+  },
+  saveError: {
+    color: '#B84738',
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: 14,
   },
   title: {
     color: TIMETABLE_COLORS.text,

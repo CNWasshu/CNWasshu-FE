@@ -205,23 +205,38 @@ fix(timetable): 확장 시간표 반응형 레이아웃 개선
 
 ### 9. 코스 저장 및 백엔드 API
 
-- [ ] 저장할 일정 존재 여부 검증
-- [ ] 코스 이름 입력 기능 구현
-- [ ] 날짜별 타임테이블 데이터 저장
-- [ ] 저장 성공 및 실패 상태 처리
-- [ ] 중복 저장 방지 검토
-- [ ] 타임테이블 API 명세 확인
-- [ ] 요청 및 응답 타입 정의
-- [ ] API 통신 모듈 구현
-- [ ] 코스 조회·저장·수정·삭제 API 연결
-- [ ] API 오류 처리
+- [x] 저장할 일정 존재 여부 검증
+- [x] 코스 이름 입력 모달 구현
+- [x] 날짜별 타임테이블 저장 요청 변환
+- [x] 최초 코스 저장 API 호출 구현
+- [x] 저장 성공 및 실패 상태 처리
+- [x] 요청 잠금을 통한 중복 저장 방지
+- [x] 타임테이블 API 명세 확인
+- [x] 요청 및 응답 타입 정의
+- [x] API 통신 모듈 구현
+- [x] 담아둔 체험 조회 API 훅 및 상태 UI 구현
+- [x] API 오류 코드별 사용자 메시지 처리
+- [x] 로컬 JWT 연결 테스트 환경 구성
+- [ ] JWT 발급 후 담아둔 체험 조회 실제 연결 검증
+- [ ] JWT 발급 후 코스 저장 실제 연결 검증
 
-예정 커밋:
+현재 타임테이블 빌더는 새로운 코스를 최초 저장하는 화면이므로 목록·상세 조회, 수정 및 전체 코스 삭제 API는 PR 5 범위에서 제외합니다. 일정 추가·수정·삭제는 저장 전 프론트엔드 로컬 상태에서 처리합니다.
+
+실제 커밋:
 
 ```text
-feat(timetable): 타임테이블 코스 저장 기능 구현
-feat(timetable): 타임테이블 API 연동
+feat(timetable): 타임테이블 API 타입 및 통신 모듈 구현
+feat(timetable): 담아둔 체험 조회 API 훅 구현
+feat(timetable): 담아둔 체험 조회 상태 UI 구현
+feat(timetable): 코스 이름 입력 및 저장 요청 구현
+feat(timetable): 코스 저장 모달 구현
+feat(timetable): 코스 저장 API 상태 훅 구현
+feat(timetable): 코스 저장 API 상태 UI 연결
+chore(timetable): 로컬 API 인증 테스트 환경 구성
+fix(timetable): 코스 저장 API 오류 처리 보완
 ```
+
+로컬 연결 테스트에서는 `.env.local`의 `EXPO_PUBLIC_DEV_ACCESS_TOKEN`을 사용합니다. 실제 토큰은 Git에 커밋하지 않으며, `EXPO_PUBLIC_APP_ENV=local`일 때만 개발용 토큰을 읽습니다. 인증 화면과 공통 토큰 저장소가 준비되면 해당 공급 경로로 교체합니다.
 
 ### 10. 최종 UI 및 품질 검증
 
@@ -275,42 +290,45 @@ fix(timetable): 모바일 및 웹 반응형 레이아웃 오류 수정
 ```text
 app/
 └── timetable/
-    ├── index.tsx
-    ├── README.md
-    └── TIMETABLE_PLAN.md
+    ├── index.tsx                         # 타임테이블 화면 상태와 사용자 흐름 조합
+    ├── README.md                         # 타임테이블 관련 패키지 및 설치 안내
+    └── TIMETABLE_PLAN.md                 # PR별 구현 계획과 검증 현황 관리
 
 components/
 └── timetable/
-    ├── TimetableCourseSection.tsx
-    ├── TimetableDateRange.d.ts
-    ├── TimetableDateRange.native.tsx
-    ├── TimetableDateRange.web.tsx
-    ├── TimetableDayTabs.tsx
-    ├── TimetableHeader.tsx
-    ├── TimetableScheduleCard.tsx
-    ├── TimetableScheduleModal.tsx
-    ├── TimetableTimeInput.d.ts
-    ├── TimetableTimeInput.native.tsx
-    ├── TimetableTimeInput.web.tsx
-    ├── TimetableTimeline.tsx
-    └── timetable-colors.ts
+    ├── TimetableCourseSection.tsx        # Day 탭·타임라인·저장 진입 영역 구성
+    ├── TimetableDateRange.d.ts           # 날짜 범위 컴포넌트 공통 타입 선언
+    ├── TimetableDateRange.native.tsx     # Android·iOS 시스템 날짜 선택 UI
+    ├── TimetableDateRange.web.tsx        # 웹 날짜 입력 UI
+    ├── TimetableDayTabs.tsx              # 날짜별 Day 이동 및 선택 UI
+    ├── TimetableHeader.tsx               # 타임테이블 빌더 상단 소개 영역
+    ├── TimetableScheduleCard.tsx         # 자유 일정·체험 일정 카드 표시
+    ├── TimetableScheduleModal.tsx        # 일정 추가·수정·삭제 바텀시트
+    ├── TimetableSaveModal.tsx            # 코스 이름 입력 및 저장 상태 바텀시트
+    ├── TimetableTimeInput.d.ts           # 시간 입력 컴포넌트 공통 타입 선언
+    ├── TimetableTimeInput.native.tsx     # Android·iOS 시스템 시간 선택 UI
+    ├── TimetableTimeInput.web.tsx        # 웹 시간 입력 UI
+    ├── TimetableTimeline.tsx             # 시간축과 일정 위치 계산·표시
+    └── timetable-colors.ts               # 타임테이블 전용 색상 상수
 
 hooks/
 └── timetable/
-    ├── use-saved-activities.ts
-    └── use-timetable.ts
+    ├── use-saved-activities.ts           # 담아둔 체험 조회·선택 상태 관리
+    ├── use-save-timetable.ts             # 코스 저장 요청·중복 방지·결과 상태 관리
+    └── use-timetable.ts                  # 여행 기간과 날짜별 일정 편집 상태 관리
 
-data/
-└── timetable/
-    └── saved-activities.ts
+api/
+└── timetableApi.ts                       # 타임테이블 HTTP 요청과 API 오류 처리
 
 types/
-└── timetable.ts
+└── timetable.ts                          # 화면 모델과 API 요청·응답 타입 정의
 
 utils/
 └── timetable/
-    ├── date.ts
-    └── time.ts
+    ├── auth.ts                           # 로컬 연결 테스트용 JWT 공급
+    ├── date.ts                           # 날짜 계산·형식 변환·여행 기간 검증
+    ├── request.ts                        # 화면 상태를 코스 저장 요청으로 변환
+    └── time.ts                           # 시간 계산·일정 입력·중복 검증
 ```
 
 파일이 많아질 경우 책임이 명확할 때만 `sections/`, `ui/`, `modals/` 등의 하위 폴더로 분리합니다. 작업량을 보여주기 위한 불필요한 폴더 분리는 하지 않습니다.
@@ -325,6 +343,17 @@ utils/
 - [x] Android 실제 기기 확인
 - [ ] iOS 실제 기기 확인
 - [ ] 모바일 화면 규격별 확인
+
+### PR 5 API 연동 검증
+
+- [x] 변경 파일 ESLint 검사
+- [x] `npx tsc --noEmit`
+- [x] `git diff --check`
+- [ ] Docker 및 Spring Boot 로컬 실행
+- [ ] JWT 발급 및 프론트 `.env.local` 연결
+- [ ] `GET /api/timetables/saved-activities` 성공·빈 목록·오류 확인
+- [ ] `POST /api/timetables` 성공·검증 오류·중복 제출 확인
+- [ ] 저장 모달 모바일·웹 화면 확인
 
 ## 작업 시작 전 확인
 

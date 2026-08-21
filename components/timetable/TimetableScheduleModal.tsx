@@ -26,13 +26,17 @@ import {
 type ScheduleFormValue = Pick<TimetableSchedule, 'endTime' | 'startTime' | 'title'>;
 
 type TimetableScheduleModalProps = {
+  activitiesError: string | null;
+  activitiesLoading: boolean;
   activities: SavedActivity[];
   dayLabel: string;
   onClearActivity: () => void;
   onBrowseActivities: () => void;
   onClose: () => void;
   onDelete?: () => void;
+  onOpenActivities: () => void;
   onRequestReservation: () => void;
+  onRetryActivities: () => void;
   onSelectActivity: (activityId: string) => void;
   onSubmit: (value: ScheduleFormValue) => void;
   schedule?: TimetableSchedule | null;
@@ -76,13 +80,17 @@ function earlierTime(firstTime: string, secondTime: string) {
 }
 
 export function TimetableScheduleModal({
+  activitiesError,
+  activitiesLoading,
   activities,
   dayLabel,
   onClearActivity,
   onBrowseActivities,
   onClose,
   onDelete,
+  onOpenActivities,
   onRequestReservation,
+  onRetryActivities,
   onSelectActivity,
   onSubmit,
   schedule,
@@ -154,6 +162,16 @@ export function TimetableScheduleModal({
     }
 
     onSelectActivity(activity.id);
+  };
+
+  const handleToggleActivityList = () => {
+    setIsActivityListVisible((current) => {
+      if (!current) {
+        onOpenActivities();
+      }
+
+      return !current;
+    });
   };
 
   const handleClearActivity = () => {
@@ -268,7 +286,7 @@ export function TimetableScheduleModal({
                 {!selectedActivity ? (
                   <Pressable
                     accessibilityRole="button"
-                    onPress={() => setIsActivityListVisible((current) => !current)}
+                    onPress={handleToggleActivityList}
                     style={styles.activityToggle}>
                     <Text style={styles.activityToggleText}>체험 선택</Text>
                     <Ionicons color={TIMETABLE_COLORS.primary} name={isActivityListVisible ? 'chevron-up' : 'chevron-down'} size={18} />
@@ -303,41 +321,63 @@ export function TimetableScheduleModal({
                     <View style={styles.activityListHeading}>
                       <Text style={styles.activityCount}>담아둔 체험 {activities.length}개</Text>
                     </View>
-                    <ScrollView
-                      contentContainerStyle={styles.activityListContent}
-                      keyboardShouldPersistTaps="handled"
-                      nestedScrollEnabled
-                      showsVerticalScrollIndicator={false}
-                      style={styles.activityList}>
-                      {activities.map((activity) => (
+                    {activitiesLoading ? (
+                      <View accessibilityLiveRegion="polite" style={styles.activityStatus}>
+                        <Text style={styles.activityStatusText}>담아둔 체험을 불러오고 있어요.</Text>
+                      </View>
+                    ) : activitiesError ? (
+                      <View style={styles.activityStatus}>
+                        <Text accessibilityRole="alert" style={styles.activityErrorText}>
+                          {activitiesError}
+                        </Text>
                         <Pressable
                           accessibilityRole="button"
-                          accessibilityState={{ selected: activity.id === selectedActivityId }}
-                          key={activity.id}
-                          onPress={() => handleSelectActivity(activity)}
-                          style={styles.activityCard}>
-                          <View style={styles.activityIcon}>
-                            <Text style={styles.activityEmoji}>{activity.icon}</Text>
-                          </View>
-                          <View style={styles.activityText}>
-                            <Text style={styles.activityTitle}>{activity.title}</Text>
-                            <Text style={styles.activityMetadata}>
-                              {activity.location} · {activity.operatingType === 'always'
-                                ? '상시 운영'
-                                : `${activity.startTime}~${activity.endTime}`}
-                              {' · '}{formatDuration(
-                                activity.operatingType === 'always' ? INITIAL_START_TIME : activity.startTime,
-                                activity.operatingType === 'always' ? INITIAL_END_TIME : activity.endTime
-                              )}
-                              {activity.requiresReservation ? ' · 예약 필요' : ''}
-                            </Text>
-                          </View>
-                          <View style={styles.selectActivityButton}>
-                            <Text style={styles.selectActivityButtonText}>선택</Text>
-                          </View>
+                          onPress={onRetryActivities}
+                          style={styles.retryActivitiesButton}>
+                          <Text style={styles.retryActivitiesButtonText}>다시 시도</Text>
                         </Pressable>
-                      ))}
-                    </ScrollView>
+                      </View>
+                    ) : activities.length === 0 ? (
+                      <View style={styles.activityStatus}>
+                        <Text style={styles.activityStatusText}>아직 담아둔 체험이 없습니다.</Text>
+                      </View>
+                    ) : (
+                      <ScrollView
+                        contentContainerStyle={styles.activityListContent}
+                        keyboardShouldPersistTaps="handled"
+                        nestedScrollEnabled
+                        showsVerticalScrollIndicator={false}
+                        style={styles.activityList}>
+                        {activities.map((activity) => (
+                          <Pressable
+                            accessibilityRole="button"
+                            accessibilityState={{ selected: activity.id === selectedActivityId }}
+                            key={activity.id}
+                            onPress={() => handleSelectActivity(activity)}
+                            style={styles.activityCard}>
+                            <View style={styles.activityIcon}>
+                              <Text style={styles.activityEmoji}>{activity.icon}</Text>
+                            </View>
+                            <View style={styles.activityText}>
+                              <Text style={styles.activityTitle}>{activity.title}</Text>
+                              <Text style={styles.activityMetadata}>
+                                {activity.location} · {activity.operatingType === 'always'
+                                  ? '상시 운영'
+                                  : `${activity.startTime}~${activity.endTime}`}
+                                {' · '}{formatDuration(
+                                  activity.operatingType === 'always' ? INITIAL_START_TIME : activity.startTime,
+                                  activity.operatingType === 'always' ? INITIAL_END_TIME : activity.endTime
+                                )}
+                                {activity.requiresReservation ? ' · 예약 필요' : ''}
+                              </Text>
+                            </View>
+                            <View style={styles.selectActivityButton}>
+                              <Text style={styles.selectActivityButtonText}>선택</Text>
+                            </View>
+                          </Pressable>
+                        ))}
+                      </ScrollView>
+                    )}
                     <Pressable
                       accessibilityHint="홈으로 이동해 다른 체험을 찾아봅니다."
                       accessibilityRole="button"
@@ -448,6 +488,9 @@ const styles = StyleSheet.create({
   activityMetadata: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 3 },
   activityNotice: { color: '#527041', fontSize: 10, lineHeight: 15, marginTop: 4 },
   activitySection: { marginTop: 14 },
+  activityErrorText: { color: '#B84738', fontSize: 12, lineHeight: 18, textAlign: 'center' },
+  activityStatus: { alignItems: 'center', backgroundColor: '#F8F2E7', borderColor: '#EFE2CD', borderRadius: 18, borderWidth: 1, justifyContent: 'center', marginTop: 7, minHeight: 110, padding: 16 },
+  activityStatusText: { color: TIMETABLE_COLORS.secondaryText, fontSize: 12, lineHeight: 18, textAlign: 'center' },
   activityText: { flex: 1 },
   activityTitle: { color: TIMETABLE_COLORS.text, fontSize: 13, fontWeight: '800', lineHeight: 19 },
   activityToggle: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#A8D2A7', borderRadius: 13, borderWidth: 1, flexDirection: 'row', justifyContent: 'center', paddingVertical: 13 },
@@ -483,6 +526,8 @@ const styles = StyleSheet.create({
   reservationButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, flexBasis: 0, justifyContent: 'center', minHeight: 46, paddingHorizontal: 10 },
   reservationButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   reservationIcon: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primaryLight, borderRadius: 24, height: 48, justifyContent: 'center', width: 48 },
+  retryActivitiesButton: { backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 10, marginTop: 10, paddingHorizontal: 14, paddingVertical: 9 },
+  retryActivitiesButtonText: { color: '#FFFFFF', fontSize: 12, fontWeight: '800' },
   selectActivityButton: { borderColor: '#9FC9AD', borderRadius: 12, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 9 },
   selectActivityButtonText: { color: TIMETABLE_COLORS.primary, fontSize: 12, fontWeight: '800' },
   selectedActivitySummary: { alignItems: 'center', backgroundColor: '#F4FAF2', borderColor: '#BDD7BF', borderRadius: 16, borderWidth: 1, flexDirection: 'row', gap: 10, marginTop: 10, padding: 10 },

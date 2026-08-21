@@ -7,10 +7,13 @@ import { TimetableDateRange } from '@/components/timetable/TimetableDateRange';
 import { TimetableCourseSection } from '@/components/timetable/TimetableCourseSection';
 import { TimetableHeader } from '@/components/timetable/TimetableHeader';
 import { TimetableScheduleModal } from '@/components/timetable/TimetableScheduleModal';
+import { TimetableSaveModal } from '@/components/timetable/TimetableSaveModal';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { useSavedActivities } from '@/hooks/timetable/use-saved-activities';
+import { useSaveTimetable } from '@/hooks/timetable/use-save-timetable';
 import { useTimetable } from '@/hooks/timetable/use-timetable';
 import type { TimetableSchedule } from '@/types/timetable';
+import { getLocalTimetableAccessToken } from '@/utils/timetable/auth';
 
 function createScheduleId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -18,30 +21,49 @@ function createScheduleId() {
 
 export default function TimetableScreen() {
   const router = useRouter();
+  const accessToken = getLocalTimetableAccessToken();
   const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
+  const [isSaveModalVisible, setIsSaveModalVisible] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<TimetableSchedule | null>(null);
+  const {
+    errorMessage: saveApiErrorMessage,
+    isSubmitting: isSaving,
+    isSuccess: isSaveSuccess,
+    reset: resetSave,
+    save: saveTimetable,
+  } = useSaveTimetable(accessToken);
   const {
     activities,
     clearSelectedActivity,
+    error: activitiesError,
+    isLoading: activitiesLoading,
+    refetch: refetchActivities,
     selectedActivity,
     selectedActivityId,
     selectActivity,
-  } = useSavedActivities();
+  } = useSavedActivities(accessToken);
   const {
     addSchedule,
+    clearSaveError,
+    timetableName,
     dateErrorMessage,
     days,
     endDate,
     handleChangeEndDate,
     handleChangeStartDate,
+    handleChangeTimetableName,
     maximumEndDate,
     minimumStartDate,
     removeSchedule,
+    prepareSaveRequest,
+    saveErrorMessage,
+    scheduleCount,
     selectedDayId,
     selectedSchedules,
     setSelectedDayId,
     startDate,
     updateSchedule,
+    validateSchedulesForSave,
   } = useTimetable();
   const selectedDay = days.find((day) => day.id === selectedDayId);
   const selectedDayLabel = `${selectedDay?.dayLabel ?? ''} (${selectedDay?.date ?? ''})`;
@@ -100,11 +122,37 @@ export default function TimetableScreen() {
     router.push('/');
   };
 
+  const openSaveModal = () => {
+    if (validateSchedulesForSave()) {
+      setIsSaveModalVisible(true);
+    }
+  };
+
+  const closeSaveModal = () => {
+    setIsSaveModalVisible(false);
+    clearSaveError();
+    resetSave();
+  };
+
+  const handleChangeCourseNameForSave = (name: string) => {
+    handleChangeTimetableName(name);
+    resetSave();
+  };
+
+  const handleSaveTimetable = async () => {
+    const request = prepareSaveRequest();
+    if (!request) {
+      return;
+    }
+
+    await saveTimetable(request);
+  };
+
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        scrollEnabled={!isScheduleModalVisible}
+        scrollEnabled={!isScheduleModalVisible && !isSaveModalVisible}
         showsVerticalScrollIndicator={false}>
         <View style={styles.screen}>
           <TimetableHeader />
@@ -120,21 +168,27 @@ export default function TimetableScreen() {
           <TimetableCourseSection
             days={days}
             onAddSchedule={openAddScheduleModal}
+            onSave={openSaveModal}
             onSelectDay={setSelectedDayId}
             onSelectSchedule={openEditScheduleModal}
             selectedDayId={selectedDayId}
             selectedSchedules={selectedSchedules}
+            saveErrorMessage={saveErrorMessage}
           />
         </View>
       </ScrollView>
       <TimetableScheduleModal
         activities={activities}
+        activitiesError={activitiesError}
+        activitiesLoading={activitiesLoading}
         dayLabel={selectedDayLabel}
         onBrowseActivities={browseMoreActivities}
         onClearActivity={clearSelectedActivity}
         onClose={closeScheduleModal}
         onDelete={confirmDeleteSchedule}
+        onOpenActivities={() => void refetchActivities()}
         onRequestReservation={browseMoreActivities}
+        onRetryActivities={() => void refetchActivities()}
         onSelectActivity={selectActivity}
         onSubmit={handleSubmitSchedule}
         schedule={editingSchedule}
@@ -142,6 +196,19 @@ export default function TimetableScreen() {
         selectedActivity={selectedActivity}
         selectedActivityId={selectedActivityId}
         visible={isScheduleModalVisible}
+      />
+      <TimetableSaveModal
+        courseName={timetableName}
+        endDate={endDate}
+        errorMessage={saveErrorMessage ?? saveApiErrorMessage}
+        isSaving={isSaving}
+        isSuccess={isSaveSuccess}
+        onChangeCourseName={handleChangeCourseNameForSave}
+        onClose={closeSaveModal}
+        onSave={() => void handleSaveTimetable()}
+        scheduleCount={scheduleCount}
+        startDate={startDate}
+        visible={isSaveModalVisible}
       />
     </SafeAreaView>
   );
