@@ -1,9 +1,9 @@
 import { useCallback, useRef, useState } from 'react';
 
 import {
-  getTimetableErrorMessage,
-  TimetableApiError,
+  normalizeTimetableApiError,
   timetableApi,
+  type TimetableApiError,
 } from '@/api/timetableApi';
 import type {
   TimetableDetailResponse,
@@ -37,9 +37,7 @@ export function useSaveTimetable(accessToken?: string) {
         setStatus('success');
         return response;
       } catch (requestError) {
-        const apiError = requestError instanceof TimetableApiError
-          ? requestError
-          : new TimetableApiError(getTimetableErrorMessage(requestError), 0);
+        const apiError = normalizeTimetableApiError(requestError);
         setError(apiError);
         setStatus('error');
         return null;
