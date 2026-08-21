@@ -290,45 +290,45 @@ fix(timetable): 모바일 및 웹 반응형 레이아웃 오류 수정
 ```text
 app/
 └── timetable/
-    ├── index.tsx
-    ├── README.md
-    └── TIMETABLE_PLAN.md
+    ├── index.tsx                         # 타임테이블 화면 상태와 사용자 흐름 조합
+    ├── README.md                         # 타임테이블 관련 패키지 및 설치 안내
+    └── TIMETABLE_PLAN.md                 # PR별 구현 계획과 검증 현황 관리
 
 components/
 └── timetable/
-    ├── TimetableCourseSection.tsx
-    ├── TimetableDateRange.d.ts
-    ├── TimetableDateRange.native.tsx
-    ├── TimetableDateRange.web.tsx
-    ├── TimetableDayTabs.tsx
-    ├── TimetableHeader.tsx
-    ├── TimetableScheduleCard.tsx
-    ├── TimetableScheduleModal.tsx
-    ├── TimetableSaveModal.tsx
-    ├── TimetableTimeInput.d.ts
-    ├── TimetableTimeInput.native.tsx
-    ├── TimetableTimeInput.web.tsx
-    ├── TimetableTimeline.tsx
-    └── timetable-colors.ts
+    ├── TimetableCourseSection.tsx        # Day 탭·타임라인·저장 진입 영역 구성
+    ├── TimetableDateRange.d.ts           # 날짜 범위 컴포넌트 공통 타입 선언
+    ├── TimetableDateRange.native.tsx     # Android·iOS 시스템 날짜 선택 UI
+    ├── TimetableDateRange.web.tsx        # 웹 날짜 입력 UI
+    ├── TimetableDayTabs.tsx              # 날짜별 Day 이동 및 선택 UI
+    ├── TimetableHeader.tsx               # 타임테이블 빌더 상단 소개 영역
+    ├── TimetableScheduleCard.tsx         # 자유 일정·체험 일정 카드 표시
+    ├── TimetableScheduleModal.tsx        # 일정 추가·수정·삭제 바텀시트
+    ├── TimetableSaveModal.tsx            # 코스 이름 입력 및 저장 상태 바텀시트
+    ├── TimetableTimeInput.d.ts           # 시간 입력 컴포넌트 공통 타입 선언
+    ├── TimetableTimeInput.native.tsx     # Android·iOS 시스템 시간 선택 UI
+    ├── TimetableTimeInput.web.tsx        # 웹 시간 입력 UI
+    ├── TimetableTimeline.tsx             # 시간축과 일정 위치 계산·표시
+    └── timetable-colors.ts               # 타임테이블 전용 색상 상수
 
 hooks/
 └── timetable/
-    ├── use-saved-activities.ts
-    ├── use-save-timetable.ts
-    └── use-timetable.ts
+    ├── use-saved-activities.ts           # 담아둔 체험 조회·선택 상태 관리
+    ├── use-save-timetable.ts             # 코스 저장 요청·중복 방지·결과 상태 관리
+    └── use-timetable.ts                  # 여행 기간과 날짜별 일정 편집 상태 관리
 
 api/
-└── timetableApi.ts
+└── timetableApi.ts                       # 타임테이블 HTTP 요청과 API 오류 처리
 
 types/
-└── timetable.ts
+└── timetable.ts                          # 화면 모델과 API 요청·응답 타입 정의
 
 utils/
 └── timetable/
-    ├── auth.ts
-    ├── date.ts
-    ├── request.ts
-    └── time.ts
+    ├── auth.ts                           # 로컬 연결 테스트용 JWT 공급
+    ├── date.ts                           # 날짜 계산·형식 변환·여행 기간 검증
+    ├── request.ts                        # 화면 상태를 코스 저장 요청으로 변환
+    └── time.ts                           # 시간 계산·일정 입력·중복 검증
 ```
 
 파일이 많아질 경우 책임이 명확할 때만 `sections/`, `ui/`, `modals/` 등의 하위 폴더로 분리합니다. 작업량을 보여주기 위한 불필요한 폴더 분리는 하지 않습니다.
