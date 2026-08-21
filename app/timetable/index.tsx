@@ -32,14 +32,18 @@ export default function TimetableScreen() {
   } = useSavedActivities();
   const {
     addSchedule,
+    timetableName,
     dateErrorMessage,
     days,
     endDate,
     handleChangeEndDate,
     handleChangeStartDate,
+    handleChangeTimetableName,
     maximumEndDate,
     minimumStartDate,
     removeSchedule,
+    prepareSaveRequest,
+    saveErrorMessage,
     selectedDayId,
     selectedSchedules,
     setSelectedDayId,
@@ -121,12 +125,16 @@ export default function TimetableScreen() {
             startDate={startDate}
           />
           <TimetableCourseSection
+            courseName={timetableName}
             days={days}
             onAddSchedule={openAddScheduleModal}
+            onChangeCourseName={handleChangeTimetableName}
+            onSave={() => void prepareSaveRequest()}
             onSelectDay={setSelectedDayId}
             onSelectSchedule={openEditScheduleModal}
             selectedDayId={selectedDayId}
             selectedSchedules={selectedSchedules}
+            saveErrorMessage={saveErrorMessage}
           />
         </View>
       </ScrollView>
