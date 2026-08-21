@@ -135,8 +135,29 @@ export function useTimetable() {
     });
   };
 
+  const validateSchedulesForSave = () => {
+    const hasSchedule = Object.values(schedulesByDay).some(
+      (schedules) => schedules.length > 0
+    );
+    const validationMessage = hasSchedule
+      ? null
+      : '저장할 일정을 한 개 이상 추가해 주세요.';
+    setSaveErrorMessage(validationMessage);
+    return hasSchedule;
+  };
+
+  const clearSaveError = () => {
+    setSaveErrorMessage(null);
+  };
+
+  const scheduleCount = Object.values(schedulesByDay).reduce(
+    (count, schedules) => count + schedules.length,
+    0
+  );
+
   return {
     addSchedule,
+    clearSaveError,
     dateErrorMessage,
     days,
     endDate,
@@ -148,11 +169,13 @@ export function useTimetable() {
     removeSchedule,
     prepareSaveRequest,
     saveErrorMessage,
+    scheduleCount,
     selectedDayId,
     selectedSchedules,
     setSelectedDayId,
     startDate,
     timetableName,
     updateSchedule,
+    validateSchedulesForSave,
   };
 }

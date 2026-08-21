@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { TimetableDayTabs } from '@/components/timetable/TimetableDayTabs';
 import { TimetableTimeline } from '@/components/timetable/TimetableTimeline';
@@ -7,10 +7,8 @@ import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import type { TimetableDay, TimetableSchedule } from '@/types/timetable';
 
 type TimetableCourseSectionProps = {
-  courseName: string;
   days: TimetableDay[];
   onAddSchedule: () => void;
-  onChangeCourseName: (name: string) => void;
   onSave: () => void;
   onSelectDay: (dayId: string) => void;
   onSelectSchedule: (schedule: TimetableSchedule) => void;
@@ -20,10 +18,8 @@ type TimetableCourseSectionProps = {
 };
 
 export function TimetableCourseSection({
-  courseName,
   days,
   onAddSchedule,
-  onChangeCourseName,
   onSave,
   onSelectDay,
   onSelectSchedule,
@@ -60,24 +56,11 @@ export function TimetableCourseSection({
 
       <TimetableTimeline onSelectSchedule={onSelectSchedule} schedules={selectedSchedules} />
 
-      <View style={styles.courseNameSection}>
-        <Text style={styles.courseNameLabel}>코스 이름</Text>
-        <TextInput
-          accessibilityLabel="코스 이름"
-          maxLength={100}
-          onChangeText={onChangeCourseName}
-          placeholder="예: 충남 당일치기 여행"
-          placeholderTextColor="#A49A89"
-          returnKeyType="done"
-          style={styles.courseNameInput}
-          value={courseName}
-        />
-        {saveErrorMessage ? (
-          <Text accessibilityRole="alert" style={styles.saveError}>
-            {saveErrorMessage}
-          </Text>
-        ) : null}
-      </View>
+      {saveErrorMessage ? (
+        <Text accessibilityRole="alert" style={styles.saveError}>
+          {saveErrorMessage}
+        </Text>
+      ) : null}
 
       <Pressable accessibilityRole="button" onPress={onSave} style={styles.saveButton}>
         <Text style={styles.saveButtonText}>코스 저장하기</Text>
@@ -118,25 +101,6 @@ const styles = StyleSheet.create({
   compactHeadingText: {
     flexBasis: '100%',
   },
-  courseNameInput: {
-    backgroundColor: '#FFFCF6',
-    borderColor: TIMETABLE_COLORS.border,
-    borderRadius: 12,
-    borderWidth: 1,
-    color: TIMETABLE_COLORS.text,
-    fontSize: 14,
-    marginTop: 7,
-    paddingHorizontal: 13,
-    paddingVertical: 12,
-  },
-  courseNameLabel: {
-    color: TIMETABLE_COLORS.text,
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  courseNameSection: {
-    marginTop: 14,
-  },
   dayTabs: {
     marginHorizontal: -14,
     marginVertical: 12,
@@ -174,7 +138,7 @@ const styles = StyleSheet.create({
     color: '#B84738',
     fontSize: 12,
     lineHeight: 17,
-    marginTop: 7,
+    marginTop: 14,
   },
   title: {
     color: TIMETABLE_COLORS.text,
