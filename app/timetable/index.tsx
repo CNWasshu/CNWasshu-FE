@@ -186,6 +186,7 @@ export default function TimetableScreen() {
         onClearActivity={clearSelectedActivity}
         onClose={closeScheduleModal}
         onDelete={confirmDeleteSchedule}
+        onOpenActivities={() => void refetchActivities()}
         onRequestReservation={browseMoreActivities}
         onRetryActivities={() => void refetchActivities()}
         onSelectActivity={selectActivity}

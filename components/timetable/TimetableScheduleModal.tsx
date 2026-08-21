@@ -34,6 +34,7 @@ type TimetableScheduleModalProps = {
   onBrowseActivities: () => void;
   onClose: () => void;
   onDelete?: () => void;
+  onOpenActivities: () => void;
   onRequestReservation: () => void;
   onRetryActivities: () => void;
   onSelectActivity: (activityId: string) => void;
@@ -87,6 +88,7 @@ export function TimetableScheduleModal({
   onBrowseActivities,
   onClose,
   onDelete,
+  onOpenActivities,
   onRequestReservation,
   onRetryActivities,
   onSelectActivity,
@@ -160,6 +162,16 @@ export function TimetableScheduleModal({
     }
 
     onSelectActivity(activity.id);
+  };
+
+  const handleToggleActivityList = () => {
+    setIsActivityListVisible((current) => {
+      if (!current) {
+        onOpenActivities();
+      }
+
+      return !current;
+    });
   };
 
   const handleClearActivity = () => {
@@ -274,7 +286,7 @@ export function TimetableScheduleModal({
                 {!selectedActivity ? (
                   <Pressable
                     accessibilityRole="button"
-                    onPress={() => setIsActivityListVisible((current) => !current)}
+                    onPress={handleToggleActivityList}
                     style={styles.activityToggle}>
                     <Text style={styles.activityToggleText}>체험 선택</Text>
                     <Ionicons color={TIMETABLE_COLORS.primary} name={isActivityListVisible ? 'chevron-up' : 'chevron-down'} size={18} />

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { getTimetableErrorMessage, timetableApi } from '@/api/timetableApi';
 import type { SavedActivity, SavedActivityResponse } from '@/types/timetable';
@@ -57,10 +57,6 @@ export function useSavedActivities(accessToken?: string) {
       setIsLoading(false);
     }
   }, [accessToken]);
-
-  useEffect(() => {
-    void refetch();
-  }, [refetch]);
 
   const clearSelectedActivity = () => {
     setSelectedActivityId(null);
