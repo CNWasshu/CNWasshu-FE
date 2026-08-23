@@ -1,0 +1,64 @@
+import type { HomeResponse } from '@/types/home';
+
+const HOME_PATH = '/api/home';
+
+export class HomeApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number
+  ) {
+    super(message);
+    this.name = 'HomeApiError';
+  }
+}
+
+function getBaseUrl() {
+  const url = process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/$/, '');
+
+  if (!url) {
+    throw new HomeApiError(
+      'API 서버 주소가 설정되지 않았습니다.',
+      0
+    );
+  }
+
+  return url;
+}
+
+async function request<T>(path: string): Promise<T> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${getBaseUrl()}${path}`);
+  } catch {
+    throw new HomeApiError(
+      '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
+      0
+    );
+  }
+
+  if (!response.ok) {
+    throw new HomeApiError(
+      '요청을 처리하지 못했습니다.',
+      response.status
+    );
+  }
+
+  return response.json() as Promise<T>;
+}
+
+export const homeApi = {
+  getHomeItems: () => request<HomeResponse>(HOME_PATH),
+};
+
+export function getHomeErrorMessage(error: unknown) {
+  if (!(error instanceof HomeApiError)) {
+    return '알 수 없는 오류가 발생했습니다.';
+  }
+
+  if (error.status >= 500) {
+    return '서버에서 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+  }
+
+  return error.message;
+}
