@@ -13,7 +13,11 @@ export class HomeApiError extends Error {
 }
 
 function getBaseUrl() {
-  const url = process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/$/, '');
+  const url =
+    process.env.EXPO_PUBLIC_API_BASE_URL?.replace(
+      /\/$/,
+      ''
+    );
 
   if (!url) {
     throw new HomeApiError(
@@ -25,11 +29,21 @@ function getBaseUrl() {
   return url;
 }
 
-async function request<T>(path: string): Promise<T> {
+async function request<T>(
+  path: string,
+  accessToken: string
+): Promise<T> {
   let response: Response;
 
   try {
-    response = await fetch(`${getBaseUrl()}${path}`);
+    response = await fetch(
+      `${getBaseUrl()}${path}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
   } catch {
     throw new HomeApiError(
       '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
@@ -48,12 +62,34 @@ async function request<T>(path: string): Promise<T> {
 }
 
 export const homeApi = {
-  getHomeItems: () => request<HomeResponse>(HOME_PATH),
+  getHomeItems: (
+    accessToken: string
+  ) =>
+    request<HomeResponse>(
+      HOME_PATH,
+      accessToken
+    ),
 };
 
-export function getHomeErrorMessage(error: unknown) {
+export function getHomeErrorMessage(
+  error: unknown
+) {
+  if (error instanceof Error) {
+    if (error.message === '로그인이 필요합니다.') {
+      return error.message;
+    }
+  }
+
   if (!(error instanceof HomeApiError)) {
     return '알 수 없는 오류가 발생했습니다.';
+  }
+
+  if (error.status === 401) {
+    return '로그인이 필요합니다.';
+  }
+
+  if (error.status === 403) {
+    return '접근 권한이 없습니다.';
   }
 
   if (error.status >= 500) {

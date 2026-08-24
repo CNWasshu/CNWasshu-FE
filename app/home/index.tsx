@@ -1,3 +1,4 @@
+import { getAccessToken } from '@/utils/auth';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -37,19 +38,26 @@ export default function HomeScreen() {
     useState(ITEMS_PER_PAGE);
 
   const fetchHomeItems = async () => {
-    try {
-      setErrorMessage('');
+  try {
+    setErrorMessage('');
 
-      const data = await homeApi.getHomeItems();
+    const accessToken = await getAccessToken();
 
-      setItems(data);
-    } catch (error) {
-      setErrorMessage(getHomeErrorMessage(error));
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+    if (!accessToken) {
+      throw new Error('로그인이 필요합니다.');
     }
-  };
+
+    const data =
+      await homeApi.getHomeItems(accessToken);
+
+    setItems(data);
+  } catch (error) {
+    setErrorMessage(getHomeErrorMessage(error));
+  } finally {
+    setLoading(false);
+    setRefreshing(false);
+  }
+};
 
   useEffect(() => {
     fetchHomeItems();
