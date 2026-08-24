@@ -1,6 +1,7 @@
 import { getAccessToken } from '@/utils/auth';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getHomeErrorMessage, homeApi } from '@/api/homeApi';
 import { HomeContent } from '@/components/home/HomeContent';
@@ -63,9 +64,12 @@ export default function HomeScreen() {
     fetchHomeItems();
   }, []);
 
-  useEffect(() => {
-    fetchBookmarks();
-  }, [fetchBookmarks]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchBookmarks();
+    }, [fetchBookmarks])
+  );
+
 
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
@@ -188,10 +192,17 @@ export default function HomeScreen() {
           id: String(item.id),
         },
       });
+      return;
     }
-
-    // RESTAURANT 상세 화면은
-    // 추후 맛집 상세 기능 구현 시 추가
+    if (item.type === 'RESTAURANT') {
+      router.push({
+        pathname: '/restaurant/[id]',
+        params: {
+          id: String(item.id),
+        },
+      });
+    }
+    
   };
 
   const handleIsBookmarked = (

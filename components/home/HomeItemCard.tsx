@@ -174,17 +174,15 @@ export function HomeItemCard({
             <View />
           )}
 
-          {isActivity && (
-            <Pressable
-              accessibilityRole="button"
-              style={styles.detailButton}
-              onPress={onPress}
-            >
-              <Text style={styles.detailButtonText}>
-                상세 보기
-              </Text>
-            </Pressable>
-          )}
+          <Pressable
+            accessibilityRole="button"
+            style={styles.detailButton}
+            onPress={onPress}
+          >
+            <Text style={styles.detailButtonText}>
+              상세 보기
+            </Text>
+          </Pressable>
         </View>
       </View>
     </View>
