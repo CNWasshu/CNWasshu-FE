@@ -23,6 +23,8 @@ export default function RootLayout() {
         <Stack.Screen name="auth/login" options={{ headerShown: false }} />
         <Stack.Screen name="auth/mypage" options={{ headerShown: false }} />
         <Stack.Screen name="bookmark/index" options={{ headerShown: false }} />
+        <Stack.Screen name="activity/[id]" options={{ headerShown: false }}/>
+        <Stack.Screen name="restaurant/[id]" options={{ headerShown: false }}/>
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
