@@ -41,7 +41,11 @@ type HomeContentProps = {
   onLoadMore: () => void;
 
   onItemPress: (item: HomeItem) => void;
+  onItemBookmarkPress: (item: HomeItem) => void;
+  isBookmarked: (item: HomeItem) => boolean;
+
   onAiRecommend: () => void;
+  onBookmarkPress: () => void;
 };
 
 export function HomeContent({
@@ -70,7 +74,11 @@ export function HomeContent({
   onLoadMore,
 
   onItemPress,
+  onItemBookmarkPress,
+  isBookmarked,
+
   onAiRecommend,
+  onBookmarkPress,
 }: HomeContentProps) {
   if (loading) {
     return (
@@ -131,6 +139,7 @@ export function HomeContent({
         <View style={styles.screen}>
           <HomeHero
             onAiRecommend={onAiRecommend}
+            onBookmarkPress={onBookmarkPress}
           />
 
           <View style={styles.content}>
@@ -188,8 +197,12 @@ export function HomeContent({
                     <HomeItemCard
                       key={`${item.type}-${item.id}`}
                       item={item}
+                      isBookmarked={isBookmarked(item)}
                       onPress={() =>
                         onItemPress(item)
+                      }
+                      onBookmarkPress={() =>
+                        onItemBookmarkPress(item)
                       }
                     />
                   ))}
