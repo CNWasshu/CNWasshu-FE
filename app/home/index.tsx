@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { getHomeErrorMessage, homeApi } from '@/api/homeApi';
 import { HomeContent } from '@/components/home/HomeContent';
+import { useBookmarks } from '@/hooks/bookmark/use-bookmarks';
 import type { HomeItem, HomeItemType } from '@/types/home';
 
 const ITEMS_PER_PAGE = 8;
@@ -10,13 +11,19 @@ const ITEMS_PER_PAGE = 8;
 export default function HomeScreen() {
   const router = useRouter();
 
+  const {
+    fetchBookmarks,
+    addBookmark,
+    removeBookmark,
+    isBookmarked,
+  } = useBookmarks();
+
   const [items, setItems] = useState<HomeItem[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // 홈 기본 화면은 체험
   const [selectedType, setSelectedType] =
     useState<HomeItemType>('ACTIVITY');
 
@@ -26,13 +33,9 @@ export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] =
     useState('전체');
 
-  // 처음에는 8개만 노출
   const [visibleCount, setVisibleCount] =
     useState(ITEMS_PER_PAGE);
 
-  /**
-   * 홈 API 조회
-   */
   const fetchHomeItems = async () => {
     try {
       setErrorMessage('');
@@ -48,16 +51,14 @@ export default function HomeScreen() {
     }
   };
 
-  /**
-   * 홈 최초 진입 시 API 호출
-   */
   useEffect(() => {
     fetchHomeItems();
   }, []);
 
-  /**
-   * 필터가 변경되면 다시 8개부터 표시
-   */
+  useEffect(() => {
+    fetchBookmarks();
+  }, [fetchBookmarks]);
+
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
   }, [
@@ -66,9 +67,6 @@ export default function HomeScreen() {
     selectedCategory,
   ]);
 
-  /**
-   * 현재 선택된 체험/맛집에 존재하는 지역 목록 생성
-   */
   const regions = useMemo(() => {
     const regionNames = Array.from(
       new Set(
@@ -84,9 +82,6 @@ export default function HomeScreen() {
     return ['전체', ...regionNames];
   }, [items, selectedType]);
 
-  /**
-   * 현재 선택된 체험/맛집에 존재하는 카테고리 목록 생성
-   */
   const categories = useMemo(() => {
     const categoryNames = Array.from(
       new Set(
@@ -102,11 +97,6 @@ export default function HomeScreen() {
     return ['전체', ...categoryNames];
   }, [items, selectedType]);
 
-  /**
-   * 타입 + 지역 + 카테고리 필터 적용
-   *
-   * 마지막에 id 오름차순 정렬
-   */
   const filteredItems = useMemo(() => {
     return items
       .filter((item) => {
@@ -135,11 +125,6 @@ export default function HomeScreen() {
     selectedCategory,
   ]);
 
-  /**
-   * 실제 화면에 보여줄 데이터
-   *
-   * 8 → 16 → 24 → ...
-   */
   const visibleItems = useMemo(() => {
     return filteredItems.slice(
       0,
@@ -150,40 +135,29 @@ export default function HomeScreen() {
     visibleCount,
   ]);
 
-  /**
-   * 체험 / 맛집 변경
-   */
   const handleSelectType = (
     type: HomeItemType
   ) => {
     setSelectedType(type);
 
-    // 타입이 바뀌면 기존 지역/카테고리 선택 초기화
     setSelectedRegion('전체');
     setSelectedCategory('전체');
   };
 
-  /**
-   * 새로고침
-   */
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
-    fetchHomeItems();
+
+    await Promise.all([
+      fetchHomeItems(),
+      fetchBookmarks(),
+    ]);
   };
 
-  /**
-   * 다시 시도
-   */
   const handleRetry = () => {
     setLoading(true);
     fetchHomeItems();
   };
 
-  /**
-   * 더 보기
-   *
-   * 한 번 누를 때마다 8개 추가
-   */
   const handleLoadMore = () => {
     setVisibleCount((previousCount) =>
       Math.min(
@@ -212,9 +186,46 @@ export default function HomeScreen() {
     // 추후 맛집 상세 기능 구현 시 추가
   };
 
-  /**
-   * AI 추천 페이지 이동
-   */
+  const handleIsBookmarked = (
+    item: HomeItem
+  ) => {
+    return isBookmarked(
+      item.type,
+      item.id
+    );
+  };
+
+  const handleItemBookmarkPress = async (
+    item: HomeItem
+  ) => {
+    const bookmarked = isBookmarked(
+      item.type,
+      item.id
+    );
+
+    if (bookmarked) {
+      await removeBookmark({
+        type: item.type,
+        targetId: item.id,
+      });
+
+      return;
+    }
+
+    const success = await addBookmark({
+      type: item.type,
+      targetId: item.id,
+    });
+
+    if (success) {
+      await fetchBookmarks();
+    }
+  };
+
+  const handleBookmarkPress = () => {
+    router.push('/bookmark');
+  };
+
   const handleAiRecommend = () => {
     router.push('/course/ai');
   };
@@ -249,7 +260,11 @@ export default function HomeScreen() {
       onLoadMore={handleLoadMore}
 
       onItemPress={handleItemPress}
+      onItemBookmarkPress={handleItemBookmarkPress}
+      isBookmarked={handleIsBookmarked}
+
       onAiRecommend={handleAiRecommend}
+      onBookmarkPress={handleBookmarkPress}
     />
   );
 }

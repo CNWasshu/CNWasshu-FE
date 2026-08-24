@@ -7,10 +7,12 @@ import {
 
 type HomeHeroProps = {
   onAiRecommend: () => void;
+  onBookmarkPress: () => void;
 };
 
 export function HomeHero({
   onAiRecommend,
+  onBookmarkPress,
 }: HomeHeroProps) {
   return (
     <View style={styles.hero}>
@@ -19,9 +21,16 @@ export function HomeHero({
           충남 체험 백과사전
         </Text>
 
-        <Text style={styles.weather}>
-          충남 여행
-        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="장바구니"
+          style={styles.bookmarkButton}
+          onPress={onBookmarkPress}
+        >
+          <Text style={styles.bookmarkIcon}>
+            ♡
+          </Text>
+        </Pressable>
       </View>
 
       <View style={styles.heroCard}>
@@ -97,9 +106,20 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 
-  weather: {
+  bookmarkButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+  },
+
+  bookmarkIcon: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 23,
+    fontWeight: '700',
+    lineHeight: 25,
   },
 
   heroCard: {

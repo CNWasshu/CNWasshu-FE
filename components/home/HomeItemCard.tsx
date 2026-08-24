@@ -10,12 +10,16 @@ import type { HomeItem } from '@/types/home';
 
 type HomeItemCardProps = {
   item: HomeItem;
+  isBookmarked: boolean;
   onPress: () => void;
+  onBookmarkPress: () => void;
 };
 
 export function HomeItemCard({
   item,
+  isBookmarked,
   onPress,
+  onBookmarkPress,
 }: HomeItemCardProps) {
   const isActivity = item.type === 'ACTIVITY';
 
@@ -38,15 +42,27 @@ export function HomeItemCard({
         </View>
       )}
 
-      {/* 장바구니 하트 UI만 표시 - 기능은 추후 연결 */}
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="장바구니 담기"
+        accessibilityLabel={
+          isBookmarked
+            ? '장바구니에서 삭제'
+            : '장바구니에 담기'
+        }
         style={styles.heartButton}
-        onPress={() => {}}
+        onPress={(event) => {
+          event.stopPropagation();
+          onBookmarkPress();
+        }}
       >
-        <Text style={styles.heartIcon}>
-          ♡
+        <Text
+          style={[
+            styles.heartIcon,
+            isBookmarked &&
+              styles.bookmarkedHeartIcon,
+          ]}
+        >
+          {isBookmarked ? '♥' : '♡'}
         </Text>
       </Pressable>
 
@@ -243,6 +259,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     lineHeight: 26,
+  },
+
+  bookmarkedHeartIcon: {
+    color: '#E64A67',
   },
 
   typeBadge: {
