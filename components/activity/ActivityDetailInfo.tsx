@@ -1,7 +1,7 @@
 import {
-    StyleSheet,
-    Text,
-    View,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 import type { ActivityDetailResponse } from '@/types/activity';
@@ -57,13 +57,7 @@ export function ActivityDetailInfo({
 
         <InfoItem
           label="예약"
-          value={
-            activity.reservationRequired == null
-              ? null
-              : activity.reservationRequired
-                ? '예약 필요'
-                : '예약 없이 이용 가능'
-          }
+          value={formatReservationInfo(activity)}
         />
       </View>
     </View>
@@ -114,6 +108,27 @@ function formatOperatingTime(
   }
 
   return null;
+}
+
+function formatReservationInfo(
+  activity: ActivityDetailResponse
+) {
+  if (activity.reservationRequired == null) {
+    return null;
+  }
+
+  if (!activity.reservationRequired) {
+    return '예약 없이 이용 가능';
+  }
+
+  if (
+    activity.maxParticipants != null &&
+    activity.maxParticipants > 0
+  ) {
+    return `예약 필요 · 최대 ${activity.maxParticipants}인`;
+  }
+
+  return '예약 필요';
 }
 
 const styles = StyleSheet.create({
