@@ -23,6 +23,12 @@ export function HomeItemCard({
 }: HomeItemCardProps) {
   const isActivity = item.type === 'ACTIVITY';
 
+  const showMaxParticipants =
+    isActivity &&
+    item.reservationRequired === true &&
+    item.maxParticipants !== null &&
+    item.maxParticipants > 0;
+
   return (
     <View style={styles.card}>
       {item.thumbnail ? (
@@ -167,9 +173,19 @@ export function HomeItemCard({
 
         <View style={styles.cardFooter}>
           {item.reservationRequired === true ? (
-            <Text style={styles.reservationText}>
-              예약 필요
-            </Text>
+            <View style={styles.reservationInfo}>
+              <Text style={styles.reservationText}>
+                예약 필요
+              </Text>
+
+              {showMaxParticipants && (
+                <Text
+                  style={styles.maxParticipantsText}
+                >
+                  · 최대 {item.maxParticipants}인
+                </Text>
+              )}
+            </View>
           ) : (
             <View />
           )}
@@ -383,10 +399,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  reservationInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
   reservationText: {
-    color: '#A66400',
+    color: '#8A7450',
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '700',
+  },
+
+  maxParticipantsText: {
+    marginLeft: 4,
+    color: '#8A7450',
+    fontSize: 11,
+    fontWeight: '700',
   },
 
   detailButton: {
