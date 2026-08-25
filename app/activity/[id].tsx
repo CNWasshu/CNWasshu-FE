@@ -1,6 +1,6 @@
 import {
-    useLocalSearchParams,
-    useRouter,
+  useLocalSearchParams,
+  useRouter,
 } from 'expo-router';
 import { useEffect } from 'react';
 
@@ -31,32 +31,19 @@ export default function ActivityDetailScreen() {
     isBookmarked,
   } = useBookmarks();
 
-  /**
-   * 상세 화면 진입 시
-   * 로그인 사용자의 장바구니 조회
-   */
   useEffect(() => {
     fetchBookmarks();
   }, [fetchBookmarks]);
 
-  /**
-   * 현재 체험 장바구니 등록 여부
-   */
   const bookmarked = isBookmarked(
     'ACTIVITY',
     activityId
   );
 
-  /**
-   * 뒤로 가기
-   */
   const handleBack = () => {
     router.back();
   };
 
-  /**
-   * 장바구니 추가 / 삭제
-   */
   const handleBookmarkPress = async () => {
     if (!activityId) {
       return;
@@ -81,15 +68,9 @@ export default function ActivityDetailScreen() {
     }
   };
 
-  /**
-   * 예약하기
-   *
-   * 예약 화면은 다음 작업에서 연결
-   */
   const handleReservationPress = () => {
-    console.log(
-      '예약할 체험 ID:',
-      activityId
+    router.push(
+      `/reservation/${activityId}`
     );
   };
 
