@@ -1,19 +1,23 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { TimetableDateRange } from '@/components/timetable/TimetableDateRange';
 import { TimetableCourseSection } from '@/components/timetable/TimetableCourseSection';
 import { TimetableHeader } from '@/components/timetable/TimetableHeader';
+import { TimetableReservationSyncStatus } from '@/components/timetable/TimetableReservationSyncStatus';
 import { TimetableScheduleModal } from '@/components/timetable/TimetableScheduleModal';
 import { TimetableSaveModal } from '@/components/timetable/TimetableSaveModal';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { useSavedActivities } from '@/hooks/timetable/use-saved-activities';
+import { useReservationSync } from '@/hooks/timetable/use-reservation-sync';
 import { useSaveTimetable } from '@/hooks/timetable/use-save-timetable';
 import { useTimetableAccessToken } from '@/hooks/timetable/use-timetable-access-token';
 import { useTimetable } from '@/hooks/timetable/use-timetable';
 import type { TimetableSchedule } from '@/types/timetable';
+import { formatDate } from '@/utils/timetable/date';
 
 function createScheduleId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -43,6 +47,11 @@ export default function TimetableScreen() {
     selectActivity,
   } = useSavedActivities(accessToken ?? undefined);
   const {
+    error: reservationSyncError,
+    isLoading: isReservationSyncing,
+    refetch: refetchReservations,
+  } = useReservationSync(accessToken ?? undefined);
+  const {
     addSchedule,
     clearSaveError,
     timetableName,
@@ -55,6 +64,7 @@ export default function TimetableScreen() {
     maximumEndDate,
     minimumStartDate,
     removeSchedule,
+    reservationSyncIssues,
     prepareSaveRequest,
     saveErrorMessage,
     scheduleCount,
@@ -62,11 +72,46 @@ export default function TimetableScreen() {
     selectedSchedules,
     setSelectedDayId,
     startDate,
+    syncedReservationCount,
+    synchronizeReservations,
     updateSchedule,
     validateSchedulesForSave,
   } = useTimetable();
   const selectedDay = days.find((day) => day.id === selectedDayId);
   const selectedDayLabel = `${selectedDay?.dayLabel ?? ''}(${selectedDay?.date ?? ''})`;
+  const reservationConflictCount = reservationSyncIssues.filter(
+    (issue) => issue.type === 'TIME_CONFLICT'
+  ).length;
+  const invalidReservationCount = reservationSyncIssues.filter(
+    (issue) => issue.type === 'INVALID_RESERVATION'
+  ).length;
+
+  const synchronizePeriodReservations = useCallback(async () => {
+    if (!accessToken) {
+      return;
+    }
+
+    const reservations = await refetchReservations(
+      formatDate(startDate),
+      formatDate(endDate)
+    );
+
+    if (reservations) {
+      synchronizeReservations(reservations);
+    }
+  }, [
+    accessToken,
+    endDate,
+    refetchReservations,
+    startDate,
+    synchronizeReservations,
+  ]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void synchronizePeriodReservations();
+    }, [synchronizePeriodReservations])
+  );
 
   const closeScheduleModal = () => {
     setIsScheduleModalVisible(false);
@@ -187,6 +232,14 @@ export default function TimetableScreen() {
             onChangeEndDate={handleChangeEndDate}
             onChangeStartDate={handleChangeStartDate}
             startDate={startDate}
+          />
+          <TimetableReservationSyncStatus
+            conflictCount={reservationConflictCount}
+            error={reservationSyncError}
+            invalidCount={invalidReservationCount}
+            isLoading={isReservationSyncing}
+            onRetry={() => void synchronizePeriodReservations()}
+            syncedCount={syncedReservationCount}
           />
           <TimetableCourseSection
             days={days}
