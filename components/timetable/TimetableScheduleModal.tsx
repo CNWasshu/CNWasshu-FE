@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { TimetableTimeInput } from '@/components/timetable/TimetableTimeInput';
-import type { SavedActivity, TimetableSchedule } from '@/types/timetable';
+import type { SavedPlace, TimetableSchedule } from '@/types/timetable';
 import {
   DAY_END_TIME,
   DAY_START_TIME,
@@ -28,7 +28,7 @@ type ScheduleFormValue = Pick<TimetableSchedule, 'endTime' | 'startTime' | 'titl
 type TimetableScheduleModalProps = {
   activitiesError: string | null;
   activitiesLoading: boolean;
-  activities: SavedActivity[];
+  activities: SavedPlace[];
   dayLabel: string;
   onClearActivity: () => void;
   onBrowseActivities: () => void;
@@ -41,7 +41,7 @@ type TimetableScheduleModalProps = {
   onSubmit: (value: ScheduleFormValue) => void;
   schedule?: TimetableSchedule | null;
   schedules: TimetableSchedule[];
-  selectedActivity: SavedActivity | null;
+  selectedActivity: SavedPlace | null;
   selectedActivityId: string | null;
   visible: boolean;
 };
@@ -106,17 +106,17 @@ export function TimetableScheduleModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [isActivityListVisible, setIsActivityListVisible] = useState(false);
-  const [reservationActivity, setReservationActivity] = useState<SavedActivity | null>(null);
+  const [reservationActivity, setReservationActivity] = useState<SavedPlace | null>(null);
   const isEditing = Boolean(schedule);
-  const isActivitySchedule = schedule?.kind === 'activity';
-  const isActivityTitleLocked = Boolean(selectedActivity) || isActivitySchedule;
+  const isPlaceSchedule = schedule?.kind === 'activity' || schedule?.kind === 'restaurant';
+  const isActivityTitleLocked = Boolean(selectedActivity) || isPlaceSchedule;
   const activityOperatingType = selectedActivity?.operatingType
-    ?? (isActivitySchedule ? schedule.operatingType : null);
+    ?? (isPlaceSchedule ? schedule.operatingType : null);
   const activityOperatingStartTime = activityOperatingType === 'hours'
-    ? selectedActivity?.startTime ?? (isActivitySchedule ? schedule.operatingStartTime : DAY_START_TIME)
+    ? selectedActivity?.startTime ?? (isPlaceSchedule ? schedule.operatingStartTime : DAY_START_TIME)
     : DAY_START_TIME;
   const activityOperatingEndTime = activityOperatingType === 'hours'
-    ? selectedActivity?.endTime ?? (isActivitySchedule ? schedule.operatingEndTime : DAY_END_TIME)
+    ? selectedActivity?.endTime ?? (isPlaceSchedule ? schedule.operatingEndTime : DAY_END_TIME)
     : DAY_END_TIME;
   const latestStartTime = addMinutes(activityOperatingEndTime, -5);
   const earliestEndTime = addMinutes(startTime, 5);
@@ -155,8 +155,8 @@ export function TimetableScheduleModal({
     setIsActivityListVisible(false);
   }, [selectedActivity, visible]);
 
-  const handleSelectActivity = (activity: SavedActivity) => {
-    if (activity.requiresReservation) {
+  const handleSelectActivity = (activity: SavedPlace) => {
+    if (activity.placeType === 'activity' && activity.requiresReservation) {
       setReservationActivity(activity);
       return;
     }
@@ -288,7 +288,7 @@ export function TimetableScheduleModal({
                     accessibilityRole="button"
                     onPress={handleToggleActivityList}
                     style={styles.activityToggle}>
-                    <Text style={styles.activityToggleText}>체험 선택</Text>
+                    <Text style={styles.activityToggleText}>체험 및 음식점 선택</Text>
                     <Ionicons color={TIMETABLE_COLORS.primary} name={isActivityListVisible ? 'chevron-up' : 'chevron-down'} size={18} />
                   </Pressable>
                 ) : null}
@@ -305,7 +305,9 @@ export function TimetableScheduleModal({
                           ? '상시 운영'
                           : `${selectedActivity.startTime}~${selectedActivity.endTime}`} · {formatDuration(startTime, endTime)}
                       </Text>
-                      <Text style={styles.activityNotice}>일정 추가하기를 누르면 이 체험이 타임테이블에 들어갑니다.</Text>
+                      <Text style={styles.activityNotice}>
+                        일정 추가하기를 누르면 이 {selectedActivity.placeType === 'activity' ? '체험' : '음식점'}이 타임테이블에 들어갑니다.
+                      </Text>
                     </View>
                     <Pressable accessibilityRole="button" onPress={handleClearActivity}>
                       <Text style={styles.clearActivityText}>선택 취소</Text>
@@ -316,14 +318,14 @@ export function TimetableScheduleModal({
                 {isActivityListVisible ? (
                   <View style={styles.activityListContainer}>
                     <Text style={styles.activityDescription}>
-                      장바구니에 담아둔 체험만 선택할 수 있어요. 더 담고 싶다면 홈에서 하트를 눌러주세요.
+                      장바구니에 담아둔 체험과 음식점을 선택할 수 있어요. 더 담고 싶다면 홈에서 하트를 눌러주세요.
                     </Text>
                     <View style={styles.activityListHeading}>
-                      <Text style={styles.activityCount}>담아둔 체험 {activities.length}개</Text>
+                      <Text style={styles.activityCount}>담아둔 체험 및 음식점 {activities.length}개</Text>
                     </View>
                     {activitiesLoading ? (
                       <View accessibilityLiveRegion="polite" style={styles.activityStatus}>
-                        <Text style={styles.activityStatusText}>담아둔 체험을 불러오고 있어요.</Text>
+                        <Text style={styles.activityStatusText}>담아둔 체험 및 음식점을 불러오고 있어요.</Text>
                       </View>
                     ) : activitiesError ? (
                       <View style={styles.activityStatus}>
@@ -339,7 +341,7 @@ export function TimetableScheduleModal({
                       </View>
                     ) : activities.length === 0 ? (
                       <View style={styles.activityStatus}>
-                        <Text style={styles.activityStatusText}>아직 담아둔 체험이 없습니다.</Text>
+                        <Text style={styles.activityStatusText}>아직 담아둔 체험이나 음식점이 없습니다.</Text>
                       </View>
                     ) : (
                       <ScrollView
@@ -361,7 +363,7 @@ export function TimetableScheduleModal({
                             <View style={styles.activityText}>
                               <Text style={styles.activityTitle}>{activity.title}</Text>
                               <Text style={styles.activityMetadata}>
-                                {activity.location} · {activity.operatingType === 'always'
+                                {activity.placeType === 'activity' ? '체험' : '음식점'} · {activity.location} · {activity.operatingType === 'always'
                                   ? '상시 운영'
                                   : `${activity.startTime}~${activity.endTime}`}
                                 {' · '}{formatDuration(

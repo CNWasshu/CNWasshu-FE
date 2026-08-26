@@ -88,7 +88,7 @@ export default function TimetableScreen() {
   const handleSubmitSchedule = (value: Pick<TimetableSchedule, 'endTime' | 'startTime' | 'title'>) => {
     if (editingSchedule) {
       updateSchedule(selectedDayId, { ...editingSchedule, ...value });
-    } else if (selectedActivity) {
+    } else if (selectedActivity?.placeType === 'activity') {
       addSchedule(selectedDayId, {
         activityId: selectedActivity.id,
         activityIcon: selectedActivity.icon,
@@ -102,6 +102,18 @@ export default function TimetableScreen() {
         reservationId: null,
         requiresReservation: selectedActivity.requiresReservation,
         source: 'local',
+      });
+    } else if (selectedActivity?.placeType === 'restaurant') {
+      addSchedule(selectedDayId, {
+        ...value,
+        id: createScheduleId(),
+        kind: 'restaurant',
+        location: selectedActivity.location,
+        operatingEndTime: selectedActivity.endTime,
+        operatingStartTime: selectedActivity.startTime,
+        operatingType: selectedActivity.operatingType,
+        restaurantIcon: selectedActivity.icon,
+        restaurantId: selectedActivity.id,
       });
     } else {
       addSchedule(selectedDayId, { ...value, id: createScheduleId(), kind: 'free' });

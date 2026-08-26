@@ -2,19 +2,16 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { bookmarkApi } from '@/api/bookmarkApi';
 import type { BookmarkResponse } from '@/types/bookmark';
-import type { SavedActivity } from '@/types/timetable';
+import type { SavedPlace } from '@/types/timetable';
 
 const DEFAULT_ACTIVITY_ICON = '📍';
+const DEFAULT_RESTAURANT_ICON = '🍽️';
 const DEFAULT_START_TIME = '09:00';
 const DEFAULT_END_TIME = '10:00';
 
-export function toSavedActivity(
+export function toSavedPlace(
   response: BookmarkResponse
-): SavedActivity | null {
-  if (response.type !== 'ACTIVITY') {
-    return null;
-  }
-
+): SavedPlace | null {
   const hasOperatingHours =
     response.operatingStartTime !== null &&
     response.operatingEndTime !== null;
@@ -31,11 +28,19 @@ export function toSavedActivity(
     endTime: alwaysOpen
       ? DEFAULT_END_TIME
       : response.operatingEndTime!.slice(0, 5),
-    icon: DEFAULT_ACTIVITY_ICON,
+    icon:
+      response.type === 'ACTIVITY'
+        ? DEFAULT_ACTIVITY_ICON
+        : DEFAULT_RESTAURANT_ICON,
     id: String(response.targetId),
     location: response.regionName,
     operatingType: alwaysOpen ? 'always' : 'hours',
+    placeType:
+      response.type === 'ACTIVITY'
+        ? 'activity'
+        : 'restaurant',
     requiresReservation:
+      response.type === 'ACTIVITY' &&
       response.reservationRequired === true,
     startTime: alwaysOpen
       ? DEFAULT_START_TIME
@@ -45,19 +50,18 @@ export function toSavedActivity(
   };
 }
 
-function toSavedActivities(
+function toSavedPlaces(
   bookmarks: BookmarkResponse[]
 ) {
   return bookmarks.flatMap((bookmark) => {
-    const activity =
-      toSavedActivity(bookmark);
+    const place = toSavedPlace(bookmark);
 
-    return activity ? [activity] : [];
+    return place ? [place] : [];
   });
 }
 
 export function useSavedActivities(accessToken?: string) {
-  const [activities, setActivities] = useState<SavedActivity[]>([]);
+  const [activities, setActivities] = useState<SavedPlace[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
@@ -80,13 +84,13 @@ export function useSavedActivities(accessToken?: string) {
           accessToken
         );
       setActivities(
-        toSavedActivities(response)
+        toSavedPlaces(response)
       );
     } catch (requestError) {
       setError(
         requestError instanceof Error
           ? requestError.message
-          : '담아둔 체험을 불러오지 못했습니다.'
+          : '담아둔 장소를 불러오지 못했습니다.'
       );
     } finally {
       setIsLoading(false);

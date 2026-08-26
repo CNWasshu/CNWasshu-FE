@@ -22,8 +22,12 @@ const TIMETABLE_ERROR_MESSAGES: Record<string, string> = {
   MISSING_ACCESS_TOKEN: '로그인이 필요한 서비스입니다.',
   MISSING_API_URL: 'API 서버 주소가 설정되지 않았습니다.',
   SCHEDULE_TIME_CONFLICT: '같은 날짜에 시간이 겹치는 일정이 있습니다.',
+  RESTAURANT_OUTSIDE_OPERATING_HOURS:
+    '음식점 운영 시간 안에서 일정을 선택해 주세요.',
   TIMETABLE_ACTIVITY_NOT_FOUND:
     '선택한 체험 정보를 찾을 수 없습니다. 체험을 다시 선택해 주세요.',
+  TIMETABLE_RESTAURANT_NOT_FOUND:
+    '선택한 음식점 정보를 찾을 수 없습니다. 음식점을 다시 선택해 주세요.',
   TIMETABLE_SCHEDULE_REQUIRED: '저장할 일정을 한 개 이상 추가해 주세요.',
 };
 
