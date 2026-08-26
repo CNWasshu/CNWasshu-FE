@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getHomeErrorMessage, homeApi } from '@/api/homeApi';
 import { HomeContent } from '@/components/home/HomeContent';
 import { useBookmarks } from '@/hooks/bookmark/use-bookmarks';
+import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-notification-count';
 import type { HomeItem, HomeItemType } from '@/types/home';
 
 const ITEMS_PER_PAGE = 8;
@@ -19,6 +20,11 @@ export default function HomeScreen() {
     removeBookmark,
     isBookmarked,
   } = useBookmarks();
+
+  const {
+    fetchUnreadNotificationCount,
+    unreadCount: unreadNotificationCount,
+  } = useUnreadNotificationCount();
 
   const [items, setItems] = useState<HomeItem[]>([]);
 
@@ -67,7 +73,8 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchBookmarks();
-    }, [fetchBookmarks])
+      fetchUnreadNotificationCount();
+    }, [fetchBookmarks, fetchUnreadNotificationCount])
   );
 
 
@@ -249,6 +256,10 @@ export default function HomeScreen() {
     router.push('/auth/mypage');
   };
 
+  const handleNotificationPress = () => {
+    router.push('/notification');
+  };
+
   const handleAiRecommend = () => {
     router.push('/course/ai');
   };
@@ -289,6 +300,8 @@ export default function HomeScreen() {
       onAiRecommend={handleAiRecommend}
       onBookmarkPress={handleBookmarkPress}
       onMyPagePress={handleMyPagePress}
+      onNotificationPress={handleNotificationPress}
+      unreadNotificationCount={unreadNotificationCount}
     />
   );
 }
