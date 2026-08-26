@@ -51,14 +51,6 @@ export function TimetableScheduleCard({ onPress, schedule, style }: TimetableSch
           </Text>
         </View>
       </Pressable>
-      <Pressable
-        accessibilityHint="수정 또는 삭제 화면을 엽니다."
-        accessibilityLabel={`${schedule.title} 일정 관리`}
-        accessibilityRole="button"
-        onPress={onPress}
-        style={styles.manageButton}>
-        <Text style={styles.manageButtonText}>−</Text>
-      </Pressable>
     </View>
   );
 }
@@ -74,8 +66,6 @@ const styles = StyleSheet.create({
   freeIcon: { backgroundColor: '#F3E8D2' },
   icon: { alignItems: 'center', borderRadius: 11, height: 34, justifyContent: 'center', width: 34 },
   iconText: { fontSize: 17 },
-  manageButton: { alignItems: 'center', backgroundColor: '#F3E8D2', borderRadius: 10, height: 36, justifyContent: 'center', marginLeft: 7, width: 30 },
-  manageButtonText: { color: '#806E4F', fontSize: 17, lineHeight: 19 },
   metadata: { color: '#7B6D57', fontSize: 10, lineHeight: 15, marginTop: 2 },
   textContent: { flex: 1, minWidth: 0 },
   title: { color: '#3F3526', fontSize: 13, fontWeight: '800', lineHeight: 18 },

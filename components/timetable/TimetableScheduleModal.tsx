@@ -108,6 +108,9 @@ export function TimetableScheduleModal({
   const [isActivityListVisible, setIsActivityListVisible] = useState(false);
   const [reservationActivity, setReservationActivity] = useState<SavedPlace | null>(null);
   const isEditing = Boolean(schedule);
+  const isSyncedReservation =
+    schedule?.kind === 'activity' &&
+    schedule.source === 'reservation';
   const isPlaceSchedule = schedule?.kind === 'activity' || schedule?.kind === 'restaurant';
   const isActivityTitleLocked = Boolean(selectedActivity) || isPlaceSchedule;
   const activityOperatingType = selectedActivity?.operatingType
@@ -288,6 +291,14 @@ export function TimetableScheduleModal({
                     : '하루 안에서 5분 단위로 원하는 시간을 선택할 수 있습니다.'}
               </Text>
               {errorMessage ? <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text> : null}
+              {isSyncedReservation ? (
+                <Text
+                  accessibilityRole="text"
+                  style={styles.reservationScheduleNotice}
+                >
+                  예약 완료 일정은 타임테이블에서 삭제할 수 없어요.
+                </Text>
+              ) : null}
             </View>
 
             {!isEditing ? (
@@ -531,6 +542,7 @@ const styles = StyleSheet.create({
   reservationButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, flexBasis: 0, justifyContent: 'center', minHeight: 46, paddingHorizontal: 10 },
   reservationButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   reservationIcon: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primaryLight, borderRadius: 24, height: 48, justifyContent: 'center', width: 48 },
+  reservationScheduleNotice: { color: '#527041', fontSize: 11, fontWeight: '700', lineHeight: 17, marginTop: 9 },
   retryActivitiesButton: { backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 10, marginTop: 10, paddingHorizontal: 14, paddingVertical: 9 },
   retryActivitiesButtonText: { color: '#FFFFFF', fontSize: 12, fontWeight: '800' },
   selectActivityButton: { borderColor: '#9FC9AD', borderRadius: 12, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 9 },

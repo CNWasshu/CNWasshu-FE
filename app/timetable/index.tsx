@@ -168,7 +168,13 @@ export default function TimetableScreen() {
   };
 
   const confirmDeleteSchedule = () => {
-    if (!editingSchedule) {
+    if (
+      !editingSchedule ||
+      (
+        editingSchedule.kind === 'activity' &&
+        editingSchedule.source === 'reservation'
+      )
+    ) {
       return;
     }
 
@@ -261,7 +267,12 @@ export default function TimetableScreen() {
         onBrowseActivities={browseMoreActivities}
         onClearActivity={clearSelectedActivity}
         onClose={closeScheduleModal}
-        onDelete={confirmDeleteSchedule}
+        onDelete={
+          editingSchedule?.kind === 'activity' &&
+          editingSchedule.source === 'reservation'
+            ? undefined
+            : confirmDeleteSchedule
+        }
         onOpenActivities={() => void refetchActivities()}
         onRequestReservation={openReservation}
         onRetryActivities={() => void refetchActivities()}
