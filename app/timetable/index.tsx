@@ -226,7 +226,13 @@ export default function TimetableScreen() {
       return;
     }
 
-    await saveTimetable(request);
+    const savedTimetable = await saveTimetable(request);
+    if (!savedTimetable) {
+      return;
+    }
+
+    setIsSaveModalVisible(false);
+    router.replace(`/course/${savedTimetable.timetableId}`);
   };
 
   return (
