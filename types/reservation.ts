@@ -15,6 +15,11 @@ export interface ReservationCreateRequest {
   withChild: boolean;
 }
 
+export interface ReservationPeriodQuery {
+  endDate: string;
+  startDate: string;
+}
+
 export interface ReservationResponse {
   reservationId: number;
 

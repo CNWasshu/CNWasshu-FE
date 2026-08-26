@@ -69,7 +69,7 @@ export function TimetableDateRange({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>여행 기본 조건</Text>
+      <Text style={styles.title}>여행 일정 선택</Text>
       <View style={styles.fields}>
         <DateField label="출발일" onPress={() => setActiveDateField('startDate')} value={startDate} />
         <DateField label="도착일" onPress={() => setActiveDateField('endDate')} value={endDate} />
