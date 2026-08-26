@@ -245,6 +245,10 @@ export default function HomeScreen() {
     router.push('/bookmark');
   };
 
+  const handleMyPagePress = () => {
+    router.push('/auth/mypage');
+  };
+
   const handleAiRecommend = () => {
     router.push('/course/ai');
   };
@@ -284,6 +288,7 @@ export default function HomeScreen() {
 
       onAiRecommend={handleAiRecommend}
       onBookmarkPress={handleBookmarkPress}
+      onMyPagePress={handleMyPagePress}
     />
   );
 }

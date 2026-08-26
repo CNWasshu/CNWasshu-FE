@@ -46,6 +46,7 @@ type HomeContentProps = {
 
   onAiRecommend: () => void;
   onBookmarkPress: () => void;
+  onMyPagePress: () => void;
 };
 
 export function HomeContent({
@@ -79,6 +80,7 @@ export function HomeContent({
 
   onAiRecommend,
   onBookmarkPress,
+  onMyPagePress,
 }: HomeContentProps) {
   if (loading) {
     return (
@@ -140,6 +142,7 @@ export function HomeContent({
           <HomeHero
             onAiRecommend={onAiRecommend}
             onBookmarkPress={onBookmarkPress}
+            onMyPagePress={onMyPagePress}
           />
 
           <View style={styles.content}>

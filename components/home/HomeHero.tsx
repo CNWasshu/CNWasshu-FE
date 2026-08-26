@@ -8,11 +8,13 @@ import {
 type HomeHeroProps = {
   onAiRecommend: () => void;
   onBookmarkPress: () => void;
+  onMyPagePress: () => void;
 };
 
 export function HomeHero({
   onAiRecommend,
   onBookmarkPress,
+  onMyPagePress,
 }: HomeHeroProps) {
   return (
     <View style={styles.hero}>
@@ -21,16 +23,29 @@ export function HomeHero({
           충남 체험 백과사전
         </Text>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="장바구니"
-          style={styles.bookmarkButton}
-          onPress={onBookmarkPress}
-        >
-          <Text style={styles.bookmarkIcon}>
-            ♡
-          </Text>
-        </Pressable>
+        <View style={styles.headerActions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="마이페이지"
+            style={styles.bookmarkButton}
+            onPress={onMyPagePress}
+          >
+            <Text style={styles.bookmarkIcon}>
+              👤
+            </Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="장바구니"
+            style={styles.bookmarkButton}
+            onPress={onBookmarkPress}
+          >
+            <Text style={styles.bookmarkIcon}>
+              ♡
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.heroCard}>
@@ -104,6 +119,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '800',
+  },
+
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
 
   bookmarkButton: {
