@@ -66,7 +66,7 @@ export default function TimetableScreen() {
     validateSchedulesForSave,
   } = useTimetable();
   const selectedDay = days.find((day) => day.id === selectedDayId);
-  const selectedDayLabel = `${selectedDay?.dayLabel ?? ''} (${selectedDay?.date ?? ''})`;
+  const selectedDayLabel = `${selectedDay?.dayLabel ?? ''}(${selectedDay?.date ?? ''})`;
 
   const closeScheduleModal = () => {
     setIsScheduleModalVisible(false);

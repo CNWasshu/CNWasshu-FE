@@ -244,7 +244,7 @@ export function TimetableScheduleModal({
                 <Text style={styles.description}>
                   {isEditing
                     ? `${dayLabel}의 일정을 수정합니다.`
-                    : `${dayLabel}에 자유 일정 또는 장바구니에 담은 체험을 추가합니다.`}
+                    : `${dayLabel}에 자유 일정 또는 장바구니에 담은 체험 및 음식점을 추가합니다.`}
                 </Text>
               </View>
               <Pressable accessibilityLabel="닫기" accessibilityRole="button" onPress={onClose} style={styles.iconButton}>
