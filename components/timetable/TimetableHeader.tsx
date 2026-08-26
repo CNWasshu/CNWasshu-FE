@@ -9,7 +9,7 @@ export function TimetableHeader() {
       </View>
       <Text style={styles.title}>타임테이블 빌더</Text>
       <Text style={styles.description}>
-        출발일과 도착일을 정하고, 시간대별로 자유 일정 또는 담아둔 체험을 배치해보세요.
+        출발일과 도착일을 정하고, 시간대별로 자유 일정 또는 담아둔 체험 및 음식점을 배치해보세요.
       </Text>
     </View>
   );
