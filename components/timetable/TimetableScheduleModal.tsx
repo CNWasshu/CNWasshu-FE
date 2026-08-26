@@ -237,7 +237,6 @@ export function TimetableScheduleModal({
           <ScrollView
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
-            scrollEnabled={!isActivityListVisible}
             showsVerticalScrollIndicator={false}>
             <View style={styles.headingRow}>
               <View style={styles.headingText}>
@@ -344,12 +343,7 @@ export function TimetableScheduleModal({
                         <Text style={styles.activityStatusText}>아직 담아둔 체험이나 음식점이 없습니다.</Text>
                       </View>
                     ) : (
-                      <ScrollView
-                        contentContainerStyle={styles.activityListContent}
-                        keyboardShouldPersistTaps="handled"
-                        nestedScrollEnabled
-                        showsVerticalScrollIndicator={false}
-                        style={styles.activityList}>
+                      <View style={styles.activityList}>
                         {activities.map((activity) => (
                           <Pressable
                             accessibilityRole="button"
@@ -378,14 +372,14 @@ export function TimetableScheduleModal({
                             </View>
                           </Pressable>
                         ))}
-                      </ScrollView>
+                      </View>
                     )}
                     <Pressable
-                      accessibilityHint="홈으로 이동해 다른 체험을 찾아봅니다."
+                      accessibilityHint="홈으로 이동해 다른 체험이나 음식점을 찾아봅니다."
                       accessibilityRole="button"
                       onPress={onBrowseActivities}
                       style={styles.moreActivitiesButton}>
-                      <Text style={styles.moreActivitiesButtonText}>더 둘러보기</Text>
+                      <Text style={styles.moreActivitiesButtonText}>홈에서 더 둘러보기</Text>
                     </Pressable>
                   </View>
                 ) : null}
@@ -483,8 +477,7 @@ const styles = StyleSheet.create({
   activityDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19 },
   activityEmoji: { fontSize: 22 },
   activityIcon: { alignItems: 'center', backgroundColor: '#DDEFD9', borderRadius: 14, height: 44, justifyContent: 'center', width: 44 },
-  activityList: { backgroundColor: '#F8F2E7', borderColor: '#EFE2CD', borderRadius: 18, borderWidth: 1, height: 110, marginTop: 7 },
-  activityListContent: { gap: 9, padding: 6 },
+  activityList: { backgroundColor: '#F8F2E7', borderColor: '#EFE2CD', borderRadius: 18, borderWidth: 1, gap: 9, marginTop: 7, padding: 6 },
   activityListContainer: { marginTop: 12 },
   activityListHeading: { marginTop: 10, paddingHorizontal: 2 },
   activityMetadata: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 3 },

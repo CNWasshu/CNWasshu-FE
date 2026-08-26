@@ -133,7 +133,7 @@ export default function TimetableScreen() {
 
   const browseMoreActivities = () => {
     closeScheduleModal();
-    router.push('/');
+    router.dismissTo('/');
   };
 
   const openSaveModal = () => {
