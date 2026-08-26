@@ -37,7 +37,9 @@ export type TimetableActivitySchedule = TimetableScheduleBase & {
   operatingEndTime: string;
   operatingStartTime: string;
   operatingType: SavedActivity['operatingType'];
+  reservationId: number | null;
   requiresReservation: boolean;
+  source: 'local' | 'reservation';
 };
 
 export type TimetableSchedule =
@@ -49,8 +51,6 @@ export type TimetableScheduleKind = TimetableSchedule['kind'];
 export type TimetableSchedulesByDay = Record<string, TimetableSchedule[]>;
 
 export type TimetableScheduleType = 'ACTIVITY' | 'FREE';
-
-export type ActivityOperatingType = 'ALWAYS' | 'HOURS';
 
 export interface TimetableScheduleRequest {
   activityId: number | null;
@@ -101,33 +101,6 @@ export interface TimetableDetailResponse {
   startDate: string;
   timetableId: number;
   timetableName: string;
-}
-
-type SavedActivityResponseBase = {
-  activityId: number;
-  durationMinutes: number | null;
-  region: string;
-  reservationRequired: boolean;
-  thumbnailUrl: string | null;
-  title: string;
-};
-
-export type SavedActivityResponse = SavedActivityResponseBase &
-  (
-    | {
-        operatingEndTime: null;
-        operatingStartTime: null;
-        operatingType: Extract<ActivityOperatingType, 'ALWAYS'>;
-      }
-    | {
-        operatingEndTime: string;
-        operatingStartTime: string;
-        operatingType: Extract<ActivityOperatingType, 'HOURS'>;
-      }
-  );
-
-export interface SavedActivityListResponse {
-  items: SavedActivityResponse[];
 }
 
 export interface TimetableApiErrorBody {

@@ -1,5 +1,4 @@
 import type {
-  SavedActivityListResponse,
   TimetableApiErrorBody,
   TimetableDetailResponse,
   TimetableSaveRequest,
@@ -92,11 +91,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const timetableApi = {
-  getSavedActivities: (accessToken: string) =>
-    request<SavedActivityListResponse>(`${TIMETABLE_PATH}/saved-activities`, {
-      headers: getAuthorizationHeaders(accessToken),
-    }),
-
   createTimetable: (payload: TimetableSaveRequest, accessToken: string) =>
     request<TimetableDetailResponse>(TIMETABLE_PATH, {
       method: 'POST',

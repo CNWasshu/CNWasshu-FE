@@ -1,33 +1,59 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { getTimetableErrorMessage, timetableApi } from '@/api/timetableApi';
-import type { SavedActivity, SavedActivityResponse } from '@/types/timetable';
+import { bookmarkApi } from '@/api/bookmarkApi';
+import type { BookmarkResponse } from '@/types/bookmark';
+import type { SavedActivity } from '@/types/timetable';
 
 const DEFAULT_ACTIVITY_ICON = '📍';
 const DEFAULT_START_TIME = '09:00';
 const DEFAULT_END_TIME = '10:00';
 
 export function toSavedActivity(
-  response: SavedActivityResponse
-): SavedActivity {
-  const alwaysOpen = response.operatingType === 'ALWAYS';
+  response: BookmarkResponse
+): SavedActivity | null {
+  if (response.type !== 'ACTIVITY') {
+    return null;
+  }
+
+  const hasOperatingHours =
+    response.operatingStartTime !== null &&
+    response.operatingEndTime !== null;
+  const alwaysOpen =
+    response.operatingStartTime === null &&
+    response.operatingEndTime === null;
+
+  if (!hasOperatingHours && !alwaysOpen) {
+    return null;
+  }
 
   return {
-    durationMinutes: response.durationMinutes,
+    durationMinutes: null,
     endTime: alwaysOpen
       ? DEFAULT_END_TIME
-      : response.operatingEndTime,
+      : response.operatingEndTime!.slice(0, 5),
     icon: DEFAULT_ACTIVITY_ICON,
-    id: String(response.activityId),
-    location: response.region,
+    id: String(response.targetId),
+    location: response.regionName,
     operatingType: alwaysOpen ? 'always' : 'hours',
-    requiresReservation: response.reservationRequired,
+    requiresReservation:
+      response.reservationRequired === true,
     startTime: alwaysOpen
       ? DEFAULT_START_TIME
-      : response.operatingStartTime,
-    thumbnailUrl: response.thumbnailUrl,
+      : response.operatingStartTime!.slice(0, 5),
+    thumbnailUrl: response.thumbnail,
     title: response.title,
   };
+}
+
+function toSavedActivities(
+  bookmarks: BookmarkResponse[]
+) {
+  return bookmarks.flatMap((bookmark) => {
+    const activity =
+      toSavedActivity(bookmark);
+
+    return activity ? [activity] : [];
+  });
 }
 
 export function useSavedActivities(accessToken?: string) {
@@ -49,10 +75,19 @@ export function useSavedActivities(accessToken?: string) {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await timetableApi.getSavedActivities(accessToken);
-      setActivities(response.items.map(toSavedActivity));
+      const response =
+        await bookmarkApi.getBookmarks(
+          accessToken
+        );
+      setActivities(
+        toSavedActivities(response)
+      );
     } catch (requestError) {
-      setError(getTimetableErrorMessage(requestError));
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : '담아둔 체험을 불러오지 못했습니다.'
+      );
     } finally {
       setIsLoading(false);
     }

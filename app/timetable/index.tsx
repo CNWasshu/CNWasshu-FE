@@ -99,7 +99,9 @@ export default function TimetableScreen() {
         operatingEndTime: selectedActivity.endTime,
         operatingStartTime: selectedActivity.startTime,
         operatingType: selectedActivity.operatingType,
+        reservationId: null,
         requiresReservation: selectedActivity.requiresReservation,
+        source: 'local',
       });
     } else {
       addSchedule(selectedDayId, { ...value, id: createScheduleId(), kind: 'free' });
