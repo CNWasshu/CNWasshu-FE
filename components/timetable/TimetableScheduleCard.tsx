@@ -12,19 +12,29 @@ export function TimetableScheduleCard({ onPress, schedule, style }: TimetableSch
   const isActivity = schedule.kind === 'activity';
   const isRestaurant = schedule.kind === 'restaurant';
   const isPlace = isActivity || isRestaurant;
+  const isSyncedReservation =
+    isActivity &&
+    schedule.source === 'reservation';
   const operatingTimeLabel = isPlace
     ? schedule.operatingType === 'always'
       ? '상시 운영'
       : `운영 ${schedule.operatingStartTime}~${schedule.operatingEndTime}`
     : null;
   const accessibilityDetails = isActivity
-    ? `체험 일정, ${operatingTimeLabel}${schedule.requiresReservation ? ', 예약 필요' : ', 예약 불필요'}`
+    ? isSyncedReservation
+      ? `예약 완료 체험 일정, ${operatingTimeLabel}`
+      : `체험 일정, ${operatingTimeLabel}${schedule.requiresReservation ? ', 예약 필요' : ', 예약 불필요'}`
     : isRestaurant
       ? `음식점 일정, ${operatingTimeLabel}`
     : '자유 일정';
-  const metadata = isPlace
-    ? `${schedule.startTime}~${schedule.endTime} · ${schedule.location} · ${operatingTimeLabel}${isActivity && schedule.requiresReservation ? ' · 예약 필요' : ''}`
-    : `${schedule.startTime}~${schedule.endTime} · 직접 입력 · 자유 일정`;
+  const timeLabel = `${schedule.startTime}~${schedule.endTime}`;
+  const metadata = isSyncedReservation
+    ? `${timeLabel} · 예약 완료`
+    : isActivity
+      ? `${timeLabel} · 체험`
+      : isRestaurant
+        ? `${timeLabel} · 음식점`
+        : timeLabel;
   const icon = isActivity
     ? schedule.activityIcon
     : isRestaurant
@@ -34,7 +44,9 @@ export function TimetableScheduleCard({ onPress, schedule, style }: TimetableSch
   return (
     <View style={[styles.card, isPlace ? styles.activityCard : styles.freeCard, style]}>
       <Pressable
-        accessibilityHint="일정을 수정하거나 삭제합니다."
+        accessibilityHint={isSyncedReservation
+          ? '예약 완료 일정의 내용을 확인합니다.'
+          : '일정을 수정하거나 삭제합니다.'}
         accessibilityLabel={`${schedule.title}, ${schedule.startTime}부터 ${schedule.endTime}까지, ${accessibilityDetails}`}
         accessibilityRole="button"
         onPress={onPress}
