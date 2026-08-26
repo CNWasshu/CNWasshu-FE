@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -79,6 +79,22 @@ export default function TimetableScreen() {
   } = useTimetable();
   const selectedDay = days.find((day) => day.id === selectedDayId);
   const selectedDayLabel = `${selectedDay?.dayLabel ?? ''}(${selectedDay?.date ?? ''})`;
+  const selectableSavedPlaces = useMemo(() => {
+    const reservedActivityIds = new Set(
+      selectedSchedules.flatMap((schedule) =>
+        schedule.kind === 'activity' &&
+        schedule.source === 'reservation'
+          ? [schedule.activityId]
+          : []
+      )
+    );
+
+    return activities.filter(
+      (place) =>
+        place.placeType !== 'activity' ||
+        !reservedActivityIds.has(place.id)
+    );
+  }, [activities, selectedSchedules]);
   const reservationConflictCount = reservationSyncIssues.filter(
     (issue) => issue.type === 'TIME_CONFLICT'
   ).length;
@@ -260,7 +276,7 @@ export default function TimetableScreen() {
         </View>
       </ScrollView>
       <TimetableScheduleModal
-        activities={activities}
+        activities={selectableSavedPlaces}
         activitiesError={activitiesError}
         activitiesLoading={activitiesLoading}
         dayLabel={selectedDayLabel}
