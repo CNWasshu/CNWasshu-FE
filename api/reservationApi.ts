@@ -1,5 +1,6 @@
 import type {
   ReservationCreateRequest,
+  ReservationPeriodQuery,
   ReservationResponse,
   ReservationTimeSlot,
 } from '@/types/reservation';
@@ -111,6 +112,25 @@ export const reservationApi = {
     request<ReservationResponse[]>(
       `${RESERVATION_PATH}?date=${encodeURIComponent(
         date
+      )}`,
+      {
+        method: 'GET',
+        headers:
+          getAuthorizationHeaders(
+            accessToken
+          ),
+      }
+    ),
+
+  getReservationsByPeriod: (
+    { startDate, endDate }: ReservationPeriodQuery,
+    accessToken: string
+  ) =>
+    request<ReservationResponse[]>(
+      `${RESERVATION_PATH}?startDate=${encodeURIComponent(
+        startDate
+      )}&endDate=${encodeURIComponent(
+        endDate
       )}`,
       {
         method: 'GET',

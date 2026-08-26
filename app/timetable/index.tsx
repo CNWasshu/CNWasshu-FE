@@ -11,9 +11,9 @@ import { TimetableSaveModal } from '@/components/timetable/TimetableSaveModal';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { useSavedActivities } from '@/hooks/timetable/use-saved-activities';
 import { useSaveTimetable } from '@/hooks/timetable/use-save-timetable';
+import { useTimetableAccessToken } from '@/hooks/timetable/use-timetable-access-token';
 import { useTimetable } from '@/hooks/timetable/use-timetable';
 import type { TimetableSchedule } from '@/types/timetable';
-import { getLocalTimetableAccessToken } from '@/utils/timetable/auth';
 
 function createScheduleId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -21,7 +21,7 @@ function createScheduleId() {
 
 export default function TimetableScreen() {
   const router = useRouter();
-  const accessToken = getLocalTimetableAccessToken();
+  const { accessToken } = useTimetableAccessToken();
   const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
   const [isSaveModalVisible, setIsSaveModalVisible] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<TimetableSchedule | null>(null);
@@ -31,7 +31,7 @@ export default function TimetableScreen() {
     isSuccess: isSaveSuccess,
     reset: resetSave,
     save: saveTimetable,
-  } = useSaveTimetable(accessToken);
+  } = useSaveTimetable(accessToken ?? undefined);
   const {
     activities,
     clearSelectedActivity,
@@ -41,7 +41,7 @@ export default function TimetableScreen() {
     selectedActivity,
     selectedActivityId,
     selectActivity,
-  } = useSavedActivities(accessToken);
+  } = useSavedActivities(accessToken ?? undefined);
   const {
     addSchedule,
     clearSaveError,
