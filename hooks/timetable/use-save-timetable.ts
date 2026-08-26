@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 import {
   normalizeTimetableApiError,
   timetableApi,
-  type TimetableApiError,
+  TimetableApiError,
 } from '@/api/timetableApi';
 import type {
   TimetableDetailResponse,
@@ -33,6 +33,15 @@ export function useSaveTimetable(accessToken?: string) {
           payload,
           accessToken ?? ''
         );
+
+        if (!Number.isSafeInteger(response.timetableId) || response.timetableId <= 0) {
+          throw new TimetableApiError(
+            '저장된 코스 번호를 확인할 수 없습니다. 다시 시도해 주세요.',
+            0,
+            'INVALID_TIMETABLE_RESPONSE'
+          );
+        }
+
         setResult(response);
         setStatus('success');
         return response;
