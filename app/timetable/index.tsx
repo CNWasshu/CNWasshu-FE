@@ -136,6 +136,15 @@ export default function TimetableScreen() {
     router.dismissTo('/');
   };
 
+  const openReservation = (
+    activityId: string
+  ) => {
+    closeScheduleModal();
+    router.push(
+      `/reservation/${activityId}`
+    );
+  };
+
   const openSaveModal = () => {
     if (validateSchedulesForSave()) {
       setIsSaveModalVisible(true);
@@ -201,7 +210,7 @@ export default function TimetableScreen() {
         onClose={closeScheduleModal}
         onDelete={confirmDeleteSchedule}
         onOpenActivities={() => void refetchActivities()}
-        onRequestReservation={browseMoreActivities}
+        onRequestReservation={openReservation}
         onRetryActivities={() => void refetchActivities()}
         onSelectActivity={selectActivity}
         onSubmit={handleSubmitSchedule}

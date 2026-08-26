@@ -35,7 +35,7 @@ type TimetableScheduleModalProps = {
   onClose: () => void;
   onDelete?: () => void;
   onOpenActivities: () => void;
-  onRequestReservation: () => void;
+  onRequestReservation: (activityId: string) => void;
   onRetryActivities: () => void;
   onSelectActivity: (activityId: string) => void;
   onSubmit: (value: ScheduleFormValue) => void;
@@ -162,6 +162,16 @@ export function TimetableScheduleModal({
     }
 
     onSelectActivity(activity.id);
+  };
+
+  const handleRequestReservation = () => {
+    if (!reservationActivity) {
+      return;
+    }
+
+    onRequestReservation(
+      reservationActivity.id
+    );
   };
 
   const handleToggleActivityList = () => {
@@ -458,9 +468,9 @@ export function TimetableScheduleModal({
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={onRequestReservation}
+                  onPress={handleRequestReservation}
                   style={styles.reservationButton}>
-                  <Text numberOfLines={1} style={styles.reservationButtonText}>홈에서 예약하기</Text>
+                  <Text numberOfLines={1} style={styles.reservationButtonText}>예약하러 가기</Text>
                 </Pressable>
               </View>
             </View>
