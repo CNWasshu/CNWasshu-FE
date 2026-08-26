@@ -8,28 +8,17 @@ import {
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 
 type TimetableReservationSyncStatusProps = {
-  conflictCount: number;
   error: string | null;
-  invalidCount: number;
   isLoading: boolean;
   onRetry: () => void;
-  syncedCount: number;
 };
 
 export function TimetableReservationSyncStatus({
-  conflictCount,
   error,
-  invalidCount,
   isLoading,
   onRetry,
-  syncedCount,
 }: TimetableReservationSyncStatusProps) {
-  if (
-    !isLoading &&
-    !error &&
-    syncedCount === 0 &&
-    invalidCount === 0
-  ) {
+  if (!isLoading && !error) {
     return null;
   }
 
@@ -57,29 +46,7 @@ export function TimetableReservationSyncStatus({
             </Text>
           </Pressable>
         </>
-      ) : (
-        <>
-          <Text style={styles.success}>
-            예약 완료 체험 {syncedCount}건을 일정에 반영했어요.
-          </Text>
-          {conflictCount > 0 ? (
-            <Text
-              accessibilityRole="alert"
-              style={styles.warning}
-            >
-              기존 일정과 겹치는 예약이 {conflictCount}건 있어요. 저장 전에 시간을 확인해 주세요.
-            </Text>
-          ) : null}
-          {invalidCount > 0 ? (
-            <Text
-              accessibilityRole="alert"
-              style={styles.warning}
-            >
-              정보가 불완전한 예약 {invalidCount}건은 반영하지 못했어요.
-            </Text>
-          ) : null}
-        </>
-      )}
+      ) : null}
     </View>
   );
 }
@@ -116,16 +83,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '800',
-  },
-  success: {
-    color: '#356A3C',
-    fontSize: 12,
-    fontWeight: '700',
-    lineHeight: 18,
-  },
-  warning: {
-    color: '#8A5A17',
-    fontSize: 11,
-    lineHeight: 17,
   },
 });

@@ -64,7 +64,6 @@ export default function TimetableScreen() {
     maximumEndDate,
     minimumStartDate,
     removeSchedule,
-    reservationSyncIssues,
     prepareSaveRequest,
     saveErrorMessage,
     scheduleCount,
@@ -72,7 +71,6 @@ export default function TimetableScreen() {
     selectedSchedules,
     setSelectedDayId,
     startDate,
-    syncedReservationCount,
     synchronizeReservations,
     updateSchedule,
     validateSchedulesForSave,
@@ -95,13 +93,6 @@ export default function TimetableScreen() {
         !reservedActivityIds.has(place.id)
     );
   }, [activities, selectedSchedules]);
-  const reservationConflictCount = reservationSyncIssues.filter(
-    (issue) => issue.type === 'TIME_CONFLICT'
-  ).length;
-  const invalidReservationCount = reservationSyncIssues.filter(
-    (issue) => issue.type === 'INVALID_RESERVATION'
-  ).length;
-
   const synchronizePeriodReservations = useCallback(async () => {
     if (!accessToken) {
       return;
@@ -256,12 +247,9 @@ export default function TimetableScreen() {
             startDate={startDate}
           />
           <TimetableReservationSyncStatus
-            conflictCount={reservationConflictCount}
             error={reservationSyncError}
-            invalidCount={invalidReservationCount}
             isLoading={isReservationSyncing}
             onRetry={() => void synchronizePeriodReservations()}
-            syncedCount={syncedReservationCount}
           />
           <TimetableCourseSection
             days={days}
