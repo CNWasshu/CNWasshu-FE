@@ -4,10 +4,10 @@ export function TimetableHeader() {
   return (
     <View style={styles.container}>
       <View style={styles.labelRow}>
-        <Text style={styles.brand}>장바구니</Text>
-        <Text style={styles.eyebrow}>내 손안의 농촌 여행</Text>
+        <Text style={styles.brand}>나의 여행 일정</Text>
+        <Text style={styles.eyebrow}>내 손안의 충남 여행</Text>
       </View>
-      <Text style={styles.title}>타임테이블 빌더</Text>
+      <Text style={styles.title}>여행 일정 만들기</Text>
       <Text style={styles.description}>
         출발일과 도착일을 정하고, 시간대별로 자유 일정 또는 담아둔 체험 및 음식점을 배치해보세요.
       </Text>
