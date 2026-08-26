@@ -1,11 +1,17 @@
-import { useCallback, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
+import {
+  type NavigationAction,
+  useFocusEffect,
+  useNavigation,
+  usePreventRemove,
+} from '@react-navigation/native';
 
 import { TimetableDateRange } from '@/components/timetable/TimetableDateRange';
 import { TimetableCourseSection } from '@/components/timetable/TimetableCourseSection';
+import { TimetableExitModal } from '@/components/timetable/TimetableExitModal';
 import { TimetableHeader } from '@/components/timetable/TimetableHeader';
 import { TimetableReservationSyncStatus } from '@/components/timetable/TimetableReservationSyncStatus';
 import { TimetableScheduleModal } from '@/components/timetable/TimetableScheduleModal';
@@ -25,9 +31,15 @@ function createScheduleId() {
 
 export default function TimetableScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const { accessToken } = useTimetableAccessToken();
   const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
   const [isSaveModalVisible, setIsSaveModalVisible] = useState(false);
+  const [isExitModalVisible, setIsExitModalVisible] = useState(false);
+  const [pendingNavigationAction, setPendingNavigationAction] =
+    useState<NavigationAction | null>(null);
+  const [isExitConfirmed, setIsExitConfirmed] = useState(false);
+  const [savedCourseId, setSavedCourseId] = useState<number | null>(null);
   const [editingSchedule, setEditingSchedule] = useState<TimetableSchedule | null>(null);
   const {
     errorMessage: saveApiErrorMessage,
@@ -75,6 +87,8 @@ export default function TimetableScreen() {
     updateSchedule,
     validateSchedulesForSave,
   } = useTimetable();
+  const shouldPreventLeaving =
+    savedCourseId == null && !isExitConfirmed && (scheduleCount > 0 || isSaving);
   const selectedDay = days.find((day) => day.id === selectedDayId);
   const selectedDayLabel = `${selectedDay?.dayLabel ?? ''}(${selectedDay?.date ?? ''})`;
   const selectableSavedPlaces = useMemo(() => {
@@ -119,6 +133,44 @@ export default function TimetableScreen() {
       void synchronizePeriodReservations();
     }, [synchronizePeriodReservations])
   );
+
+  usePreventRemove(
+    shouldPreventLeaving,
+    ({ data }) => {
+      if (isSaving) {
+        return;
+      }
+
+      setPendingNavigationAction(data.action);
+      setIsExitModalVisible(true);
+    }
+  );
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !shouldPreventLeaving) {
+      return;
+    }
+
+    const preventBrowserExit = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', preventBrowserExit);
+    return () => window.removeEventListener('beforeunload', preventBrowserExit);
+  }, [shouldPreventLeaving]);
+
+  useEffect(() => {
+    if (savedCourseId != null) {
+      router.replace(`/course/${savedCourseId}`);
+    }
+  }, [router, savedCourseId]);
+
+  useEffect(() => {
+    if (isExitConfirmed && pendingNavigationAction) {
+      navigation.dispatch(pendingNavigationAction);
+    }
+  }, [isExitConfirmed, navigation, pendingNavigationAction]);
 
   const closeScheduleModal = () => {
     setIsScheduleModalVisible(false);
@@ -215,6 +267,16 @@ export default function TimetableScreen() {
     resetSave();
   };
 
+  const continueEditing = () => {
+    setIsExitModalVisible(false);
+    setPendingNavigationAction(null);
+  };
+
+  const exitWithoutSaving = () => {
+    setIsExitModalVisible(false);
+    setIsExitConfirmed(true);
+  };
+
   const handleChangeCourseNameForSave = (name: string) => {
     handleChangeTimetableName(name);
     resetSave();
@@ -232,7 +294,7 @@ export default function TimetableScreen() {
     }
 
     setIsSaveModalVisible(false);
-    router.replace(`/course/${savedTimetable.timetableId}`);
+    setSavedCourseId(savedTimetable.timetableId);
   };
 
   return (
@@ -306,6 +368,11 @@ export default function TimetableScreen() {
         scheduleCount={scheduleCount}
         startDate={startDate}
         visible={isSaveModalVisible}
+      />
+      <TimetableExitModal
+        onContinue={continueEditing}
+        onExit={exitWithoutSaving}
+        visible={isExitModalVisible}
       />
     </SafeAreaView>
   );
