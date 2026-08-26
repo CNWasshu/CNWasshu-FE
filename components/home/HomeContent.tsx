@@ -47,6 +47,8 @@ type HomeContentProps = {
   onAiRecommend: () => void;
   onBookmarkPress: () => void;
   onMyPagePress: () => void;
+  onNotificationPress: () => void;
+  unreadNotificationCount: number;
 };
 
 export function HomeContent({
@@ -81,6 +83,8 @@ export function HomeContent({
   onAiRecommend,
   onBookmarkPress,
   onMyPagePress,
+  onNotificationPress,
+  unreadNotificationCount,
 }: HomeContentProps) {
   if (loading) {
     return (
@@ -143,6 +147,8 @@ export function HomeContent({
             onAiRecommend={onAiRecommend}
             onBookmarkPress={onBookmarkPress}
             onMyPagePress={onMyPagePress}
+            onNotificationPress={onNotificationPress}
+            unreadNotificationCount={unreadNotificationCount}
           />
 
           <View style={styles.content}>
