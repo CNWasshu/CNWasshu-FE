@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 
 import { CourseColors } from '@/constants/course-colors';
 import { useKakaoLogin } from '@/hooks/auth/use-kakao-login';
@@ -23,7 +23,6 @@ function buildKakaoAuthUrl(clientId: string, redirectUri: string) {
 }
 
 export default function LoginScreen() {
-  const router = useRouter();
   const params = useLocalSearchParams<{ code?: string; error?: string }>();
   const { errorMessage: loginErrorMessage, isSubmitting, login, reset } = useKakaoLogin();
   const [configErrorMessage, setConfigErrorMessage] = useState<string | null>(null);
@@ -44,13 +43,9 @@ export default function LoginScreen() {
     }
 
     handledCodeRef.current = code;
-    void (async () => {
-      const response = await login(code, redirectUri);
-      if (response) {
-        router.replace('/');
-      }
-    })();
-  }, [login, params.code, redirectUri, router]);
+    // 성공 시 홈/온보딩 이동은 useKakaoLogin 내부에서 처리한다 (isNewUser 분기 포함).
+    void login(code, redirectUri);
+  }, [login, params.code, redirectUri]);
 
   const handlePressKakaoLogin = () => {
     setConfigErrorMessage(null);
