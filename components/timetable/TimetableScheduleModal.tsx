@@ -246,7 +246,6 @@ export function TimetableScheduleModal({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.overlay}>
         <View accessibilityViewIsModal style={styles.sheet}>
-          <View style={styles.handle} />
           <ScrollView
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
@@ -521,7 +520,7 @@ const styles = StyleSheet.create({
   confirmationDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19, marginTop: 7, textAlign: 'center' },
   confirmationOverlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.58)', bottom: 0, justifyContent: 'center', left: 0, position: 'absolute', right: 0, top: 0, zIndex: 10 },
   confirmationTitle: { color: TIMETABLE_COLORS.text, fontSize: 18, fontWeight: '800', marginTop: 12 },
-  content: { paddingBottom: 14, paddingHorizontal: 14 },
+  content: { paddingBottom: 14, paddingHorizontal: 14, paddingTop: 14 },
   clearActivityText: { color: TIMETABLE_COLORS.primary, fontSize: 11, fontWeight: '800' },
   deleteButton: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#C95A4A', borderRadius: 12, borderWidth: 1, justifyContent: 'center', paddingHorizontal: 22 },
   deleteButtonText: { color: '#B84738', fontSize: 14, fontWeight: '800' },
@@ -529,7 +528,6 @@ const styles = StyleSheet.create({
   error: { color: '#B84738', fontSize: 12, lineHeight: 17, marginTop: 7 },
   formCard: { backgroundColor: '#FFFFFF', borderColor: TIMETABLE_COLORS.border, borderRadius: 20, borderWidth: 1, marginTop: 16, padding: 14 },
   footer: { backgroundColor: TIMETABLE_COLORS.background, borderTopColor: TIMETABLE_COLORS.border, borderTopWidth: 1, paddingHorizontal: 14, paddingTop: 12 },
-  handle: { alignSelf: 'center', backgroundColor: '#CDBFA8', borderRadius: 999, height: 5, marginBottom: 12, marginTop: 8, width: 42 },
   headingRow: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between' },
   headingText: { flex: 1, paddingRight: 12 },
   hint: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 8 },
