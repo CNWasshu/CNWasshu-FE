@@ -20,31 +20,28 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const segments = useSegments();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [hasToken, setHasToken] = useState(false);
 
+  // segments(=현재 라우트)가 바뀔 때마다 토큰을 매번 새로 읽는다.
+  // 로그인 직후처럼 토큰이 방금 저장된 상태에서도 정확히 판단하기 위함
+  // (마운트 시 1회만 체크하고 캐시해두면, 로그인 성공 후 새 라우트로 이동해도
+  // 캐시된 값이 없다고 나와서 곧바로 /auth/login으로 튕겨버리는 버그가 있었음).
   useEffect(() => {
     let isMounted = true;
     (async () => {
       const token = await getAccessToken();
-      if (isMounted) {
-        setHasToken(!!token);
-        setIsCheckingAuth(false);
+      if (!isMounted) {
+        return;
       }
+      const currentPath = segments.join('/');
+      if (!token && currentPath !== PUBLIC_PATH) {
+        router.replace('/auth/login');
+      }
+      setIsCheckingAuth(false);
     })();
     return () => {
       isMounted = false;
     };
-  }, []);
-
-  useEffect(() => {
-    if (isCheckingAuth) {
-      return;
-    }
-    const currentPath = segments.join('/');
-    if (!hasToken && currentPath !== PUBLIC_PATH) {
-      router.replace('/auth/login');
-    }
-  }, [isCheckingAuth, hasToken, segments, router]);
+  }, [segments, router]);
 
   if (isCheckingAuth) {
     return (
@@ -71,6 +68,7 @@ export default function RootLayout() {
           <Stack.Screen name="timetable/index" options={{ headerShown: false }} />
           <Stack.Screen name="auth/login" options={{ headerShown: false }} />
           <Stack.Screen name="auth/mypage" options={{ headerShown: false }} />
+          <Stack.Screen name="auth/onboarding" options={{ headerShown: false }} />
           <Stack.Screen name="bookmark/index" options={{ headerShown: false }} />
           <Stack.Screen name="activity/[id]" options={{ headerShown: false }}/>
           <Stack.Screen name="restaurant/[id]" options={{ headerShown: false }}/>
