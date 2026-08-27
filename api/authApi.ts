@@ -61,7 +61,12 @@ function getAuthorizationHeaders(accessToken: string) {
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(`${getBaseUrl()}${path}`, init);
+    response = await fetch(`${getBaseUrl()}${path}`, {
+      ...init,
+      // ngrok 무료 티어가 브라우저성 요청에 경고 인터스티셜(HTML)을 대신 주는 걸 막는 헤더.
+      // 실제 배포 서버에는 영향 없다.
+      headers: { ...init?.headers, 'ngrok-skip-browser-warning': 'true' },
+    });
   } catch {
     throw new AuthApiError(
       '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
