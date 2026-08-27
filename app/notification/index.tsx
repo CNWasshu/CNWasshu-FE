@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BackHeader } from '@/components/common/BackHeader';
 import { NotificationListItem } from '@/components/notification/NotificationListItem';
 import { CourseColors } from '@/constants/course-colors';
 import { useNotifications } from '@/hooks/notification/use-notifications';
@@ -48,6 +49,7 @@ export default function NotificationScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.hero}>
+          <BackHeader />
           <Text style={styles.heroTitle}>알림함</Text>
           <Text style={styles.heroDescription}>
             코스, 예약, 만족도 조사 알림을{`\n`}이곳에서 확인할 수 있어요.

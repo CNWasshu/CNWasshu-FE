@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BackHeader } from '@/components/common/BackHeader';
 import { CourseColors } from '@/constants/course-colors';
 import { useNotificationSettings } from '@/hooks/notification/use-notification-settings';
 import type { NotificationSettingResponse } from '@/types/notification';
@@ -70,6 +71,7 @@ export default function NotificationSettingsScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.hero}>
+          <BackHeader />
           <Text style={styles.heroTitle}>알림톡 설정</Text>
           <Text style={styles.heroDescription}>
             코스와 예약 일정을 카카오 알림톡으로{`\n`}언제 받을지 정할 수 있어요.
