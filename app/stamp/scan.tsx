@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { normalizeStampApiError, stampApi } from '@/api/stampApi';
 import { CourseColors } from '@/constants/course-colors';
-import { getAccessToken } from '@/utils/auth';
+import { clearTokens, getAccessToken, isSessionExpiredError } from '@/utils/auth';
 
 type ScanStatus = 'checking-token' | 'scanning' | 'processing' | 'success' | 'error';
 
@@ -49,6 +49,11 @@ export default function StampScanScreen() {
         router.replace('/stamp');
       }, 1400);
     } catch (requestError) {
+      if (isSessionExpiredError(requestError)) {
+        await clearTokens();
+        router.replace('/auth/login');
+        return;
+      }
       const apiError = normalizeStampApiError(requestError);
       setErrorMessage(apiError.message);
       setStatus('error');
@@ -62,6 +67,17 @@ export default function StampScanScreen() {
     setStatus('scanning');
   };
 
+  // TODO(디버그용, 확인 후 제거): 권한 요청 버튼이 반응 없다는 이슈 원인 파악용
+  const handleRequestPermission = async () => {
+    console.log('[stamp/scan] 권한 허용하기 버튼 클릭됨');
+    try {
+      const result = await requestPermission();
+      console.log('[stamp/scan] requestPermission() 결과 =', JSON.stringify(result));
+    } catch (permissionError) {
+      console.error('[stamp/scan] requestPermission() 에러:', permissionError);
+    }
+  };
+
   if (!permission || status === 'checking-token') {
     return (
       <SafeAreaView style={styles.centerSafe}>
@@ -69,6 +85,9 @@ export default function StampScanScreen() {
       </SafeAreaView>
     );
   }
+
+  // TODO(디버그용, 확인 후 제거)
+  console.log('[stamp/scan] 현재 permission 상태 =', JSON.stringify(permission));
 
   if (!permission.granted) {
     return (
@@ -78,7 +97,7 @@ export default function StampScanScreen() {
           <Text style={styles.permissionDescription}>
             체험 인증 QR 코드를 스캔하려면{'\n'}카메라 접근을 허용해 주세요.
           </Text>
-          <Pressable style={styles.primaryButton} onPress={requestPermission}>
+          <Pressable style={styles.primaryButton} onPress={handleRequestPermission}>
             <Text style={styles.primaryButtonText}>권한 허용하기</Text>
           </Pressable>
           <Pressable style={styles.secondaryButton} onPress={() => router.back()}>

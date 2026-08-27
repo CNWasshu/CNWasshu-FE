@@ -7,7 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { getStampErrorMessage, stampApi } from '@/api/stampApi';
 import { CourseColors } from '@/constants/course-colors';
 import type { StampResponse } from '@/types/stamp';
-import { getAccessToken } from '@/utils/auth';
+import { clearTokens, getAccessToken, isSessionExpiredError } from '@/utils/auth';
 
 const STAMP_GOAL = 10;
 
@@ -38,11 +38,16 @@ export default function StampListScreen() {
       const response = await stampApi.getMyStamps(token);
       setStamps(response.stamps);
     } catch (requestError) {
+      if (isSessionExpiredError(requestError)) {
+        await clearTokens();
+        router.replace('/auth/login');
+        return;
+      }
       setErrorMessage(getStampErrorMessage(requestError));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   useFocusEffect(
     useCallback(() => {

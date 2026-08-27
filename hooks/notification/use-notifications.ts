@@ -1,11 +1,14 @@
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 
 import { getNotificationErrorMessage, notificationApi } from '@/api/notificationApi';
 import type { NotificationResponse } from '@/types/notification';
+import { clearTokens, isSessionExpiredError } from '@/utils/auth';
 
 const PAGE_SIZE = 20;
 
 export function useNotifications(accessToken: string | null) {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationResponse[]>([]);
   const [page, setPage] = useState(0);
   const [hasNext, setHasNext] = useState(false);
@@ -38,6 +41,11 @@ export function useNotifications(accessToken: string | null) {
         setPage(response.page);
         setHasNext(response.hasNext);
       } catch (requestError) {
+        if (isSessionExpiredError(requestError)) {
+          await clearTokens();
+          router.replace('/auth/login');
+          return;
+        }
         setError(getNotificationErrorMessage(requestError));
       } finally {
         if (append) {
@@ -47,7 +55,7 @@ export function useNotifications(accessToken: string | null) {
         }
       }
     },
-    [accessToken]
+    [accessToken, router]
   );
 
   const refetch = useCallback(() => fetchPage(0, false), [fetchPage]);
