@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 import { DeleteAccountModal } from '@/components/auth/DeleteAccountModal';
+import { BackHeader } from '@/components/common/BackHeader';
 import { CourseColors } from '@/constants/course-colors';
 import { useDeleteAccount } from '@/hooks/auth/use-delete-account';
 import { useLogout } from '@/hooks/auth/use-logout';
@@ -124,6 +125,7 @@ export default function MyPageScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.hero}>
+          <BackHeader />
           <View style={styles.heroTop}>
             <Text style={styles.heroTitle}>마이</Text>
             <Text style={styles.heroBadge}>체험 기록</Text>
