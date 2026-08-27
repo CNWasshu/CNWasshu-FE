@@ -34,7 +34,13 @@ function AuthGate({ children }: { children: React.ReactNode }) {
       }
       const currentPath = segments.join('/');
       if (!token && currentPath !== PUBLIC_PATH) {
+        // 리다이렉트만 걸어두고 isCheckingAuth는 false로 바꾸지 않는다.
+        // 그래야 실제로 /auth/login으로 라우트가 바뀌기 전까지 children(홈 등)이
+        // 먼저 렌더링돼서 미인증 상태로 API를 호출해버리는 걸 막을 수 있다.
+        // 라우트가 바뀌면 segments가 바뀌어 이 effect가 다시 실행되고,
+        // 그때 currentPath === PUBLIC_PATH가 되어 정상적으로 로딩이 풀린다.
         router.replace('/auth/login');
+        return;
       }
       setIsCheckingAuth(false);
     })();

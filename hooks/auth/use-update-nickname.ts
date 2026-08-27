@@ -1,11 +1,14 @@
+import { useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 
 import { authApi, normalizeAuthApiError, type AuthApiError } from '@/api/authApi';
 import type { UserSummary } from '@/types/auth';
+import { clearTokens, isSessionExpiredError } from '@/utils/auth';
 
 type UpdateStatus = 'error' | 'idle' | 'submitting' | 'success';
 
 export function useUpdateNickname(accessToken: string | null) {
+  const router = useRouter();
   const submittingRef = useRef(false);
   const [error, setError] = useState<AuthApiError | null>(null);
   const [status, setStatus] = useState<UpdateStatus>('idle');
@@ -25,6 +28,11 @@ export function useUpdateNickname(accessToken: string | null) {
         setStatus('success');
         return response;
       } catch (requestError) {
+        if (isSessionExpiredError(requestError)) {
+          await clearTokens();
+          router.replace('/auth/login');
+          return null;
+        }
         setError(normalizeAuthApiError(requestError));
         setStatus('error');
         return null;
@@ -32,7 +40,7 @@ export function useUpdateNickname(accessToken: string | null) {
         submittingRef.current = false;
       }
     },
-    [accessToken]
+    [accessToken, router]
   );
 
   const reset = useCallback(() => {

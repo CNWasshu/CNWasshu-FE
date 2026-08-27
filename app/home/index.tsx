@@ -1,9 +1,9 @@
-import { getAccessToken } from '@/utils/auth';
+import { clearTokens, getAccessToken } from '@/utils/auth';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getHomeErrorMessage, homeApi } from '@/api/homeApi';
+import { HomeApiError, getHomeErrorMessage, homeApi } from '@/api/homeApi';
 import { HomeContent } from '@/components/home/HomeContent';
 import { useBookmarks } from '@/hooks/bookmark/use-bookmarks';
 import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-notification-count';
@@ -59,6 +59,13 @@ export default function HomeScreen() {
 
     setItems(data);
   } catch (error) {
+    // 저장된 토큰이 있어도 만료/무효면 서버가 401을 준다.
+    // 이 경우 에러 카드만 띄우면 막다른 골목이라, 토큰을 지우고 로그인 화면으로 보낸다.
+    if (error instanceof HomeApiError && error.status === 401) {
+      await clearTokens();
+      router.replace('/auth/login');
+      return;
+    }
     setErrorMessage(getHomeErrorMessage(error));
   } finally {
     setLoading(false);
