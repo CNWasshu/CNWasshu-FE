@@ -2,26 +2,45 @@ import type { CourseSummary } from '@/types/course';
 import { CourseColors } from '@/constants/course-colors';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+function getTripDuration(startDate: string, endDate: string) {
+  const start = new Date(`${startDate}T00:00:00`).getTime();
+  const end = new Date(`${endDate}T00:00:00`).getTime();
+  const dayCount = Math.round((end - start) / (24 * 60 * 60 * 1000)) + 1;
+
+  if (!Number.isFinite(dayCount) || dayCount < 1) return '여행 일정';
+  return dayCount === 1 ? '당일 여행' : `${dayCount - 1}박 ${dayCount}일`;
+}
+
+function getCompactDateRange(startDate: string, endDate: string) {
+  const [, startMonth, startDay] = startDate.split('-');
+  const [, endMonth, endDay] = endDate.split('-');
+  if (!startMonth || !startDay || !endMonth || !endDay) return `${startDate} - ${endDate}`;
+  return startMonth === endMonth
+    ? `${startMonth}.${startDay}–${endDay}`
+    : `${startMonth}.${startDay}–${endMonth}.${endDay}`;
+}
+
 export function CourseListItem({ course, onPress }: { course: CourseSummary; onPress: () => void }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
-      <View style={styles.row}>
-        <Text style={styles.name}>{course.courseName}</Text>
-        <Text style={[styles.badge, course.courseType === 'AI' && styles.aiBadge]}>{course.courseType === 'AI' ? 'AI 추천 코스' : '내가 만든 코스'}</Text>
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
+      <View style={styles.badgeRow}>
+        <Text style={[styles.typeBadge, course.courseType === 'AI' ? styles.aiBadge : styles.userBadge]}>{course.courseType === 'AI' ? '✦ AI' : 'MY'}</Text>
+        <View style={styles.durationBadge}><Text style={styles.durationText}>{getTripDuration(course.startDate, course.endDate)}</Text></View>
       </View>
-      <Text style={styles.date}>{course.startDate} ~ {course.endDate}</Text>
+      <Text numberOfLines={2} ellipsizeMode="tail" style={styles.name}>{course.courseName}</Text>
       <View style={styles.footer}>
-        <Text style={styles.count}>총 일정 {course.itemCount}개</Text>
-        <View style={styles.loadButton}><Text style={styles.loadButtonText}>불러오기</Text><Text style={styles.arrow}>›</Text></View>
+        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72} style={styles.metaText}>{getCompactDateRange(course.startDate, course.endDate)} · 일정 {course.itemCount}개</Text>
+        <View style={styles.action}><Text style={styles.loadButtonText}>코스 보기</Text><Text style={styles.arrow}>›</Text></View>
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { padding: 18, borderRadius: 20, backgroundColor: CourseColors.white, gap: 10, borderWidth: 1, borderColor: CourseColors.border, shadowColor: '#5A4932', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 2 },
-  pressed: { opacity: 0.72, transform: [{ scale: 0.99 }] }, row: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, alignItems: 'flex-start' },
-  name: { flex: 1, color: CourseColors.text, fontWeight: '800', fontSize: 18, lineHeight: 25 }, badge: { color: CourseColors.primaryDark, backgroundColor: CourseColors.primarySoft, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, fontSize: 11, fontWeight: '800', overflow: 'hidden' },
-  aiBadge: { color: '#765C27', backgroundColor: '#F8EBCB' }, date: { color: CourseColors.muted, fontSize: 14 }, count: { color: CourseColors.muted, fontSize: 13 },
-  footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }, loadButton: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: CourseColors.primary, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 9 }, loadButtonText: { color: CourseColors.white, fontWeight: '800', fontSize: 13 }, arrow: { color: CourseColors.white, fontWeight: '900', fontSize: 18, lineHeight: 16 },
+  card: { backgroundColor: CourseColors.white, borderColor: CourseColors.border, borderRadius: 18, borderWidth: 1, flexBasis: '48%', minHeight: 156, padding: 13 },
+  pressed: { backgroundColor: '#FCF7ED', opacity: 0.82 }, badgeRow: { alignItems: 'center', flexDirection: 'row', gap: 5, justifyContent: 'space-between' },
+  typeBadge: { borderRadius: 8, fontSize: 9, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 7, paddingVertical: 4 }, aiBadge: { backgroundColor: '#F8EBCB', color: '#765C27' }, userBadge: { backgroundColor: '#F1E9DA', color: '#746755' },
+  durationBadge: { backgroundColor: CourseColors.primarySoft, borderRadius: 8, flexShrink: 0, paddingHorizontal: 7, paddingVertical: 4 }, durationText: { color: CourseColors.primaryDark, fontSize: 9, fontWeight: '900' },
+  name: { color: CourseColors.text, fontSize: 16, fontWeight: '900', lineHeight: 21, marginTop: 10, minHeight: 42 },
+  footer: { alignItems: 'center', borderTopColor: '#F2E8D7', borderTopWidth: 1, flexDirection: 'row', gap: 5, justifyContent: 'space-between', marginTop: 10, paddingTop: 9 }, metaText: { color: CourseColors.muted, flex: 1, fontSize: 10, fontWeight: '700', minWidth: 0 }, action: { alignItems: 'center', flexDirection: 'row', flexShrink: 0 }, loadButtonText: { color: CourseColors.primaryDark, fontSize: 10, fontWeight: '900' }, arrow: { color: CourseColors.primary, fontSize: 15, fontWeight: '900', lineHeight: 13, marginLeft: 2 },
 });
