@@ -1,5 +1,6 @@
 import type { AiRecommendationRequest, Transportation, TravelStyle } from '@/types/course';
 import { CourseColors } from '@/constants/course-colors';
+import { CourseDateField } from '@/components/course/CourseDateField';
 import { useState } from 'react';
 import { KeyboardTypeOptions, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
@@ -16,6 +17,11 @@ export function AiCourseForm({ loading, onSubmit }: Props) {
   const [transportation, setTransportation] = useState<Transportation>('CAR');
   const [travelStyle, setTravelStyle] = useState<TravelStyle>('HEALING'); const [validation, setValidation] = useState<string | null>(null);
 
+  const changeStartDate = (value: string) => {
+    setStartDate(value);
+    if (endDate && value > endDate) setEndDate(value);
+  };
+
   const submit = () => {
     const datePattern = /^\d{4}-\d{2}-\d{2}$/; const count = Number(peopleCount);
     if (!datePattern.test(startDate) || !datePattern.test(endDate)) return setValidation('날짜를 YYYY-MM-DD 형식으로 입력해 주세요.');
@@ -28,8 +34,8 @@ export function AiCourseForm({ loading, onSubmit }: Props) {
   return <View style={styles.form}>
     <View style={styles.formHeading}><View style={styles.formIcon}><Text style={styles.formIconText}>✦</Text></View><View><Text style={styles.sectionTitle}>기본 조건</Text><Text style={styles.sectionDescription}>원하는 여행의 기본 정보를 알려주세요.</Text></View></View>
     <View style={[styles.fieldGrid, !twoColumns && styles.oneColumn]}>
-      <Field label="여행 시작일" icon="◷" value={startDate} onChangeText={setStartDate} placeholder="2026-09-10" />
-      <Field label="여행 종료일" icon="◷" value={endDate} onChangeText={setEndDate} placeholder="2026-09-12" />
+      <CourseDateField label="여행 시작일" value={startDate} onChange={changeStartDate} placeholder="날짜 선택" />
+      <CourseDateField label="여행 종료일" minimumDate={startDate} value={endDate} onChange={setEndDate} placeholder="날짜 선택" />
       <Field label="희망 지역" icon="⌖" value={region} onChangeText={setRegion} placeholder="예: 공주시" />
       <Field label="인원수" icon="♙" value={peopleCount} onChangeText={setPeopleCount} placeholder="예: 4" keyboardType="number-pad" />
     </View>
