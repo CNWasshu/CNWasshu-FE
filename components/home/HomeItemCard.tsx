@@ -10,14 +10,24 @@ import type { HomeItem } from '@/types/home';
 
 type HomeItemCardProps = {
   item: HomeItem;
+  isBookmarked: boolean;
   onPress: () => void;
+  onBookmarkPress: () => void;
 };
 
 export function HomeItemCard({
   item,
+  isBookmarked,
   onPress,
+  onBookmarkPress,
 }: HomeItemCardProps) {
   const isActivity = item.type === 'ACTIVITY';
+
+  const showMaxParticipants =
+    isActivity &&
+    item.reservationRequired === true &&
+    item.maxParticipants !== null &&
+    item.maxParticipants > 0;
 
   return (
     <View style={styles.card}>
@@ -38,15 +48,27 @@ export function HomeItemCard({
         </View>
       )}
 
-      {/* 장바구니 하트 UI만 표시 - 기능은 추후 연결 */}
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="장바구니 담기"
+        accessibilityLabel={
+          isBookmarked
+            ? '장바구니에서 삭제'
+            : '장바구니에 담기'
+        }
         style={styles.heartButton}
-        onPress={() => {}}
+        onPress={(event) => {
+          event.stopPropagation();
+          onBookmarkPress();
+        }}
       >
-        <Text style={styles.heartIcon}>
-          ♡
+        <Text
+          style={[
+            styles.heartIcon,
+            isBookmarked &&
+              styles.bookmarkedHeartIcon,
+          ]}
+        >
+          {isBookmarked ? '♥' : '♡'}
         </Text>
       </Pressable>
 
@@ -151,24 +173,32 @@ export function HomeItemCard({
 
         <View style={styles.cardFooter}>
           {item.reservationRequired === true ? (
-            <Text style={styles.reservationText}>
-              예약 필요
-            </Text>
+            <View style={styles.reservationInfo}>
+              <Text style={styles.reservationText}>
+                예약 필요
+              </Text>
+
+              {showMaxParticipants && (
+                <Text
+                  style={styles.maxParticipantsText}
+                >
+                  · 최대 {item.maxParticipants}인
+                </Text>
+              )}
+            </View>
           ) : (
             <View />
           )}
 
-          {isActivity && (
-            <Pressable
-              accessibilityRole="button"
-              style={styles.detailButton}
-              onPress={onPress}
-            >
-              <Text style={styles.detailButtonText}>
-                상세 보기
-              </Text>
-            </Pressable>
-          )}
+          <Pressable
+            accessibilityRole="button"
+            style={styles.detailButton}
+            onPress={onPress}
+          >
+            <Text style={styles.detailButtonText}>
+              상세 보기
+            </Text>
+          </Pressable>
         </View>
       </View>
     </View>
@@ -243,6 +273,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     lineHeight: 26,
+  },
+
+  bookmarkedHeartIcon: {
+    color: '#E64A67',
   },
 
   typeBadge: {
@@ -365,10 +399,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  reservationInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
   reservationText: {
-    color: '#A66400',
+    color: '#8A7450',
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '700',
+  },
+
+  maxParticipantsText: {
+    marginLeft: 4,
+    color: '#8A7450',
+    fontSize: 11,
+    fontWeight: '700',
   },
 
   detailButton: {

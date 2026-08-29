@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 import { DeleteAccountModal } from '@/components/auth/DeleteAccountModal';
+import { BackHeader } from '@/components/common/BackHeader';
 import { CourseColors } from '@/constants/course-colors';
 import { useDeleteAccount } from '@/hooks/auth/use-delete-account';
 import { useLogout } from '@/hooks/auth/use-logout';
@@ -124,6 +125,7 @@ export default function MyPageScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.hero}>
+          <BackHeader />
           <View style={styles.heroTop}>
             <Text style={styles.heroTitle}>마이</Text>
             <Text style={styles.heroBadge}>체험 기록</Text>
@@ -231,10 +233,10 @@ export default function MyPageScreen() {
                   <Text style={styles.menuValue}>저장한 코스에서 선택</Text>
                 </View>
                 <Pressable
-                  onPress={() => router.push('/notification')}
+                  onPress={() => router.push('/notification/settings')}
                   style={[styles.menuRow, styles.menuRowLast]}>
                   <Text style={styles.menuLabel}>알림톡 설정</Text>
-                  <Text style={styles.menuValue}>알림 확인하기 ›</Text>
+                  <Text style={styles.menuValue}>알림 시점 설정하기 ›</Text>
                 </Pressable>
               </View>
 

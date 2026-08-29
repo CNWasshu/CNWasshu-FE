@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { TimetableTimeInput } from '@/components/timetable/TimetableTimeInput';
-import type { SavedActivity, TimetableSchedule } from '@/types/timetable';
+import type { SavedPlace, TimetableSchedule } from '@/types/timetable';
 import {
   DAY_END_TIME,
   DAY_START_TIME,
@@ -28,20 +28,20 @@ type ScheduleFormValue = Pick<TimetableSchedule, 'endTime' | 'startTime' | 'titl
 type TimetableScheduleModalProps = {
   activitiesError: string | null;
   activitiesLoading: boolean;
-  activities: SavedActivity[];
+  activities: SavedPlace[];
   dayLabel: string;
   onClearActivity: () => void;
   onBrowseActivities: () => void;
   onClose: () => void;
   onDelete?: () => void;
   onOpenActivities: () => void;
-  onRequestReservation: () => void;
+  onRequestReservation: (activityId: string) => void;
   onRetryActivities: () => void;
   onSelectActivity: (activityId: string) => void;
   onSubmit: (value: ScheduleFormValue) => void;
   schedule?: TimetableSchedule | null;
   schedules: TimetableSchedule[];
-  selectedActivity: SavedActivity | null;
+  selectedActivity: SavedPlace | null;
   selectedActivityId: string | null;
   visible: boolean;
 };
@@ -106,17 +106,20 @@ export function TimetableScheduleModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [isActivityListVisible, setIsActivityListVisible] = useState(false);
-  const [reservationActivity, setReservationActivity] = useState<SavedActivity | null>(null);
+  const [reservationActivity, setReservationActivity] = useState<SavedPlace | null>(null);
   const isEditing = Boolean(schedule);
-  const isActivitySchedule = schedule?.kind === 'activity';
-  const isActivityTitleLocked = Boolean(selectedActivity) || isActivitySchedule;
+  const isSyncedReservation =
+    schedule?.kind === 'activity' &&
+    schedule.source === 'reservation';
+  const isPlaceSchedule = schedule?.kind === 'activity' || schedule?.kind === 'restaurant';
+  const isActivityTitleLocked = Boolean(selectedActivity) || isPlaceSchedule;
   const activityOperatingType = selectedActivity?.operatingType
-    ?? (isActivitySchedule ? schedule.operatingType : null);
+    ?? (isPlaceSchedule ? schedule.operatingType : null);
   const activityOperatingStartTime = activityOperatingType === 'hours'
-    ? selectedActivity?.startTime ?? (isActivitySchedule ? schedule.operatingStartTime : DAY_START_TIME)
+    ? selectedActivity?.startTime ?? (isPlaceSchedule ? schedule.operatingStartTime : DAY_START_TIME)
     : DAY_START_TIME;
   const activityOperatingEndTime = activityOperatingType === 'hours'
-    ? selectedActivity?.endTime ?? (isActivitySchedule ? schedule.operatingEndTime : DAY_END_TIME)
+    ? selectedActivity?.endTime ?? (isPlaceSchedule ? schedule.operatingEndTime : DAY_END_TIME)
     : DAY_END_TIME;
   const latestStartTime = addMinutes(activityOperatingEndTime, -5);
   const earliestEndTime = addMinutes(startTime, 5);
@@ -155,13 +158,23 @@ export function TimetableScheduleModal({
     setIsActivityListVisible(false);
   }, [selectedActivity, visible]);
 
-  const handleSelectActivity = (activity: SavedActivity) => {
-    if (activity.requiresReservation) {
+  const handleSelectActivity = (activity: SavedPlace) => {
+    if (activity.placeType === 'activity' && activity.requiresReservation) {
       setReservationActivity(activity);
       return;
     }
 
     onSelectActivity(activity.id);
+  };
+
+  const handleRequestReservation = () => {
+    if (!reservationActivity) {
+      return;
+    }
+
+    onRequestReservation(
+      reservationActivity.id
+    );
   };
 
   const handleToggleActivityList = () => {
@@ -233,11 +246,9 @@ export function TimetableScheduleModal({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.overlay}>
         <View accessibilityViewIsModal style={styles.sheet}>
-          <View style={styles.handle} />
           <ScrollView
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
-            scrollEnabled={!isActivityListVisible}
             showsVerticalScrollIndicator={false}>
             <View style={styles.headingRow}>
               <View style={styles.headingText}>
@@ -245,7 +256,7 @@ export function TimetableScheduleModal({
                 <Text style={styles.description}>
                   {isEditing
                     ? `${dayLabel}의 일정을 수정합니다.`
-                    : `${dayLabel}에 자유 일정 또는 장바구니에 담은 체험을 추가합니다.`}
+                    : `${dayLabel}에 자유 일정 또는 장바구니에 담은 체험 및 음식점을 추가합니다.`}
                 </Text>
               </View>
               <Pressable accessibilityLabel="닫기" accessibilityRole="button" onPress={onClose} style={styles.iconButton}>
@@ -279,6 +290,14 @@ export function TimetableScheduleModal({
                     : '하루 안에서 5분 단위로 원하는 시간을 선택할 수 있습니다.'}
               </Text>
               {errorMessage ? <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text> : null}
+              {isSyncedReservation ? (
+                <Text
+                  accessibilityRole="text"
+                  style={styles.reservationScheduleNotice}
+                >
+                  예약 완료 일정은 타임테이블에서 삭제할 수 없어요.
+                </Text>
+              ) : null}
             </View>
 
             {!isEditing ? (
@@ -288,7 +307,7 @@ export function TimetableScheduleModal({
                     accessibilityRole="button"
                     onPress={handleToggleActivityList}
                     style={styles.activityToggle}>
-                    <Text style={styles.activityToggleText}>체험 선택</Text>
+                    <Text style={styles.activityToggleText}>체험 및 음식점 선택</Text>
                     <Ionicons color={TIMETABLE_COLORS.primary} name={isActivityListVisible ? 'chevron-up' : 'chevron-down'} size={18} />
                   </Pressable>
                 ) : null}
@@ -305,7 +324,9 @@ export function TimetableScheduleModal({
                           ? '상시 운영'
                           : `${selectedActivity.startTime}~${selectedActivity.endTime}`} · {formatDuration(startTime, endTime)}
                       </Text>
-                      <Text style={styles.activityNotice}>일정 추가하기를 누르면 이 체험이 타임테이블에 들어갑니다.</Text>
+                      <Text style={styles.activityNotice}>
+                        일정 추가하기를 누르면 이 {selectedActivity.placeType === 'activity' ? '체험' : '음식점'}이 타임테이블에 들어갑니다.
+                      </Text>
                     </View>
                     <Pressable accessibilityRole="button" onPress={handleClearActivity}>
                       <Text style={styles.clearActivityText}>선택 취소</Text>
@@ -316,14 +337,14 @@ export function TimetableScheduleModal({
                 {isActivityListVisible ? (
                   <View style={styles.activityListContainer}>
                     <Text style={styles.activityDescription}>
-                      장바구니에 담아둔 체험만 선택할 수 있어요. 더 담고 싶다면 홈에서 하트를 눌러주세요.
+                      장바구니에 담아둔 체험과 음식점을 선택할 수 있어요. 더 담고 싶다면 홈에서 하트를 눌러주세요.
                     </Text>
                     <View style={styles.activityListHeading}>
-                      <Text style={styles.activityCount}>담아둔 체험 {activities.length}개</Text>
+                      <Text style={styles.activityCount}>담아둔 체험 및 음식점 {activities.length}개</Text>
                     </View>
                     {activitiesLoading ? (
                       <View accessibilityLiveRegion="polite" style={styles.activityStatus}>
-                        <Text style={styles.activityStatusText}>담아둔 체험을 불러오고 있어요.</Text>
+                        <Text style={styles.activityStatusText}>담아둔 체험 및 음식점을 불러오고 있어요.</Text>
                       </View>
                     ) : activitiesError ? (
                       <View style={styles.activityStatus}>
@@ -339,15 +360,10 @@ export function TimetableScheduleModal({
                       </View>
                     ) : activities.length === 0 ? (
                       <View style={styles.activityStatus}>
-                        <Text style={styles.activityStatusText}>아직 담아둔 체험이 없습니다.</Text>
+                        <Text style={styles.activityStatusText}>아직 담아둔 체험이나 음식점이 없습니다.</Text>
                       </View>
                     ) : (
-                      <ScrollView
-                        contentContainerStyle={styles.activityListContent}
-                        keyboardShouldPersistTaps="handled"
-                        nestedScrollEnabled
-                        showsVerticalScrollIndicator={false}
-                        style={styles.activityList}>
+                      <View style={styles.activityList}>
                         {activities.map((activity) => (
                           <Pressable
                             accessibilityRole="button"
@@ -361,7 +377,7 @@ export function TimetableScheduleModal({
                             <View style={styles.activityText}>
                               <Text style={styles.activityTitle}>{activity.title}</Text>
                               <Text style={styles.activityMetadata}>
-                                {activity.location} · {activity.operatingType === 'always'
+                                {activity.placeType === 'activity' ? '체험' : '음식점'} · {activity.location} · {activity.operatingType === 'always'
                                   ? '상시 운영'
                                   : `${activity.startTime}~${activity.endTime}`}
                                 {' · '}{formatDuration(
@@ -376,14 +392,14 @@ export function TimetableScheduleModal({
                             </View>
                           </Pressable>
                         ))}
-                      </ScrollView>
+                      </View>
                     )}
                     <Pressable
-                      accessibilityHint="홈으로 이동해 다른 체험을 찾아봅니다."
+                      accessibilityHint="홈으로 이동해 다른 체험이나 음식점을 찾아봅니다."
                       accessibilityRole="button"
                       onPress={onBrowseActivities}
                       style={styles.moreActivitiesButton}>
-                      <Text style={styles.moreActivitiesButtonText}>더 둘러보기</Text>
+                      <Text style={styles.moreActivitiesButtonText}>홈에서 더 둘러보기</Text>
                     </Pressable>
                   </View>
                 ) : null}
@@ -462,9 +478,9 @@ export function TimetableScheduleModal({
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={onRequestReservation}
+                  onPress={handleRequestReservation}
                   style={styles.reservationButton}>
-                  <Text numberOfLines={1} style={styles.reservationButtonText}>홈에서 예약하기</Text>
+                  <Text numberOfLines={1} style={styles.reservationButtonText}>예약하러 가기</Text>
                 </Pressable>
               </View>
             </View>
@@ -481,8 +497,7 @@ const styles = StyleSheet.create({
   activityDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19 },
   activityEmoji: { fontSize: 22 },
   activityIcon: { alignItems: 'center', backgroundColor: '#DDEFD9', borderRadius: 14, height: 44, justifyContent: 'center', width: 44 },
-  activityList: { backgroundColor: '#F8F2E7', borderColor: '#EFE2CD', borderRadius: 18, borderWidth: 1, height: 110, marginTop: 7 },
-  activityListContent: { gap: 9, padding: 6 },
+  activityList: { backgroundColor: '#F8F2E7', borderColor: '#EFE2CD', borderRadius: 18, borderWidth: 1, gap: 9, marginTop: 7, padding: 6 },
   activityListContainer: { marginTop: 12 },
   activityListHeading: { marginTop: 10, paddingHorizontal: 2 },
   activityMetadata: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 3 },
@@ -505,7 +520,7 @@ const styles = StyleSheet.create({
   confirmationDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19, marginTop: 7, textAlign: 'center' },
   confirmationOverlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.58)', bottom: 0, justifyContent: 'center', left: 0, position: 'absolute', right: 0, top: 0, zIndex: 10 },
   confirmationTitle: { color: TIMETABLE_COLORS.text, fontSize: 18, fontWeight: '800', marginTop: 12 },
-  content: { paddingBottom: 14, paddingHorizontal: 14 },
+  content: { paddingBottom: 14, paddingHorizontal: 14, paddingTop: 14 },
   clearActivityText: { color: TIMETABLE_COLORS.primary, fontSize: 11, fontWeight: '800' },
   deleteButton: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#C95A4A', borderRadius: 12, borderWidth: 1, justifyContent: 'center', paddingHorizontal: 22 },
   deleteButtonText: { color: '#B84738', fontSize: 14, fontWeight: '800' },
@@ -513,7 +528,6 @@ const styles = StyleSheet.create({
   error: { color: '#B84738', fontSize: 12, lineHeight: 17, marginTop: 7 },
   formCard: { backgroundColor: '#FFFFFF', borderColor: TIMETABLE_COLORS.border, borderRadius: 20, borderWidth: 1, marginTop: 16, padding: 14 },
   footer: { backgroundColor: TIMETABLE_COLORS.background, borderTopColor: TIMETABLE_COLORS.border, borderTopWidth: 1, paddingHorizontal: 14, paddingTop: 12 },
-  handle: { alignSelf: 'center', backgroundColor: '#CDBFA8', borderRadius: 999, height: 5, marginBottom: 12, marginTop: 8, width: 42 },
   headingRow: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between' },
   headingText: { flex: 1, paddingRight: 12 },
   hint: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 8 },
@@ -526,6 +540,7 @@ const styles = StyleSheet.create({
   reservationButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, flexBasis: 0, justifyContent: 'center', minHeight: 46, paddingHorizontal: 10 },
   reservationButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   reservationIcon: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primaryLight, borderRadius: 24, height: 48, justifyContent: 'center', width: 48 },
+  reservationScheduleNotice: { color: '#527041', fontSize: 11, fontWeight: '700', lineHeight: 17, marginTop: 9 },
   retryActivitiesButton: { backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 10, marginTop: 10, paddingHorizontal: 14, paddingVertical: 9 },
   retryActivitiesButtonText: { color: '#FFFFFF', fontSize: 12, fontWeight: '800' },
   selectActivityButton: { borderColor: '#9FC9AD', borderRadius: 12, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 9 },

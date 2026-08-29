@@ -12,13 +12,14 @@ type TimetableScheduleBase = {
   title: string;
 };
 
-export type SavedActivity = {
+export type SavedPlace = {
   durationMinutes: number | null;
   endTime: string;
   icon: string;
   id: string;
   location: string;
   operatingType: 'always' | 'hours';
+  placeType: 'activity' | 'restaurant';
   requiresReservation: boolean;
   startTime: string;
   thumbnailUrl: string | null;
@@ -30,27 +31,38 @@ export type TimetableFreeSchedule = TimetableScheduleBase & {
 };
 
 export type TimetableActivitySchedule = TimetableScheduleBase & {
-  activityId: SavedActivity['id'];
-  activityIcon: SavedActivity['icon'];
+  activityId: SavedPlace['id'];
+  activityIcon: SavedPlace['icon'];
   kind: 'activity';
-  location: SavedActivity['location'];
+  location: SavedPlace['location'];
   operatingEndTime: string;
   operatingStartTime: string;
-  operatingType: SavedActivity['operatingType'];
+  operatingType: SavedPlace['operatingType'];
+  reservationId: number | null;
   requiresReservation: boolean;
+  source: 'local' | 'reservation';
+};
+
+export type TimetableRestaurantSchedule = TimetableScheduleBase & {
+  kind: 'restaurant';
+  location: SavedPlace['location'];
+  operatingEndTime: string;
+  operatingStartTime: string;
+  operatingType: SavedPlace['operatingType'];
+  restaurantIcon: SavedPlace['icon'];
+  restaurantId: SavedPlace['id'];
 };
 
 export type TimetableSchedule =
   | TimetableActivitySchedule
+  | TimetableRestaurantSchedule
   | TimetableFreeSchedule;
 
 export type TimetableScheduleKind = TimetableSchedule['kind'];
 
 export type TimetableSchedulesByDay = Record<string, TimetableSchedule[]>;
 
-export type TimetableScheduleType = 'ACTIVITY' | 'FREE';
-
-export type ActivityOperatingType = 'ALWAYS' | 'HOURS';
+export type TimetableScheduleType = 'ACTIVITY' | 'FREE' | 'RESTAURANT';
 
 export interface TimetableScheduleRequest {
   activityId: number | null;
@@ -58,6 +70,7 @@ export interface TimetableScheduleRequest {
   endTime: string;
   memo: string | null;
   reservationId: number | null;
+  restaurantId: number | null;
   scheduleType: TimetableScheduleType;
   sortOrder: number;
   startTime: string;
@@ -82,6 +95,7 @@ export interface TimetableScheduleResponse {
   endTime: string;
   memo: string | null;
   reservationId: number | null;
+  restaurantId: number | null;
   scheduleId: number;
   scheduleType: TimetableScheduleType;
   sortOrder: number;
@@ -101,33 +115,6 @@ export interface TimetableDetailResponse {
   startDate: string;
   timetableId: number;
   timetableName: string;
-}
-
-type SavedActivityResponseBase = {
-  activityId: number;
-  durationMinutes: number | null;
-  region: string;
-  reservationRequired: boolean;
-  thumbnailUrl: string | null;
-  title: string;
-};
-
-export type SavedActivityResponse = SavedActivityResponseBase &
-  (
-    | {
-        operatingEndTime: null;
-        operatingStartTime: null;
-        operatingType: Extract<ActivityOperatingType, 'ALWAYS'>;
-      }
-    | {
-        operatingEndTime: string;
-        operatingStartTime: string;
-        operatingType: Extract<ActivityOperatingType, 'HOURS'>;
-      }
-  );
-
-export interface SavedActivityListResponse {
-  items: SavedActivityResponse[];
 }
 
 export interface TimetableApiErrorBody {

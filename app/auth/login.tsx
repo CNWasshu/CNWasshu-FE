@@ -1,7 +1,9 @@
+import * as Linking from 'expo-linking';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 
 import { CourseColors } from '@/constants/course-colors';
 import { useKakaoLogin } from '@/hooks/auth/use-kakao-login';
@@ -23,7 +25,6 @@ function buildKakaoAuthUrl(clientId: string, redirectUri: string) {
 }
 
 export default function LoginScreen() {
-  const router = useRouter();
   const params = useLocalSearchParams<{ code?: string; error?: string }>();
   const { errorMessage: loginErrorMessage, isSubmitting, login, reset } = useKakaoLogin();
   const [configErrorMessage, setConfigErrorMessage] = useState<string | null>(null);
@@ -31,6 +32,10 @@ export default function LoginScreen() {
 
   const clientId = process.env.EXPO_PUBLIC_KAKAO_CLIENT_ID;
   const redirectUri = process.env.EXPO_PUBLIC_KAKAO_REDIRECT_URI;
+  // 네이티브(Expo Go/디바이스)용. 카카오 콘솔은 http(s) redirect_uri만 받아준다.
+  // 단, Expo Go는 Universal Links를 설정할 수 없어서 ASWebAuthenticationSession이
+  // http(s) 리다이렉트를 안정적으로 가로채지 못하는 근본적인 제약이 있다 — dev client 필요.
+  const nativeRedirectUri = process.env.EXPO_PUBLIC_KAKAO_NATIVE_REDIRECT_URI;
 
   useEffect(() => {
     const code = firstParam(params.code);
@@ -44,32 +49,59 @@ export default function LoginScreen() {
     }
 
     handledCodeRef.current = code;
-    void (async () => {
-      const response = await login(code, redirectUri);
-      if (response) {
-        router.replace('/');
-      }
-    })();
-  }, [login, params.code, redirectUri, router]);
+    // 성공 시 홈/온보딩 이동은 useKakaoLogin 내부에서 처리한다 (isNewUser 분기 포함).
+    void login(code, redirectUri);
+  }, [login, params.code, redirectUri]);
 
-  const handlePressKakaoLogin = () => {
+  const handlePressKakaoLogin = async () => {
     setConfigErrorMessage(null);
     reset();
 
-    if (!clientId || !redirectUri) {
+    if (!clientId) {
       setConfigErrorMessage('카카오 로그인 설정이 올바르지 않습니다. 환경변수를 확인해 주세요.');
       return;
     }
 
     if (Platform.OS === 'web') {
+      if (!redirectUri) {
+        setConfigErrorMessage('카카오 로그인 설정이 올바르지 않습니다. 환경변수를 확인해 주세요.');
+        return;
+      }
       if (typeof window !== 'undefined') {
         window.location.href = buildKakaoAuthUrl(clientId, redirectUri);
       }
       return;
     }
 
-    // TODO: 네이티브(iOS/Android)는 WebView 또는 딥링크 기반 카카오 로그인 연동 필요
-    setConfigErrorMessage('네이티브 카카오 로그인은 아직 지원되지 않습니다.');
+    if (!nativeRedirectUri) {
+      setConfigErrorMessage('네이티브 카카오 로그인 설정이 올바르지 않습니다. EXPO_PUBLIC_KAKAO_NATIVE_REDIRECT_URI를 확인해 주세요.');
+      return;
+    }
+
+    // 네이티브: 인앱 브라우저로 카카오 인가 화면을 열고, nativeRedirectUri로 이동을 시도하면
+    // (실제로 그 페이지가 로드되지 않아도) 그 URL을 가로채서 인가코드를 꺼내
+    // 웹과 동일한 login()으로 넘긴다.
+    try {
+      const authUrl = buildKakaoAuthUrl(clientId, nativeRedirectUri);
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, nativeRedirectUri);
+
+      if (result.type !== 'success' || !result.url) {
+        // 사용자가 브라우저를 직접 닫은 경우 등 — 에러로 취급하지 않는다.
+        return;
+      }
+
+      const { queryParams } = Linking.parse(result.url);
+      const code = queryParams?.code;
+
+      if (typeof code !== 'string') {
+        setConfigErrorMessage('카카오 로그인에 실패했습니다. 다시 시도해 주세요.');
+        return;
+      }
+
+      await login(code, nativeRedirectUri);
+    } catch {
+      setConfigErrorMessage('카카오 로그인 중 오류가 발생했습니다.');
+    }
   };
 
   const kakaoParamErrorMessage = firstParam(params.error)
@@ -101,6 +133,14 @@ export default function LoginScreen() {
           )}
 
           {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+
+          {Platform.OS !== 'web' ? (
+            <Text selectable style={styles.debugRedirectUri}>
+              카카오 콘솔 Redirect URI 등록용: {nativeRedirectUri ?? '(EXPO_PUBLIC_KAKAO_NATIVE_REDIRECT_URI 미설정)'}
+              {'\n'}
+              지금 앱이 쓰는 API 주소: {process.env.EXPO_PUBLIC_API_BASE_URL ?? '(EXPO_PUBLIC_API_BASE_URL 미설정)'}
+            </Text>
+          ) : null}
         </View>
       </View>
     </SafeAreaView>
@@ -154,4 +194,10 @@ const styles = StyleSheet.create({
   },
   kakaoButtonText: { color: KAKAO_TEXT, fontWeight: '900', fontSize: 16 },
   error: { color: CourseColors.error, textAlign: 'center' },
+  debugRedirectUri: {
+    color: CourseColors.muted,
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 4,
+  },
 });

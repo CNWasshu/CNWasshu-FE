@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
+import type { ReservationResponse } from '@/types/reservation';
 import type {
   TimetableDay,
   TimetableSchedule,
@@ -17,6 +18,10 @@ import {
   createTimetableSaveRequest,
   validateTimetableSaveInput,
 } from '@/utils/timetable/request';
+import {
+  mergeConfirmedReservations,
+  type ReservationSyncIssue,
+} from '@/utils/timetable/reservation-sync';
 
 function synchronizeSchedules(
   days: TimetableDay[],
@@ -33,6 +38,8 @@ export function useTimetable() {
   const [endDate, setEndDate] = useState(minimumStartDate);
   const [dateErrorMessage, setDateErrorMessage] = useState<string | null>(null);
   const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
+  const [reservationSyncIssues, setReservationSyncIssues] = useState<ReservationSyncIssue[]>([]);
+  const [syncedReservationCount, setSyncedReservationCount] = useState(0);
   const [timetableName, setTimetableName] = useState('');
   const days = useMemo(() => createTimetableDays(startDate, endDate), [endDate, startDate]);
   const [selectedDayId, setSelectedDayId] = useState(formatDate(minimumStartDate));
@@ -44,6 +51,24 @@ export function useTimetable() {
     [startDate]
   );
   const selectedSchedules = schedulesByDay[selectedDayId] ?? [];
+
+  const synchronizeReservations = useCallback(
+    (reservations: ReservationResponse[]) => {
+      setSchedulesByDay((currentSchedules) => {
+        const result = mergeConfirmedReservations(
+          currentSchedules,
+          reservations,
+          days.map((day) => day.id)
+        );
+        setSyncedReservationCount(
+          result.syncedReservationIds.length
+        );
+        setReservationSyncIssues(result.issues);
+        return result.schedulesByDay;
+      });
+    },
+    [days]
+  );
 
   const handleChangeStartDate = (date: Date) => {
     const nextStartDate = startOfDay(date);
@@ -167,6 +192,7 @@ export function useTimetable() {
     maximumEndDate,
     minimumStartDate,
     removeSchedule,
+    reservationSyncIssues,
     prepareSaveRequest,
     saveErrorMessage,
     scheduleCount,
@@ -174,6 +200,8 @@ export function useTimetable() {
     selectedSchedules,
     setSelectedDayId,
     startDate,
+    syncedReservationCount,
+    synchronizeReservations,
     timetableName,
     updateSchedule,
     validateSchedulesForSave,

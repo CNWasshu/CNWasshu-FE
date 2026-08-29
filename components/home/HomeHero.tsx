@@ -7,10 +7,18 @@ import {
 
 type HomeHeroProps = {
   onAiRecommend: () => void;
+  onBookmarkPress: () => void;
+  onMyPagePress: () => void;
+  onNotificationPress: () => void;
+  unreadNotificationCount: number;
 };
 
 export function HomeHero({
   onAiRecommend,
+  onBookmarkPress,
+  onMyPagePress,
+  onNotificationPress,
+  unreadNotificationCount,
 }: HomeHeroProps) {
   return (
     <View style={styles.hero}>
@@ -19,9 +27,48 @@ export function HomeHero({
           충남 체험 백과사전
         </Text>
 
-        <Text style={styles.weather}>
-          충남 여행
-        </Text>
+        <View style={styles.headerActions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="알림함"
+            style={styles.bookmarkButton}
+            onPress={onNotificationPress}
+          >
+            <Text style={styles.bookmarkIcon}>
+              🔔
+            </Text>
+
+            {unreadNotificationCount > 0 ? (
+              <View style={styles.notificationBadge}>
+                <Text style={styles.notificationBadgeText}>
+                  {unreadNotificationCount}
+                </Text>
+              </View>
+            ) : null}
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="마이페이지"
+            style={styles.bookmarkButton}
+            onPress={onMyPagePress}
+          >
+            <Text style={styles.bookmarkIcon}>
+              👤
+            </Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="장바구니"
+            style={styles.bookmarkButton}
+            onPress={onBookmarkPress}
+          >
+            <Text style={styles.bookmarkIcon}>
+              ♡
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.heroCard}>
@@ -97,9 +144,49 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 
-  weather: {
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  bookmarkButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    position: 'relative',
+  },
+
+  bookmarkIcon: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 23,
+    fontWeight: '700',
+    lineHeight: 25,
+  },
+
+  notificationBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    minWidth: 16,
+    height: 16,
+    paddingHorizontal: 3,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E25C3E',
+    borderWidth: 1.5,
+    borderColor: '#4C884D',
+  },
+
+  notificationBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '900',
+    lineHeight: 12,
   },
 
   heroCard: {

@@ -60,8 +60,13 @@ export function createTimetableSaveRequest({
           clientScheduleId: schedule.id,
           endTime: schedule.endTime,
           memo: null,
-          reservationId: null,
-          scheduleType: schedule.kind === 'activity' ? 'ACTIVITY' : 'FREE',
+          reservationId: schedule.kind === 'activity' ? schedule.reservationId : null,
+          restaurantId: schedule.kind === 'restaurant' ? Number(schedule.restaurantId) : null,
+          scheduleType: schedule.kind === 'activity'
+            ? 'ACTIVITY'
+            : schedule.kind === 'restaurant'
+              ? 'RESTAURANT'
+              : 'FREE',
           sortOrder: scheduleIndex + 1,
           startTime: schedule.startTime,
           title: schedule.title.trim(),

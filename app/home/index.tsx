@@ -1,8 +1,12 @@
+import { clearTokens, getAccessToken } from '@/utils/auth';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getHomeErrorMessage, homeApi } from '@/api/homeApi';
+import { HomeApiError, getHomeErrorMessage, homeApi } from '@/api/homeApi';
 import { HomeContent } from '@/components/home/HomeContent';
+import { useBookmarks } from '@/hooks/bookmark/use-bookmarks';
+import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-notification-count';
 import type { HomeItem, HomeItemType } from '@/types/home';
 
 const ITEMS_PER_PAGE = 8;
@@ -10,13 +14,24 @@ const ITEMS_PER_PAGE = 8;
 export default function HomeScreen() {
   const router = useRouter();
 
+  const {
+    fetchBookmarks,
+    addBookmark,
+    removeBookmark,
+    isBookmarked,
+  } = useBookmarks();
+
+  const {
+    fetchUnreadNotificationCount,
+    unreadCount: unreadNotificationCount,
+  } = useUnreadNotificationCount();
+
   const [items, setItems] = useState<HomeItem[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // 홈 기본 화면은 체험
   const [selectedType, setSelectedType] =
     useState<HomeItemType>('ACTIVITY');
 
@@ -26,38 +41,50 @@ export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] =
     useState('전체');
 
-  // 처음에는 8개만 노출
   const [visibleCount, setVisibleCount] =
     useState(ITEMS_PER_PAGE);
 
-  /**
-   * 홈 API 조회
-   */
   const fetchHomeItems = async () => {
-    try {
-      setErrorMessage('');
+  try {
+    setErrorMessage('');
 
-      const data = await homeApi.getHomeItems();
+    const accessToken = await getAccessToken();
 
-      setItems(data);
-    } catch (error) {
-      setErrorMessage(getHomeErrorMessage(error));
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+    if (!accessToken) {
+      throw new Error('로그인이 필요합니다.');
     }
-  };
 
-  /**
-   * 홈 최초 진입 시 API 호출
-   */
+    const data =
+      await homeApi.getHomeItems(accessToken);
+
+    setItems(data);
+  } catch (error) {
+    // 저장된 토큰이 있어도 만료/무효면 서버가 401을 준다.
+    // 이 경우 에러 카드만 띄우면 막다른 골목이라, 토큰을 지우고 로그인 화면으로 보낸다.
+    if (error instanceof HomeApiError && error.status === 401) {
+      await clearTokens();
+      router.replace('/auth/login');
+      return;
+    }
+    setErrorMessage(getHomeErrorMessage(error));
+  } finally {
+    setLoading(false);
+    setRefreshing(false);
+  }
+};
+
   useEffect(() => {
     fetchHomeItems();
   }, []);
 
-  /**
-   * 필터가 변경되면 다시 8개부터 표시
-   */
+  useFocusEffect(
+    useCallback(() => {
+      fetchBookmarks();
+      fetchUnreadNotificationCount();
+    }, [fetchBookmarks, fetchUnreadNotificationCount])
+  );
+
+
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
   }, [
@@ -66,9 +93,6 @@ export default function HomeScreen() {
     selectedCategory,
   ]);
 
-  /**
-   * 현재 선택된 체험/맛집에 존재하는 지역 목록 생성
-   */
   const regions = useMemo(() => {
     const regionNames = Array.from(
       new Set(
@@ -84,9 +108,6 @@ export default function HomeScreen() {
     return ['전체', ...regionNames];
   }, [items, selectedType]);
 
-  /**
-   * 현재 선택된 체험/맛집에 존재하는 카테고리 목록 생성
-   */
   const categories = useMemo(() => {
     const categoryNames = Array.from(
       new Set(
@@ -102,11 +123,6 @@ export default function HomeScreen() {
     return ['전체', ...categoryNames];
   }, [items, selectedType]);
 
-  /**
-   * 타입 + 지역 + 카테고리 필터 적용
-   *
-   * 마지막에 id 오름차순 정렬
-   */
   const filteredItems = useMemo(() => {
     return items
       .filter((item) => {
@@ -135,11 +151,6 @@ export default function HomeScreen() {
     selectedCategory,
   ]);
 
-  /**
-   * 실제 화면에 보여줄 데이터
-   *
-   * 8 → 16 → 24 → ...
-   */
   const visibleItems = useMemo(() => {
     return filteredItems.slice(
       0,
@@ -150,40 +161,29 @@ export default function HomeScreen() {
     visibleCount,
   ]);
 
-  /**
-   * 체험 / 맛집 변경
-   */
   const handleSelectType = (
     type: HomeItemType
   ) => {
     setSelectedType(type);
 
-    // 타입이 바뀌면 기존 지역/카테고리 선택 초기화
     setSelectedRegion('전체');
     setSelectedCategory('전체');
   };
 
-  /**
-   * 새로고침
-   */
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
-    fetchHomeItems();
+
+    await Promise.all([
+      fetchHomeItems(),
+      fetchBookmarks(),
+    ]);
   };
 
-  /**
-   * 다시 시도
-   */
   const handleRetry = () => {
     setLoading(true);
     fetchHomeItems();
   };
 
-  /**
-   * 더 보기
-   *
-   * 한 번 누를 때마다 8개 추가
-   */
   const handleLoadMore = () => {
     setVisibleCount((previousCount) =>
       Math.min(
@@ -206,15 +206,67 @@ export default function HomeScreen() {
           id: String(item.id),
         },
       });
+      return;
     }
-
-    // RESTAURANT 상세 화면은
-    // 추후 맛집 상세 기능 구현 시 추가
+    if (item.type === 'RESTAURANT') {
+      router.push({
+        pathname: '/restaurant/[id]',
+        params: {
+          id: String(item.id),
+        },
+      });
+    }
+    
   };
 
-  /**
-   * AI 추천 페이지 이동
-   */
+  const handleIsBookmarked = (
+    item: HomeItem
+  ) => {
+    return isBookmarked(
+      item.type,
+      item.id
+    );
+  };
+
+  const handleItemBookmarkPress = async (
+    item: HomeItem
+  ) => {
+    const bookmarked = isBookmarked(
+      item.type,
+      item.id
+    );
+
+    if (bookmarked) {
+      await removeBookmark({
+        type: item.type,
+        targetId: item.id,
+      });
+
+      return;
+    }
+
+    const success = await addBookmark({
+      type: item.type,
+      targetId: item.id,
+    });
+
+    if (success) {
+      await fetchBookmarks();
+    }
+  };
+
+  const handleBookmarkPress = () => {
+    router.push('/bookmark');
+  };
+
+  const handleMyPagePress = () => {
+    router.push('/auth/mypage');
+  };
+
+  const handleNotificationPress = () => {
+    router.push('/notification');
+  };
+
   const handleAiRecommend = () => {
     router.push('/course/ai');
   };
@@ -249,7 +301,14 @@ export default function HomeScreen() {
       onLoadMore={handleLoadMore}
 
       onItemPress={handleItemPress}
+      onItemBookmarkPress={handleItemBookmarkPress}
+      isBookmarked={handleIsBookmarked}
+
       onAiRecommend={handleAiRecommend}
+      onBookmarkPress={handleBookmarkPress}
+      onMyPagePress={handleMyPagePress}
+      onNotificationPress={handleNotificationPress}
+      unreadNotificationCount={unreadNotificationCount}
     />
   );
 }

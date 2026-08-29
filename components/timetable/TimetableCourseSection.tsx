@@ -34,8 +34,10 @@ export function TimetableCourseSection({
     <View style={styles.container}>
       <View style={[styles.headingRow, isCompact && styles.compactHeadingRow]}>
         <View style={[styles.headingText, isCompact && styles.compactHeadingText]}>
-          <Text style={styles.title}>시간대별 코스 설계</Text>
-          <Text style={styles.description}>일정 시간에 맞춰 자유 일정이나 체험을 추가해 보세요.</Text>
+          <Text style={styles.title}>시간대별 일정 구성</Text>
+          <Text style={styles.description}>
+            시간에 맞춰 자유 일정이나 담아둔 체험 및 음식점을 추가해 보세요.
+          </Text>
         </View>
         <Pressable
           accessibilityRole="button"

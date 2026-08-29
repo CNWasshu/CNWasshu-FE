@@ -1,19 +1,29 @@
-import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import {
+  type NavigationAction,
+  useFocusEffect,
+  useNavigation,
+  usePreventRemove,
+} from '@react-navigation/native';
 
 import { TimetableDateRange } from '@/components/timetable/TimetableDateRange';
 import { TimetableCourseSection } from '@/components/timetable/TimetableCourseSection';
+import { TimetableExitModal } from '@/components/timetable/TimetableExitModal';
 import { TimetableHeader } from '@/components/timetable/TimetableHeader';
+import { TimetableReservationSyncStatus } from '@/components/timetable/TimetableReservationSyncStatus';
 import { TimetableScheduleModal } from '@/components/timetable/TimetableScheduleModal';
 import { TimetableSaveModal } from '@/components/timetable/TimetableSaveModal';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { useSavedActivities } from '@/hooks/timetable/use-saved-activities';
+import { useReservationSync } from '@/hooks/timetable/use-reservation-sync';
 import { useSaveTimetable } from '@/hooks/timetable/use-save-timetable';
+import { useTimetableAccessToken } from '@/hooks/timetable/use-timetable-access-token';
 import { useTimetable } from '@/hooks/timetable/use-timetable';
 import type { TimetableSchedule } from '@/types/timetable';
-import { getLocalTimetableAccessToken } from '@/utils/timetable/auth';
+import { formatDate } from '@/utils/timetable/date';
 
 function createScheduleId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -21,9 +31,15 @@ function createScheduleId() {
 
 export default function TimetableScreen() {
   const router = useRouter();
-  const accessToken = getLocalTimetableAccessToken();
+  const navigation = useNavigation();
+  const { accessToken } = useTimetableAccessToken();
   const [isScheduleModalVisible, setIsScheduleModalVisible] = useState(false);
   const [isSaveModalVisible, setIsSaveModalVisible] = useState(false);
+  const [isExitModalVisible, setIsExitModalVisible] = useState(false);
+  const [pendingNavigationAction, setPendingNavigationAction] =
+    useState<NavigationAction | null>(null);
+  const [isExitConfirmed, setIsExitConfirmed] = useState(false);
+  const [savedCourseId, setSavedCourseId] = useState<number | null>(null);
   const [editingSchedule, setEditingSchedule] = useState<TimetableSchedule | null>(null);
   const {
     errorMessage: saveApiErrorMessage,
@@ -31,7 +47,7 @@ export default function TimetableScreen() {
     isSuccess: isSaveSuccess,
     reset: resetSave,
     save: saveTimetable,
-  } = useSaveTimetable(accessToken);
+  } = useSaveTimetable(accessToken ?? undefined);
   const {
     activities,
     clearSelectedActivity,
@@ -41,7 +57,12 @@ export default function TimetableScreen() {
     selectedActivity,
     selectedActivityId,
     selectActivity,
-  } = useSavedActivities(accessToken);
+  } = useSavedActivities(accessToken ?? undefined);
+  const {
+    error: reservationSyncError,
+    isLoading: isReservationSyncing,
+    refetch: refetchReservations,
+  } = useReservationSync(accessToken ?? undefined);
   const {
     addSchedule,
     clearSaveError,
@@ -62,11 +83,94 @@ export default function TimetableScreen() {
     selectedSchedules,
     setSelectedDayId,
     startDate,
+    synchronizeReservations,
     updateSchedule,
     validateSchedulesForSave,
   } = useTimetable();
+  const shouldPreventLeaving =
+    savedCourseId == null && !isExitConfirmed && (scheduleCount > 0 || isSaving);
   const selectedDay = days.find((day) => day.id === selectedDayId);
-  const selectedDayLabel = `${selectedDay?.dayLabel ?? ''} (${selectedDay?.date ?? ''})`;
+  const selectedDayLabel = `${selectedDay?.dayLabel ?? ''}(${selectedDay?.date ?? ''})`;
+  const selectableSavedPlaces = useMemo(() => {
+    const reservedActivityIds = new Set(
+      selectedSchedules.flatMap((schedule) =>
+        schedule.kind === 'activity' &&
+        schedule.source === 'reservation'
+          ? [schedule.activityId]
+          : []
+      )
+    );
+
+    return activities.filter(
+      (place) =>
+        place.placeType !== 'activity' ||
+        !reservedActivityIds.has(place.id)
+    );
+  }, [activities, selectedSchedules]);
+  const synchronizePeriodReservations = useCallback(async () => {
+    if (!accessToken) {
+      return;
+    }
+
+    const reservations = await refetchReservations(
+      formatDate(startDate),
+      formatDate(endDate)
+    );
+
+    if (reservations) {
+      synchronizeReservations(reservations);
+    }
+  }, [
+    accessToken,
+    endDate,
+    refetchReservations,
+    startDate,
+    synchronizeReservations,
+  ]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void synchronizePeriodReservations();
+    }, [synchronizePeriodReservations])
+  );
+
+  usePreventRemove(
+    shouldPreventLeaving,
+    ({ data }) => {
+      if (isSaving) {
+        return;
+      }
+
+      setPendingNavigationAction(data.action);
+      setIsExitModalVisible(true);
+    }
+  );
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !shouldPreventLeaving) {
+      return;
+    }
+
+    const preventBrowserExit = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', preventBrowserExit);
+    return () => window.removeEventListener('beforeunload', preventBrowserExit);
+  }, [shouldPreventLeaving]);
+
+  useEffect(() => {
+    if (savedCourseId != null) {
+      router.replace(`/course/${savedCourseId}`);
+    }
+  }, [router, savedCourseId]);
+
+  useEffect(() => {
+    if (isExitConfirmed && pendingNavigationAction) {
+      navigation.dispatch(pendingNavigationAction);
+    }
+  }, [isExitConfirmed, navigation, pendingNavigationAction]);
 
   const closeScheduleModal = () => {
     setIsScheduleModalVisible(false);
@@ -88,7 +192,7 @@ export default function TimetableScreen() {
   const handleSubmitSchedule = (value: Pick<TimetableSchedule, 'endTime' | 'startTime' | 'title'>) => {
     if (editingSchedule) {
       updateSchedule(selectedDayId, { ...editingSchedule, ...value });
-    } else if (selectedActivity) {
+    } else if (selectedActivity?.placeType === 'activity') {
       addSchedule(selectedDayId, {
         activityId: selectedActivity.id,
         activityIcon: selectedActivity.icon,
@@ -99,7 +203,21 @@ export default function TimetableScreen() {
         operatingEndTime: selectedActivity.endTime,
         operatingStartTime: selectedActivity.startTime,
         operatingType: selectedActivity.operatingType,
+        reservationId: null,
         requiresReservation: selectedActivity.requiresReservation,
+        source: 'local',
+      });
+    } else if (selectedActivity?.placeType === 'restaurant') {
+      addSchedule(selectedDayId, {
+        ...value,
+        id: createScheduleId(),
+        kind: 'restaurant',
+        location: selectedActivity.location,
+        operatingEndTime: selectedActivity.endTime,
+        operatingStartTime: selectedActivity.startTime,
+        operatingType: selectedActivity.operatingType,
+        restaurantIcon: selectedActivity.icon,
+        restaurantId: selectedActivity.id,
       });
     } else {
       addSchedule(selectedDayId, { ...value, id: createScheduleId(), kind: 'free' });
@@ -109,7 +227,13 @@ export default function TimetableScreen() {
   };
 
   const confirmDeleteSchedule = () => {
-    if (!editingSchedule) {
+    if (
+      !editingSchedule ||
+      (
+        editingSchedule.kind === 'activity' &&
+        editingSchedule.source === 'reservation'
+      )
+    ) {
       return;
     }
 
@@ -119,7 +243,16 @@ export default function TimetableScreen() {
 
   const browseMoreActivities = () => {
     closeScheduleModal();
-    router.push('/');
+    router.dismissTo('/');
+  };
+
+  const openReservation = (
+    activityId: string
+  ) => {
+    closeScheduleModal();
+    router.push(
+      `/reservation/${activityId}`
+    );
   };
 
   const openSaveModal = () => {
@@ -134,6 +267,16 @@ export default function TimetableScreen() {
     resetSave();
   };
 
+  const continueEditing = () => {
+    setIsExitModalVisible(false);
+    setPendingNavigationAction(null);
+  };
+
+  const exitWithoutSaving = () => {
+    setIsExitModalVisible(false);
+    setIsExitConfirmed(true);
+  };
+
   const handleChangeCourseNameForSave = (name: string) => {
     handleChangeTimetableName(name);
     resetSave();
@@ -145,7 +288,13 @@ export default function TimetableScreen() {
       return;
     }
 
-    await saveTimetable(request);
+    const savedTimetable = await saveTimetable(request);
+    if (!savedTimetable) {
+      return;
+    }
+
+    setIsSaveModalVisible(false);
+    setSavedCourseId(savedTimetable.timetableId);
   };
 
   return (
@@ -165,6 +314,11 @@ export default function TimetableScreen() {
             onChangeStartDate={handleChangeStartDate}
             startDate={startDate}
           />
+          <TimetableReservationSyncStatus
+            error={reservationSyncError}
+            isLoading={isReservationSyncing}
+            onRetry={() => void synchronizePeriodReservations()}
+          />
           <TimetableCourseSection
             days={days}
             onAddSchedule={openAddScheduleModal}
@@ -178,16 +332,21 @@ export default function TimetableScreen() {
         </View>
       </ScrollView>
       <TimetableScheduleModal
-        activities={activities}
+        activities={selectableSavedPlaces}
         activitiesError={activitiesError}
         activitiesLoading={activitiesLoading}
         dayLabel={selectedDayLabel}
         onBrowseActivities={browseMoreActivities}
         onClearActivity={clearSelectedActivity}
         onClose={closeScheduleModal}
-        onDelete={confirmDeleteSchedule}
+        onDelete={
+          editingSchedule?.kind === 'activity' &&
+          editingSchedule.source === 'reservation'
+            ? undefined
+            : confirmDeleteSchedule
+        }
         onOpenActivities={() => void refetchActivities()}
-        onRequestReservation={browseMoreActivities}
+        onRequestReservation={openReservation}
         onRetryActivities={() => void refetchActivities()}
         onSelectActivity={selectActivity}
         onSubmit={handleSubmitSchedule}
@@ -209,6 +368,11 @@ export default function TimetableScreen() {
         scheduleCount={scheduleCount}
         startDate={startDate}
         visible={isSaveModalVisible}
+      />
+      <TimetableExitModal
+        onContinue={continueEditing}
+        onExit={exitWithoutSaving}
+        visible={isExitModalVisible}
       />
     </SafeAreaView>
   );
