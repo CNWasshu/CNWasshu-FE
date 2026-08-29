@@ -46,6 +46,20 @@ function getBaseUrl() {
   return url;
 }
 
+function getNgrokHeaders(baseUrl: string) {
+  try {
+    const hostname = new URL(baseUrl).hostname;
+    if (hostname === 'ngrok.io' || hostname.endsWith('.ngrok.io') ||
+        hostname === 'ngrok-free.app' || hostname.endsWith('.ngrok-free.app')) {
+      return { 'ngrok-skip-browser-warning': 'true' };
+    }
+  } catch {
+    // getBaseUrl에서 존재 여부를 검증하며, 잘못된 URL은 fetch가 기존 방식대로 처리한다.
+  }
+
+  return {};
+}
+
 function getAuthorizationHeaders(accessToken: string) {
   const token = accessToken.trim();
   if (!token) {
@@ -61,11 +75,12 @@ function getAuthorizationHeaders(accessToken: string) {
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(`${getBaseUrl()}${path}`, {
+    const baseUrl = getBaseUrl();
+    response = await fetch(`${baseUrl}${path}`, {
       ...init,
       // ngrok 무료 티어가 브라우저성 요청에 경고 인터스티셜(HTML)을 대신 주는 걸 막는 헤더.
-      // 실제 배포 서버에는 영향 없다.
-      headers: { ...init?.headers, 'ngrok-skip-browser-warning': 'true' },
+      // 로컬 및 일반 배포 서버에서는 불필요한 CORS preflight를 만들지 않도록 제외한다.
+      headers: { ...init?.headers, ...getNgrokHeaders(baseUrl) },
     });
   } catch {
     throw new AuthApiError(
