@@ -1,12 +1,12 @@
 import {
-    useMemo,
-    useState,
+  useMemo,
+  useState,
 } from 'react';
 import {
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 interface ReservationCalendarProps {
@@ -52,6 +52,16 @@ function getTodayString() {
   );
 }
 
+function getOneYearLaterString() {
+  const today = new Date();
+
+  return toDateString(
+    today.getFullYear() + 1,
+    today.getMonth(),
+    today.getDate()
+  );
+}
+
 export function ReservationCalendar({
   selectedDate,
   startDate,
@@ -71,6 +81,22 @@ export function ReservationCalendar({
 
   const todayString =
     getTodayString();
+
+  const oneYearLaterString =
+    getOneYearLaterString();
+
+  const maximumDate =
+    endDate &&
+    endDate < oneYearLaterString
+      ? endDate
+      : oneYearLaterString;
+
+  const [
+    maximumYear,
+    maximumMonth,
+  ] = maximumDate
+    .split('-')
+    .map(Number);
 
   const calendarDays = useMemo(() => {
     const firstDay = new Date(
@@ -126,6 +152,12 @@ export function ReservationCalendar({
     }
 
     if (
+      date > maximumDate
+    ) {
+      return true;
+    }
+
+    if (
       startDate &&
       date < startDate
     ) {
@@ -155,6 +187,16 @@ export function ReservationCalendar({
     currentMonth ===
       today.getMonth();
 
+  const nextDisabled =
+    currentYear >
+      maximumYear ||
+    (
+      currentYear ===
+        maximumYear &&
+      currentMonth >=
+        maximumMonth - 1
+    );
+
   const previousMonth = () => {
     if (previousDisabled) {
       return;
@@ -174,6 +216,10 @@ export function ReservationCalendar({
   };
 
   const nextMonth = () => {
+    if (nextDisabled) {
+      return;
+    }
+
     if (currentMonth === 11) {
       setCurrentYear(
         current => current + 1
@@ -212,10 +258,17 @@ export function ReservationCalendar({
         </Text>
 
         <Pressable
+          disabled={nextDisabled}
           onPress={nextMonth}
           style={styles.arrowButton}
         >
-          <Text style={styles.arrow}>
+          <Text
+            style={[
+              styles.arrow,
+              nextDisabled &&
+                styles.arrowDisabled,
+            ]}
+          >
             ›
           </Text>
         </Pressable>
