@@ -1,7 +1,7 @@
 import {
-    ScrollView,
-    StyleSheet,
-    View,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,9 +17,14 @@ interface BookmarkContentProps {
   loading: boolean;
   errorMessage: string;
 
-  onBack: () => void;
-  onPress: (bookmark: BookmarkResponse) => void;
-  onRemove: (bookmark: BookmarkResponse) => void;
+  onPress: (
+    bookmark: BookmarkResponse
+  ) => void;
+
+  onRemove: (
+    bookmark: BookmarkResponse
+  ) => void;
+
   onRetry: () => void;
 }
 
@@ -27,8 +32,6 @@ export function BookmarkContent({
   bookmarks,
   loading,
   errorMessage,
-
-  onBack,
   onPress,
   onRemove,
   onRetry,
@@ -40,13 +43,16 @@ export function BookmarkContent({
     >
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        contentContainerStyle={
+          styles.scrollContent
+        }
+        showsVerticalScrollIndicator={
+          false
+        }
       >
         <View style={styles.screen}>
           <BookmarkHeader
             count={bookmarks.length}
-            onBack={onBack}
           />
 
           {loading ? (
@@ -60,22 +66,28 @@ export function BookmarkContent({
             <BookmarkEmpty />
           ) : (
             <View style={styles.grid}>
-              {bookmarks.map((bookmark) => (
-                <View
-                  key={bookmark.bookmarkId}
-                  style={styles.cardWrapper}
-                >
-                  <BookmarkCard
-                    bookmark={bookmark}
-                    onPress={() =>
-                      onPress(bookmark)
+              {bookmarks.map(
+                (bookmark) => (
+                  <View
+                    key={
+                      bookmark.bookmarkId
                     }
-                    onRemove={() =>
-                      onRemove(bookmark)
+                    style={
+                      styles.cardWrapper
                     }
-                  />
-                </View>
-              ))}
+                  >
+                    <BookmarkCard
+                      bookmark={bookmark}
+                      onPress={() =>
+                        onPress(bookmark)
+                      }
+                      onRemove={() =>
+                        onRemove(bookmark)
+                      }
+                    />
+                  </View>
+                )
+              )}
             </View>
           )}
         </View>
@@ -96,15 +108,15 @@ const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    alignItems: 'center',
     flexGrow: 1,
+    alignItems: 'center',
     backgroundColor: '#FFFAF1',
   },
 
   screen: {
+    flex: 1,
     width: '100%',
     maxWidth: 430,
-    flex: 1,
     paddingHorizontal: 18,
     paddingTop: 14,
     paddingBottom: 30,

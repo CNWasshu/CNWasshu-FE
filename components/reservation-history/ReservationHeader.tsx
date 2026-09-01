@@ -1,7 +1,7 @@
 import {
-    StyleSheet,
-    Text,
-    View,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 interface ReservationHeaderProps {
@@ -13,18 +13,16 @@ export function ReservationHeader({
 }: ReservationHeaderProps) {
   return (
     <View style={styles.header}>
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>
-          예약 관리
-        </Text>
-      </View>
-
       <Text style={styles.title}>
         예약 내역
       </Text>
 
+      <Text style={styles.description}>
+        예정된 예약을 확인해보세요.
+      </Text>
+
       <Text style={styles.count}>
-        예정된 예약 {count}건
+        총 {count}건의 예약이 있어요
       </Text>
     </View>
   );
@@ -35,41 +33,33 @@ const styles = StyleSheet.create({
     marginHorizontal: -18,
     marginTop: -14,
     marginBottom: 22,
-    paddingHorizontal: 18,
-    paddingTop: 30,
+    paddingHorizontal: 22,
+    paddingTop: 28,
     paddingBottom: 28,
-
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
-
-    backgroundColor: '#4f8f53',
-  },
-
-  badge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: '#ffffff',
-  },
-
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#3f7d46',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    backgroundColor: '#3f8349',
   },
 
   title: {
-    marginTop: 16,
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '900',
+    letterSpacing: -0.5,
+    color: '#ffffff',
+  },
+
+  description: {
+    marginTop: 5,
+    fontSize: 12,
+    fontWeight: '400',
+    lineHeight: 18,
     color: '#ffffff',
   },
 
   count: {
-    marginTop: 7,
+    marginTop: 15,
     fontSize: 12,
-    fontWeight: '700',
-    color: '#e7f2e5',
+    fontWeight: '500',
+    color: '#ffffff',
   },
 });

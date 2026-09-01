@@ -1,9 +1,9 @@
 import { Image } from 'expo-image';
 import {
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 import type { BookmarkResponse } from '@/types/bookmark';
@@ -22,6 +22,10 @@ export function BookmarkCard({
   const isActivity =
     bookmark.type === 'ACTIVITY';
 
+  const hasOperatingTime =
+    bookmark.operatingStartTime ||
+    bookmark.operatingEndTime;
+
   return (
     <Pressable
       style={styles.card}
@@ -38,8 +42,8 @@ export function BookmarkCard({
         />
       ) : (
         <View style={styles.imagePlaceholder}>
-          <Text style={styles.placeholderEmoji}>
-            {isActivity ? '🌿' : '🍽️'}
+          <Text style={styles.placeholderText}>
+            이미지 준비 중
           </Text>
         </View>
       )}
@@ -102,21 +106,35 @@ export function BookmarkCard({
           {bookmark.title}
         </Text>
 
-        {(bookmark.operatingStartTime ||
-          bookmark.operatingEndTime) && (
-          <Text
-            style={styles.operatingTime}
-            numberOfLines={1}
-          >
-            🕒 {formatOperatingTime(bookmark)}
-          </Text>
-        )}
+        <Text
+          style={[
+            styles.operatingTime,
+            !hasOperatingTime &&
+              styles.operatingTimeEmpty,
+          ]}
+          numberOfLines={1}
+        >
+          {hasOperatingTime
+            ? formatOperatingTime(bookmark)
+            : '운영시간 정보 없음'}
+        </Text>
 
         <View style={styles.footer}>
-          {isActivity &&
-          bookmark.reservationRequired === true ? (
-            <Text style={styles.reservationText}>
-              예약 필요
+          {isActivity ? (
+            <Text
+              style={[
+                styles.reservationText,
+                bookmark.reservationRequired ===
+                  false &&
+                  styles.reservationNotRequiredText,
+                bookmark.reservationRequired ===
+                  null &&
+                styles.reservationUnknownText,
+              ]}
+            >
+              {getReservationText(
+                bookmark.reservationRequired
+              )}
             </Text>
           ) : (
             <Text style={styles.detailHint}>
@@ -133,10 +151,16 @@ function formatOperatingTime(
   bookmark: BookmarkResponse
 ) {
   const start =
-    bookmark.operatingStartTime?.slice(0, 5);
+    bookmark.operatingStartTime?.slice(
+      0,
+      5
+    );
 
   const end =
-    bookmark.operatingEndTime?.slice(0, 5);
+    bookmark.operatingEndTime?.slice(
+      0,
+      5
+    );
 
   if (start && end) {
     return `${start} ~ ${end}`;
@@ -153,14 +177,27 @@ function formatOperatingTime(
   return '';
 }
 
+function getReservationText(
+  reservationRequired: boolean | null
+) {
+  if (reservationRequired === true) {
+    return '예약 필요';
+  }
+
+  if (reservationRequired === false) {
+    return '예약 불필요';
+  }
+
+  return '예약 정보 없음';
+}
+
 const styles = StyleSheet.create({
   card: {
-    position: 'relative',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#EFE3CE',
+    borderColor: '#efe3ce',
     borderRadius: 18,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#ffffff',
   },
 
   image: {
@@ -172,11 +209,13 @@ const styles = StyleSheet.create({
     height: 110,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E8F5E4',
+    backgroundColor: '#e8f5e4',
   },
 
-  placeholderEmoji: {
-    fontSize: 38,
+  placeholderText: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#527557',
   },
 
   heartButton: {
@@ -188,14 +227,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.94)',
+    backgroundColor:
+      'rgba(255,255,255,0.94)',
   },
 
   heartIcon: {
-    color: '#E64A67',
     fontSize: 19,
-    fontWeight: '700',
     lineHeight: 21,
+    fontWeight: '700',
+    color: '#e64a67',
   },
 
   typeBadge: {
@@ -205,13 +245,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
     paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#ffffff',
   },
 
   typeBadgeText: {
-    color: '#3F7D46',
     fontSize: 9,
     fontWeight: '900',
+    color: '#3f7d46',
   },
 
   content: {
@@ -222,7 +262,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 4,
-    marginBottom: 8,
+    marginBottom: 6,
   },
 
   tag: {
@@ -233,54 +273,68 @@ const styles = StyleSheet.create({
   },
 
   regionTag: {
-    backgroundColor: '#E7F4E2',
+    backgroundColor: '#e7f4e2',
   },
 
   regionTagText: {
-    color: '#3F7D46',
     fontSize: 9,
     fontWeight: '900',
+    color: '#3f7d46',
   },
 
   categoryTag: {
-    backgroundColor: '#F0E6D3',
+    backgroundColor: '#f0e6d3',
   },
 
   categoryTagText: {
-    color: '#6B5730',
     fontSize: 9,
     fontWeight: '900',
+    color: '#6b5730',
   },
 
   title: {
-    minHeight: 38,
-    color: '#29251E',
+    minHeight: 24,
     fontSize: 15,
-    fontWeight: '900',
     lineHeight: 19,
+    fontWeight: '900',
     letterSpacing: -0.3,
+    color: '#29251e',
   },
 
   operatingTime: {
-    marginTop: 6,
-    color: '#6F6A60',
+    marginTop: 2,
     fontSize: 10,
+    fontWeight: '500',
+    color: '#766749',
+  },
+
+  operatingTimeEmpty: {
+    color: '#b4aca0',
   },
 
   footer: {
     minHeight: 18,
-    marginTop: 9,
+    marginTop: 4,
     justifyContent: 'center',
   },
 
   reservationText: {
-    color: '#A66400',
     fontSize: 10,
-    fontWeight: '800',
+    fontWeight: '500',
+    color: '#a66400',
+  },
+
+  reservationNotRequiredText: {
+    color: '#6f6a60',
+  },
+
+  reservationUnknownText: {
+    color: '#b4aca0',
   },
 
   detailHint: {
-    color: '#8A8378',
-    fontSize: 9,
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#8a8378',
   },
 });
