@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -9,7 +10,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 
 import { DeleteAccountModal } from '@/components/auth/DeleteAccountModal';
 import { BackHeader } from '@/components/common/BackHeader';
@@ -237,6 +237,26 @@ export default function MyPageScreen() {
                   style={[styles.menuRow, styles.menuRowLast]}>
                   <Text style={styles.menuLabel}>알림톡 설정</Text>
                   <Text style={styles.menuValue}>알림 시점 설정하기 ›</Text>
+                </Pressable>
+              </View>
+
+              <View style={styles.menuCard}>
+                <Pressable
+                  onPress={() =>
+                    router.push('/reservation')
+                  }
+                  style={[
+                    styles.menuRow,
+                    styles.menuRowLast,
+                  ]}
+                >
+                  <Text style={styles.menuLabel}>
+                    예약 내역
+                  </Text>
+
+                  <Text style={styles.menuValue}>
+                    예약 확인하기 ›
+                  </Text>
                 </Pressable>
               </View>
 
