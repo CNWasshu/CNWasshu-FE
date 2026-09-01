@@ -105,6 +105,20 @@ export const reservationApi = {
       }
     ),
 
+  getReservations: (
+    accessToken: string
+  ) =>
+    request<ReservationResponse[]>(
+      RESERVATION_PATH,
+      {
+        method: 'GET',
+        headers:
+          getAuthorizationHeaders(
+            accessToken
+          ),
+      }
+    ),
+
   getReservationsByDate: (
     date: string,
     accessToken: string
@@ -123,7 +137,10 @@ export const reservationApi = {
     ),
 
   getReservationsByPeriod: (
-    { startDate, endDate }: ReservationPeriodQuery,
+    {
+      startDate,
+      endDate,
+    }: ReservationPeriodQuery,
     accessToken: string
   ) =>
     request<ReservationResponse[]>(
@@ -157,6 +174,21 @@ export const reservationApi = {
           ),
         },
         body: JSON.stringify(payload),
+      }
+    ),
+
+  cancelReservation: (
+    reservationId: number,
+    accessToken: string
+  ) =>
+    request<void>(
+      `${RESERVATION_PATH}/${reservationId}/cancel`,
+      {
+        method: 'PATCH',
+        headers:
+          getAuthorizationHeaders(
+            accessToken
+          ),
       }
     ),
 };

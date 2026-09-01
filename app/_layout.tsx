@@ -83,6 +83,7 @@ export default function RootLayout() {
           <Stack.Screen name="activity/[id]" options={{ headerShown: false }}/>
           <Stack.Screen name="restaurant/[id]" options={{ headerShown: false }}/>
           <Stack.Screen name="reservation/[id]" options={{headerShown: false,}}/>
+          <Stack.Screen name="reservation/index" options={{headerShown: false,}}/>
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
       </AuthGate>
