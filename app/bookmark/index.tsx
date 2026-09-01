@@ -1,5 +1,8 @@
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 
 import { BookmarkContent } from '@/components/bookmark/BookmarkContent';
 import { BookmarkDeleteModal } from '@/components/bookmark/BookmarkDeleteModal';
@@ -21,7 +24,10 @@ export default function BookmarkScreen() {
   const [
     selectedBookmark,
     setSelectedBookmark,
-  ] = useState<BookmarkResponse | null>(null);
+  ] =
+    useState<BookmarkResponse | null>(
+      null
+    );
 
   const [
     deleteModalVisible,
@@ -32,22 +38,24 @@ export default function BookmarkScreen() {
     fetchBookmarks();
   }, [fetchBookmarks]);
 
-
-  const handleBack = () => {
-    router.back();
-  };
-
   const handleBookmarkPress = (
     bookmark: BookmarkResponse
   ) => {
-    if (bookmark.type === 'ACTIVITY') {
-      // 추후 체험 상세 페이지 이동
+    if (
+      bookmark.type === 'ACTIVITY'
+    ) {
+      router.push(
+        `/activity/${bookmark.targetId}`
+      );
       return;
     }
 
-    if (bookmark.type === 'RESTAURANT') {
-      // 추후 맛집 상세 페이지 이동
-      return;
+    if (
+      bookmark.type === 'RESTAURANT'
+    ) {
+      router.push(
+        `/restaurant/${bookmark.targetId}`
+      );
     }
   };
 
@@ -60,23 +68,27 @@ export default function BookmarkScreen() {
     setDeleteModalVisible(true);
   };
 
-  const handleConfirmRemove = async () => {
-    if (!selectedBookmark) {
-      return;
-    }
+  const handleConfirmRemove =
+    async () => {
+      if (!selectedBookmark) {
+        return;
+      }
 
-    const success = await removeBookmark({
-      type: selectedBookmark.type,
-      targetId: selectedBookmark.targetId,
-    });
+      const success =
+        await removeBookmark({
+          type:
+            selectedBookmark.type,
+          targetId:
+            selectedBookmark.targetId,
+        });
 
-    if (!success) {
-      return;
-    }
+      if (!success) {
+        return;
+      }
 
-    setDeleteModalVisible(false);
-    setSelectedBookmark(null);
-  };
+      setDeleteModalVisible(false);
+      setSelectedBookmark(null);
+    };
 
   const handleCancelRemove = () => {
     setDeleteModalVisible(false);
@@ -93,16 +105,23 @@ export default function BookmarkScreen() {
         bookmarks={bookmarks}
         loading={loading}
         errorMessage={errorMessage}
-        onBack={handleBack}
-        onPress={handleBookmarkPress}
-        onRemove={handleRemovePress}
+        onPress={
+          handleBookmarkPress
+        }
+        onRemove={
+          handleRemovePress
+        }
         onRetry={handleRetry}
       />
 
       <BookmarkDeleteModal
         visible={deleteModalVisible}
-        onConfirm={handleConfirmRemove}
-        onCancel={handleCancelRemove}
+        onConfirm={
+          handleConfirmRemove
+        }
+        onCancel={
+          handleCancelRemove
+        }
       />
     </>
   );
