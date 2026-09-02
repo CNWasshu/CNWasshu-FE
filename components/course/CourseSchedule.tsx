@@ -1,6 +1,6 @@
 import type { CourseItem } from '@/types/course';
 import { CourseColors } from '@/constants/course-colors';
-import { getGoogleMapsDirectionsUrl, getGoogleMapsPlaceUrl, openExternalMap } from '@/utils/courseMaps';
+import { getGoogleMapsPlaceUrl, openExternalMap } from '@/utils/courseMaps';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -59,10 +59,6 @@ export function CourseSchedule({ enableDayNavigation = false, items }: { enableD
               </View>
             </View>
           ))}
-          {dayItems.length > 1 ? <Pressable accessibilityLabel={`Day ${dayNo} 전체 코스 Google 지도에서 보기`} accessibilityRole="link" onPress={() => {
-            const url = getGoogleMapsDirectionsUrl(dayItems);
-            if (url) openMap(url);
-          }} style={styles.routeButton}><Text style={styles.routeButtonText}>Day {dayNo} 전체 코스 Google 지도에서 보기</Text><Text style={styles.routeArrow}>→</Text></Pressable> : null}
         </View>
       ))}
     </View>
@@ -76,5 +72,5 @@ const styles = StyleSheet.create({
   item: { flex: 1, backgroundColor: CourseColors.white, borderRadius: 16, borderWidth: 1, borderColor: CourseColors.border, padding: 13, gap: 5 },
   number: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: CourseColors.primary },
   numberText: { color: CourseColors.white, fontSize: 12, fontWeight: '900' }, timeRow: { alignItems: 'center', flexDirection: 'row', gap: 5 }, time: { color: CourseColors.primary, fontWeight: '800', fontSize: 12 }, title: { color: CourseColors.text, fontSize: 16, fontWeight: '800', lineHeight: 22 }, address: { color: '#766B5D', fontSize: 12, lineHeight: 18 },
-  memo: { color: CourseColors.muted, lineHeight: 19, fontSize: 13 }, mapButton: { alignItems: 'center', alignSelf: 'flex-start', flexDirection: 'row', gap: 5, minHeight: 44, marginTop: 1, paddingRight: 8 }, mapButtonText: { color: CourseColors.primary, fontSize: 12, fontWeight: '800' }, routeButton: { marginLeft: 38, minHeight: 44, borderRadius: 12, borderWidth: 1, borderColor: '#B8D0B4', backgroundColor: CourseColors.primarySoft, paddingHorizontal: 13, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 }, routeButtonText: { color: CourseColors.primaryDark, fontSize: 12, fontWeight: '800', textAlign: 'center' }, routeArrow: { color: CourseColors.primary, fontSize: 16, fontWeight: '900' }, empty: { alignItems: 'center', gap: 7, paddingVertical: 28 }, emptyTitle: { color: CourseColors.text, fontSize: 15, fontWeight: '900' }, emptyDescription: { color: CourseColors.muted, fontSize: 12, lineHeight: 18, textAlign: 'center' },
+  memo: { color: CourseColors.muted, lineHeight: 19, fontSize: 13 }, mapButton: { alignItems: 'center', alignSelf: 'flex-start', flexDirection: 'row', gap: 5, minHeight: 44, marginTop: 1, paddingRight: 8 }, mapButtonText: { color: CourseColors.primary, fontSize: 12, fontWeight: '800' }, empty: { alignItems: 'center', gap: 7, paddingVertical: 28 }, emptyTitle: { color: CourseColors.text, fontSize: 15, fontWeight: '900' }, emptyDescription: { color: CourseColors.muted, fontSize: 12, lineHeight: 18, textAlign: 'center' },
 });
