@@ -52,7 +52,7 @@ const styles = {
     fontSize: 14,
     minWidth: 0,
     outline: 'none',
-    padding: '13px 0',
+    padding: '10px 0',
   },
   inputShell: {
     alignItems: 'center',
@@ -60,6 +60,7 @@ const styles = {
     border: `1px solid ${CourseColors.border}`,
     borderRadius: 15,
     display: 'flex',
+    minHeight: 44,
     padding: '0 13px',
   },
   inputError: {
