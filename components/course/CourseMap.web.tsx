@@ -48,7 +48,7 @@ export function CourseMap({ items }: { items: CourseItem[] }) {
       if (coordinates.length === 1) map.setView(coordinates[0], 14);
       else map.fitBounds(leaflet.latLngBounds(coordinates), { padding: [42, 42] });
 
-      if (coordinates.length > 1) leaflet.polyline(coordinates, { color: CourseColors.primary, weight: 2, opacity: 0.7 }).addTo(map);
+      if (coordinates.length > 1) leaflet.polyline(coordinates, { color: CourseColors.primary, weight: 2, opacity: 0.72 }).addTo(map);
       selectedMarkers.forEach((marker) => {
         const icon = leaflet.divIcon({
           className: '',

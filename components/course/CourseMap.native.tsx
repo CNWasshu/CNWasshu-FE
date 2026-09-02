@@ -72,7 +72,7 @@ export function CourseMap({ items }: { items: CourseItem[] }) {
           initialRegion={{ latitude: first.latitude, longitude: first.longitude, latitudeDelta: 0.025, longitudeDelta: 0.025 }}
         >
           {selectedMarkers.length > 1 ? (
-            <Polyline coordinates={selectedMarkers.map(({ latitude, longitude }) => ({ latitude, longitude }))} strokeColor="rgba(63, 125, 70, 0.7)" strokeWidth={2} />
+            <Polyline coordinates={selectedMarkers.map(({ latitude, longitude }) => ({ latitude, longitude }))} strokeColor="rgba(63, 125, 70, 0.72)" strokeWidth={2} />
           ) : null}
           {selectedMarkers.map((marker) => (
             <Marker key={`${marker.dayNo}-${marker.markerNumber}-${marker.title}`} coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}>
