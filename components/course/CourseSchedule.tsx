@@ -34,8 +34,8 @@ export function CourseSchedule({ items }: { items: CourseItem[] }) {
               </View>
               <View style={styles.item}>
                 <Text style={styles.title}>{item.title}</Text>
+                {item.address?.trim() ? <Text style={styles.address}>{item.address}</Text> : null}
                 <Text style={styles.time}>{displayTime(item.startTime)} ~ {displayTime(item.endTime)}</Text>
-                {item.address ? <Text style={styles.address}>{item.address}</Text> : null}
                 {item.memo ? <Text style={styles.memo}>{item.memo}</Text> : null}
                 <Pressable onPress={() => openMap(getGoogleMapsPlaceUrl(item))} style={styles.mapButton}><Text style={styles.mapButtonText}>Google 지도에서 보기 ↗</Text></Pressable>
               </View>
