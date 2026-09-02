@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     gap: 8,
-    minHeight: 47,
+    minHeight: 44,
     paddingHorizontal: 13,
   },
   inputError: { backgroundColor: '#FFF9F6', borderColor: '#E6BDB3' },

@@ -1,6 +1,5 @@
 import { CourseColors } from '@/constants/course-colors';
 import type { CourseItem } from '@/types/course';
-import { getGoogleMapsDirectionsUrl, getGoogleMapsPlaceUrl, openExternalMap } from '@/utils/courseMaps';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -23,7 +22,6 @@ export function CourseMap({ items }: { items: CourseItem[] }) {
   const [selectedDay, setSelectedDay] = useState(defaultDay);
   const activeDay = selectedDay != null && dayNumbers.includes(selectedDay) ? selectedDay : dayNumbers[0];
   const selectedMarkers = useMemo(() => activeDay == null ? [] : dayGroups[activeDay] ?? [], [activeDay, dayGroups]);
-  const dayItems = useMemo(() => items.filter((item) => item.dayNo === activeDay), [activeDay, items]);
 
   useEffect(() => {
     setSelectedDay(defaultDay);
@@ -52,7 +50,6 @@ export function CourseMap({ items }: { items: CourseItem[] }) {
   if (markers.length === 0) return <CourseMapPlaceholder />;
 
   const first = selectedMarkers[0];
-  const externalUrl = getGoogleMapsDirectionsUrl(dayItems) ?? (dayItems[0] ? getGoogleMapsPlaceUrl(dayItems[0]) : null);
   return (
     <View style={styles.wrapper}>
       {dayNumbers.length > 1 ? (
@@ -88,7 +85,6 @@ export function CourseMap({ items }: { items: CourseItem[] }) {
           ))}
         </MapView>
       </View> : <CourseMapPlaceholder dayNo={activeDay} />}
-      {externalUrl ? <Pressable accessibilityLabel="Google 지도에서 전체 경로 보기" accessibilityRole="link" style={styles.externalButton} onPress={() => void openExternalMap(externalUrl)}><Text style={styles.externalButtonText}>Google 지도에서 전체 경로 보기 ↗</Text></Pressable> : null}
     </View>
   );
 }
@@ -97,5 +93,5 @@ const styles = StyleSheet.create({
   wrapper: { gap: 9 }, days: { gap: 7, paddingRight: 12 }, dayChip: { alignItems: 'center', flexDirection: 'row', gap: 4, minHeight: 44, borderWidth: 1, borderColor: CourseColors.border, backgroundColor: CourseColors.background, borderRadius: 14, paddingHorizontal: 12 }, dayChipSelected: { borderColor: CourseColors.primary, backgroundColor: CourseColors.primary }, dayText: { color: CourseColors.muted, fontSize: 12, fontWeight: '800' }, dayTextSelected: { color: CourseColors.white },
   mapFrame: { height: 235, borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: '#CAD8C8' }, map: { flex: 1 },
   marker: { width: 30, height: 30, borderRadius: 15, backgroundColor: CourseColors.primary, borderWidth: 2, borderColor: CourseColors.white, alignItems: 'center', justifyContent: 'center', shadowColor: '#263C28', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.14, shadowRadius: 3, elevation: 2 }, markerText: { color: CourseColors.white, fontSize: 13, lineHeight: 15, fontWeight: '900' },
-  callout: { width: 210, backgroundColor: CourseColors.white, borderRadius: 14, padding: 13, gap: 4, borderWidth: 1, borderColor: CourseColors.border }, calloutTitle: { color: CourseColors.text, fontWeight: '900', fontSize: 15 }, calloutTime: { color: CourseColors.primary, fontWeight: '800', fontSize: 12 }, calloutAddress: { color: CourseColors.muted, fontSize: 12, lineHeight: 17 }, externalButton: { alignSelf: 'flex-start', borderWidth: 1, borderColor: '#B8D0B4', backgroundColor: CourseColors.white, borderRadius: 12, minHeight: 44, paddingHorizontal: 12, justifyContent: 'center' }, externalButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 12 },
+  callout: { width: 210, backgroundColor: CourseColors.white, borderRadius: 14, padding: 13, gap: 4, borderWidth: 1, borderColor: CourseColors.border }, calloutTitle: { color: CourseColors.text, fontWeight: '900', fontSize: 15 }, calloutTime: { color: CourseColors.primary, fontWeight: '800', fontSize: 12 }, calloutAddress: { color: CourseColors.muted, fontSize: 12, lineHeight: 17 },
 });

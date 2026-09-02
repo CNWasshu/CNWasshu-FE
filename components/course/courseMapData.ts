@@ -11,12 +11,20 @@ export interface CourseMarker {
   longitude: number;
 }
 
+export function buildCourseDisplayNumbers(items: CourseItem[]) {
+  const sortedItems = [...items].sort((a, b) =>
+    a.dayNo - b.dayNo || a.sortOrder - b.sortOrder || a.startTime.localeCompare(b.startTime)
+  );
+  return new Map(sortedItems.map((item, index) => [item, index + 1]));
+}
+
 export function buildCourseMarkers(items: CourseItem[]): CourseMarker[] {
+  const displayNumbers = buildCourseDisplayNumbers(items);
   return items.flatMap((item) =>
     item.latitude != null && item.longitude != null
       ? [{
           dayNo: item.dayNo,
-          markerNumber: item.sortOrder,
+          markerNumber: displayNumbers.get(item) ?? item.sortOrder,
           title: item.title,
           address: item.address,
           startTime: item.startTime,
