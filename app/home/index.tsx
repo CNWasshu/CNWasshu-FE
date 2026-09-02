@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { HomeApiError, getHomeErrorMessage, homeApi } from '@/api/homeApi';
 import { HomeContent } from '@/components/home/HomeContent';
+import { CHUNGNAM_REGIONS } from '@/constants/regions';
 import { useBookmarks } from '@/hooks/bookmark/use-bookmarks';
 import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-notification-count';
 import type { HomeItem, HomeItemType } from '@/types/home';
@@ -104,8 +105,15 @@ export default function HomeScreen() {
           .filter(Boolean)
       )
     );
+    const availableRegions = new Set(regionNames);
+    const knownRegions = CHUNGNAM_REGIONS.filter((region) =>
+      availableRegions.has(region)
+    );
+    const otherRegions = regionNames.filter(
+      (region) => !CHUNGNAM_REGIONS.includes(region as (typeof CHUNGNAM_REGIONS)[number])
+    );
 
-    return ['전체', ...regionNames];
+    return ['전체', ...knownRegions, ...otherRegions];
   }, [items, selectedType]);
 
   const categories = useMemo(() => {

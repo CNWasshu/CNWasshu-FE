@@ -1,6 +1,7 @@
 import { CourseColors } from '@/constants/course-colors';
 
 type CourseDateFieldProps = {
+  error?: boolean;
   label: string;
   minimumDate?: string;
   onChange: (value: string) => void;
@@ -8,11 +9,11 @@ type CourseDateFieldProps = {
   value: string;
 };
 
-export function CourseDateField({ label, minimumDate, onChange, placeholder, value }: CourseDateFieldProps) {
+export function CourseDateField({ error, label, minimumDate, onChange, placeholder, value }: CourseDateFieldProps) {
   return (
     <label style={styles.field}>
       <span style={styles.label}>{label}</span>
-      <span style={styles.inputShell}>
+      <span style={{ ...styles.inputShell, ...(error ? styles.inputError : {}) }}>
         <span aria-hidden style={styles.icon}>◷</span>
         <input
           aria-label={`${label} 선택`}
@@ -60,6 +61,10 @@ const styles = {
     borderRadius: 15,
     display: 'flex',
     padding: '0 13px',
+  },
+  inputError: {
+    backgroundColor: '#FFF9F6',
+    borderColor: '#E6BDB3',
   },
   label: {
     color: CourseColors.text,

@@ -7,6 +7,7 @@ import { CourseColors } from '@/constants/course-colors';
 import { formatDate, parseDate } from '@/utils/timetable/date';
 
 type CourseDateFieldProps = {
+  error?: boolean;
   label: string;
   minimumDate?: string;
   onChange: (value: string) => void;
@@ -14,7 +15,7 @@ type CourseDateFieldProps = {
   value: string;
 };
 
-export function CourseDateField({ label, minimumDate, onChange, placeholder, value }: CourseDateFieldProps) {
+export function CourseDateField({ error, label, minimumDate, onChange, placeholder, value }: CourseDateFieldProps) {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const selectedDate = value ? parseDate(value) : new Date();
 
@@ -34,7 +35,7 @@ export function CourseDateField({ label, minimumDate, onChange, placeholder, val
         accessibilityLabel={`${label} 선택`}
         accessibilityRole="button"
         onPress={() => setIsPickerOpen((open) => !open)}
-        style={styles.inputShell}
+        style={[styles.inputShell, error && styles.inputError]}
       >
         <Ionicons color={CourseColors.primary} name="calendar-outline" size={18} />
         <Text style={[styles.value, !value && styles.placeholder]}>{value || placeholder}</Text>
@@ -65,6 +66,7 @@ const styles = StyleSheet.create({
     minHeight: 47,
     paddingHorizontal: 13,
   },
+  inputError: { backgroundColor: '#FFF9F6', borderColor: '#E6BDB3' },
   label: { color: CourseColors.text, fontSize: 14, fontWeight: '800' },
   placeholder: { color: '#A49A8A' },
   value: { color: CourseColors.text, flex: 1, fontSize: 14 },
