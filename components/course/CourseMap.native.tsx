@@ -69,7 +69,7 @@ export function CourseMap({ items }: { items: CourseItem[] }) {
           initialRegion={{ latitude: first.latitude, longitude: first.longitude, latitudeDelta: 0.025, longitudeDelta: 0.025 }}
         >
           {selectedMarkers.length > 1 ? (
-            <Polyline coordinates={selectedMarkers.map(({ latitude, longitude }) => ({ latitude, longitude }))} strokeColor={CourseColors.primary} strokeWidth={3} />
+            <Polyline coordinates={selectedMarkers.map(({ latitude, longitude }) => ({ latitude, longitude }))} strokeColor="rgba(63, 125, 70, 0.7)" strokeWidth={2} />
           ) : null}
           {selectedMarkers.map((marker) => (
             <Marker key={`${marker.dayNo}-${marker.markerNumber}-${marker.title}`} coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}>
@@ -85,14 +85,14 @@ export function CourseMap({ items }: { items: CourseItem[] }) {
           ))}
         </MapView>
       </View> : <CourseMapPlaceholder />}
-      {externalUrl ? <Pressable style={styles.externalButton} onPress={() => void openExternalMap(externalUrl)}><Text style={styles.externalButtonText}>Google 지도에서 전체 경로 보기 ↗</Text></Pressable> : null}
+      {externalUrl ? <Pressable accessibilityLabel="Google 지도에서 전체 경로 보기" accessibilityRole="link" style={styles.externalButton} onPress={() => void openExternalMap(externalUrl)}><Text style={styles.externalButtonText}>Google 지도에서 전체 경로 보기 ↗</Text></Pressable> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: { gap: 10 }, days: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, dayChip: { borderWidth: 1, borderColor: CourseColors.border, backgroundColor: CourseColors.white, borderRadius: 16, paddingHorizontal: 13, paddingVertical: 7 }, dayChipSelected: { borderColor: CourseColors.primary, backgroundColor: CourseColors.primary }, dayText: { color: CourseColors.muted, fontSize: 12, fontWeight: '800' }, dayTextSelected: { color: CourseColors.white },
-  mapFrame: { height: 260, borderRadius: 22, overflow: 'hidden', borderWidth: 1, borderColor: '#CAD8C8' }, map: { flex: 1 },
-  marker: { width: 34, height: 34, borderRadius: 17, backgroundColor: CourseColors.primary, borderWidth: 3, borderColor: CourseColors.white, alignItems: 'center', justifyContent: 'center' }, markerText: { color: CourseColors.white, fontWeight: '900' },
-  callout: { width: 210, backgroundColor: CourseColors.white, borderRadius: 14, padding: 13, gap: 4, borderWidth: 1, borderColor: CourseColors.border }, calloutTitle: { color: CourseColors.text, fontWeight: '900', fontSize: 15 }, calloutTime: { color: CourseColors.primary, fontWeight: '800', fontSize: 12 }, calloutAddress: { color: CourseColors.muted, fontSize: 12, lineHeight: 17 }, externalButton: { borderWidth: 1, borderColor: CourseColors.primary, backgroundColor: CourseColors.primarySoft, borderRadius: 14, padding: 12, alignItems: 'center' }, externalButtonText: { color: CourseColors.primaryDark, fontWeight: '900', fontSize: 13 },
+  wrapper: { gap: 9 }, days: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 }, dayChip: { borderWidth: 1, borderColor: CourseColors.border, backgroundColor: CourseColors.background, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 7 }, dayChipSelected: { borderColor: CourseColors.primary, backgroundColor: CourseColors.primary }, dayText: { color: CourseColors.muted, fontSize: 12, fontWeight: '800' }, dayTextSelected: { color: CourseColors.white },
+  mapFrame: { height: 235, borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: '#CAD8C8' }, map: { flex: 1 },
+  marker: { width: 30, height: 30, borderRadius: 15, backgroundColor: CourseColors.primary, borderWidth: 2, borderColor: CourseColors.white, alignItems: 'center', justifyContent: 'center', shadowColor: '#263C28', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.14, shadowRadius: 3, elevation: 2 }, markerText: { color: CourseColors.white, fontSize: 13, lineHeight: 15, fontWeight: '900' },
+  callout: { width: 210, backgroundColor: CourseColors.white, borderRadius: 14, padding: 13, gap: 4, borderWidth: 1, borderColor: CourseColors.border }, calloutTitle: { color: CourseColors.text, fontWeight: '900', fontSize: 15 }, calloutTime: { color: CourseColors.primary, fontWeight: '800', fontSize: 12 }, calloutAddress: { color: CourseColors.muted, fontSize: 12, lineHeight: 17 }, externalButton: { alignSelf: 'flex-start', borderWidth: 1, borderColor: '#B8D0B4', backgroundColor: CourseColors.white, borderRadius: 12, minHeight: 44, paddingHorizontal: 12, justifyContent: 'center' }, externalButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 12 },
 });

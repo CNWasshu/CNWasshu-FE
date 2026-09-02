@@ -3,12 +3,14 @@ import { CourseColors } from '@/constants/course-colors';
 import { useCourses } from '@/hooks/useCourse';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CourseListScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
   const { courses, loading, error, refetch } = useCourses();
+  const singleColumn = width < 600;
 
   useFocusEffect(useCallback(() => { void refetch(); }, [refetch]));
 
@@ -34,7 +36,7 @@ export default function CourseListScreen() {
           </View> : null}
           {!loading && !error && courses.length > 0 ? <View style={styles.listSection}>
             <View style={styles.sectionHeading}><View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>저장된 코스 <Text style={styles.sectionCount}>{courses.length}</Text></Text></View><Pressable accessibilityLabel="새 AI 추천 코스 만들기" style={({ pressed }) => [styles.smallAiButton, pressed && styles.smallAiButtonPressed]} onPress={() => router.push('/course/ai')}><Text style={styles.aiSparkle}>✦</Text><Text style={styles.smallAiText}>AI 코스</Text><Text style={styles.smallAiArrow}>＋</Text></Pressable></View>
-            <View style={styles.list}>{courses.map((course) => <CourseListItem key={course.id} course={course} onPress={() => router.push(`/course/${course.id}`)} />)}</View>
+            <View style={styles.list}>{courses.map((course) => <CourseListItem key={course.id} course={course} onPress={() => router.push(`/course/${course.id}`)} singleColumn={singleColumn} />)}</View>
           </View> : null}
         </View>
       </ScrollView>

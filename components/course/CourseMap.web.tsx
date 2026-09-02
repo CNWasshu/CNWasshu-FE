@@ -46,13 +46,13 @@ export function CourseMap({ items }: { items: CourseItem[] }) {
       if (coordinates.length === 1) map.setView(coordinates[0], 14);
       else map.fitBounds(leaflet.latLngBounds(coordinates), { padding: [42, 42] });
 
-      if (coordinates.length > 1) leaflet.polyline(coordinates, { color: CourseColors.primary, weight: 4, opacity: 0.8 }).addTo(map);
+      if (coordinates.length > 1) leaflet.polyline(coordinates, { color: CourseColors.primary, weight: 2, opacity: 0.7 }).addTo(map);
       selectedMarkers.forEach((marker) => {
         const icon = leaflet.divIcon({
           className: '',
-          html: `<div style="width:34px;height:34px;border-radius:17px;background:${CourseColors.primary};border:3px solid white;color:white;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 6px rgba(38,60,40,.28)">${marker.markerNumber}</div>`,
-          iconSize: [34, 34],
-          iconAnchor: [17, 17],
+          html: `<div style="width:30px;height:30px;border-radius:15px;background:${CourseColors.primary};border:2px solid white;color:white;font-size:13px;line-height:15px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(38,60,40,.16)">${marker.markerNumber}</div>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15],
         });
         const popup = document.createElement('div');
         const title = document.createElement('strong');
@@ -87,12 +87,12 @@ export function CourseMap({ items }: { items: CourseItem[] }) {
       {selectedMarkers.length > 0 ? (
         <View style={styles.mapFrame}>{/* Web-only DOM node used as the Leaflet mount point. */}<div ref={containerRef} style={{ width: '100%', height: '100%' }} /></View>
       ) : <CourseMapPlaceholder />}
-      {externalUrl ? <Pressable style={styles.button} onPress={() => void openExternalMap(externalUrl)}><Text style={styles.buttonText}>Google 지도에서 전체 경로 보기 ↗</Text></Pressable> : null}
+      {externalUrl ? <Pressable accessibilityLabel="Google 지도에서 전체 경로 보기" accessibilityRole="link" style={styles.button} onPress={() => void openExternalMap(externalUrl)}><Text style={styles.buttonText}>Google 지도에서 전체 경로 보기 ↗</Text></Pressable> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: { gap: 10 }, days: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, dayChip: { borderWidth: 1, borderColor: CourseColors.border, backgroundColor: CourseColors.white, borderRadius: 16, paddingHorizontal: 13, paddingVertical: 7 }, dayChipSelected: { borderColor: CourseColors.primary, backgroundColor: CourseColors.primary }, dayText: { color: CourseColors.muted, fontSize: 12, fontWeight: '800' }, dayTextSelected: { color: CourseColors.white },
-  mapFrame: { height: 300, borderRadius: 22, overflow: 'hidden', borderWidth: 1, borderColor: '#CAD8C8', backgroundColor: CourseColors.map }, button: { borderWidth: 1, borderColor: CourseColors.primary, backgroundColor: CourseColors.primarySoft, borderRadius: 14, padding: 12, alignItems: 'center' }, buttonText: { color: CourseColors.primaryDark, fontWeight: '900', fontSize: 13 },
+  wrapper: { gap: 9 }, days: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 }, dayChip: { borderWidth: 1, borderColor: CourseColors.border, backgroundColor: CourseColors.background, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 7 }, dayChipSelected: { borderColor: CourseColors.primary, backgroundColor: CourseColors.primary }, dayText: { color: CourseColors.muted, fontSize: 12, fontWeight: '800' }, dayTextSelected: { color: CourseColors.white },
+  mapFrame: { height: 260, borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: '#CAD8C8', backgroundColor: CourseColors.map }, button: { alignSelf: 'flex-start', borderWidth: 1, borderColor: '#B8D0B4', backgroundColor: CourseColors.white, borderRadius: 12, minHeight: 44, paddingHorizontal: 12, justifyContent: 'center' }, buttonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 12 },
 });
