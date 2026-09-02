@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 
 export type CourseDateFieldProps = {
+  error?: boolean;
   label: string;
   minimumDate?: string;
   onChange: (value: string) => void;
