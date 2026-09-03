@@ -92,7 +92,14 @@ export default function SurveyScreen() {
         return;
       }
       await surveyApi.saveDraft(surveyId, payload, accessToken);
-      setSurvey(await surveyApi.submit(surveyId, accessToken));
+      const completed = await surveyApi.submit(surveyId, accessToken);
+      router.replace({
+        pathname: '/survey/result',
+        params: {
+          courseName: completed.courseName,
+          result: completed.status,
+        },
+      });
     } catch (requestError) {
       setActionError(getSurveyErrorMessage(requestError));
     } finally {
