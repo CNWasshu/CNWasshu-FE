@@ -6,6 +6,7 @@ export interface NotificationResponse {
   courseId: number | null;
   reservationId: number | null;
   activityId: number | null;
+  courseSurveyId: number | null;
   title: string;
   content: string;
   isRead: boolean;
@@ -27,6 +28,7 @@ export interface NotificationSettingResponse {
   reservation3hBefore: boolean;
   reservation1hBefore: boolean;
   reservation30mBefore: boolean;
+  surveyEnabled: boolean;
 }
 
 export interface NotificationSettingUpdateRequest {
@@ -35,6 +37,7 @@ export interface NotificationSettingUpdateRequest {
   reservation3hBefore?: boolean;
   reservation1hBefore?: boolean;
   reservation30mBefore?: boolean;
+  surveyEnabled?: boolean;
 }
 
 export interface NotificationApiErrorBody {
