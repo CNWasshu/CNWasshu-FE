@@ -1,12 +1,21 @@
 import * as Linking from 'expo-linking';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 
 import { CourseColors } from '@/constants/course-colors';
 import { useKakaoLogin } from '@/hooks/auth/use-kakao-login';
+import { useLogin } from '@/hooks/auth/use-login';
 
 const KAKAO_YELLOW = '#FEE500';
 const KAKAO_TEXT = '#191919';
@@ -27,7 +36,15 @@ function buildKakaoAuthUrl(clientId: string, redirectUri: string) {
 export default function LoginScreen() {
   const params = useLocalSearchParams<{ code?: string; error?: string }>();
   const { errorMessage: loginErrorMessage, isSubmitting, login, reset } = useKakaoLogin();
+  const {
+    errorMessage: basicLoginErrorMessage,
+    isSubmitting: isBasicLoginSubmitting,
+    login: basicLogin,
+    reset: resetBasicLogin,
+  } = useLogin();
   const [configErrorMessage, setConfigErrorMessage] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const handledCodeRef = useRef<string | null>(null);
 
   const clientId = process.env.EXPO_PUBLIC_KAKAO_CLIENT_ID;
@@ -52,6 +69,12 @@ export default function LoginScreen() {
     // 성공 시 홈/온보딩 이동은 useKakaoLogin 내부에서 처리한다 (isNewUser 분기 포함).
     void login(code, redirectUri);
   }, [login, params.code, redirectUri]);
+
+  const handlePressBasicLogin = async () => {
+    setConfigErrorMessage(null);
+    resetBasicLogin();
+    await basicLogin(email.trim(), password);
+  };
 
   const handlePressKakaoLogin = async () => {
     setConfigErrorMessage(null);
@@ -121,6 +144,59 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.body}>
+          <View style={styles.basicLoginForm}>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!isBasicLoginSubmitting}
+              keyboardType="email-address"
+              onChangeText={setEmail}
+              placeholder="이메일"
+              placeholderTextColor={CourseColors.muted}
+              style={styles.input}
+              value={email}
+            />
+            <TextInput
+              editable={!isBasicLoginSubmitting}
+              onChangeText={setPassword}
+              placeholder="비밀번호"
+              placeholderTextColor={CourseColors.muted}
+              secureTextEntry
+              style={styles.input}
+              value={password}
+            />
+
+            {basicLoginErrorMessage ? (
+              <Text style={styles.error}>{basicLoginErrorMessage}</Text>
+            ) : null}
+
+            <Pressable
+              disabled={isBasicLoginSubmitting || !email.trim() || !password}
+              onPress={() => void handlePressBasicLogin()}
+              style={[
+                styles.loginButton,
+                (isBasicLoginSubmitting || !email.trim() || !password) && styles.disabled,
+              ]}>
+              {isBasicLoginSubmitting ? (
+                <ActivityIndicator color={CourseColors.white} />
+              ) : (
+                <Text style={styles.loginButtonText}>로그인</Text>
+              )}
+            </Pressable>
+
+            <Link asChild href="/auth/signup">
+              <Pressable style={styles.signupLink}>
+                <Text style={styles.signupLinkText}>계정이 없으신가요? 회원가입</Text>
+              </Pressable>
+            </Link>
+          </View>
+
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>또는</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
           {isSubmitting ? (
             <View style={styles.loadingCard}>
               <ActivityIndicator size="large" color={CourseColors.primary} />
@@ -185,6 +261,32 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: { color: CourseColors.muted, fontWeight: '600' },
+  basicLoginForm: { gap: 10 },
+  input: {
+    minHeight: 52,
+    borderWidth: 1,
+    borderColor: CourseColors.border,
+    borderRadius: 15,
+    paddingHorizontal: 16,
+    fontSize: 15,
+    color: CourseColors.text,
+    backgroundColor: CourseColors.white,
+  },
+  loginButton: {
+    minHeight: 52,
+    backgroundColor: CourseColors.primary,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  loginButtonText: { color: CourseColors.white, fontWeight: '900', fontSize: 15 },
+  signupLink: { alignItems: 'center', paddingVertical: 6 },
+  signupLinkText: { color: CourseColors.primary, fontSize: 13, fontWeight: '700' },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: CourseColors.border },
+  dividerText: { color: CourseColors.muted, fontSize: 12, fontWeight: '700' },
+  disabled: { opacity: 0.55 },
   kakaoButton: {
     minHeight: 56,
     backgroundColor: KAKAO_YELLOW,
