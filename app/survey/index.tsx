@@ -28,6 +28,8 @@ export default function SurveyScreen() {
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [snoozed, setSnoozed] = useState(false);
+  const isSnoozed = snoozed || survey?.status === 'SNOOZED';
 
   const loadSurvey = useCallback(async () => {
     if (!surveyId) {
@@ -107,6 +109,30 @@ export default function SurveyScreen() {
     }
   };
 
+  const snoozeSurvey = async () => {
+    if (!surveyId) return;
+    setSaving(true);
+    setActionError(null);
+    try {
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        router.replace('/auth/login');
+        return;
+      }
+      await surveyApi.snooze(surveyId, accessToken);
+      setSnoozed(true);
+    } catch (requestError) {
+      if (isSessionExpiredError(requestError)) {
+        await clearTokens();
+        router.replace('/auth/login');
+        return;
+      }
+      setActionError(getSurveyErrorMessage(requestError));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -158,26 +184,47 @@ export default function SurveyScreen() {
             </View>
           ) : null}
 
-          {!loading && survey && survey.surveyType === 'USER_COURSE'
-          && !CLOSED_STATUSES.has(survey.status) && !FINISHED_STATUSES.has(survey.status) ? (
-            <ManualSurveyForm
-              error={actionError}
-              onSaveDraft={saveDraft}
-              onSubmit={submitSurvey}
-              saving={saving}
-              survey={survey}
-            />
+          {!loading && survey && isSnoozed ? (
+            <View style={styles.stateCard}>
+              <Text style={styles.completeIcon}>✓</Text>
+              <Text style={styles.stateTitle}>내일 다시 알려드릴게요</Text>
+              <Text style={styles.stateText}>내일 오전 10시에 만족도 조사 알림을 다시 보내드려요.</Text>
+              <Pressable onPress={() => router.replace('/notification')} style={styles.primaryButton}>
+                <Text style={styles.primaryButtonText}>알림함으로 돌아가기</Text>
+              </Pressable>
+            </View>
           ) : null}
 
-          {!loading && survey && survey.surveyType === 'AI_COURSE'
+          {!loading && survey && !isSnoozed && survey.surveyType === 'USER_COURSE'
           && !CLOSED_STATUSES.has(survey.status) && !FINISHED_STATUSES.has(survey.status) ? (
-            <AiSurveyForm
-              error={actionError}
-              onSaveDraft={saveDraft}
-              onSubmit={submitSurvey}
-              saving={saving}
-              survey={survey}
-            />
+            <>
+              <ManualSurveyForm
+                error={actionError}
+                onSaveDraft={saveDraft}
+                onSubmit={submitSurvey}
+                saving={saving}
+                survey={survey}
+              />
+              <Pressable disabled={saving} onPress={() => void snoozeSurvey()} style={styles.snoozeButton}>
+                <Text style={styles.snoozeButtonText}>내일 다시 알림</Text>
+              </Pressable>
+            </>
+          ) : null}
+
+          {!loading && survey && !isSnoozed && survey.surveyType === 'AI_COURSE'
+          && !CLOSED_STATUSES.has(survey.status) && !FINISHED_STATUSES.has(survey.status) ? (
+            <>
+              <AiSurveyForm
+                error={actionError}
+                onSaveDraft={saveDraft}
+                onSubmit={submitSurvey}
+                saving={saving}
+                survey={survey}
+              />
+              <Pressable disabled={saving} onPress={() => void snoozeSurvey()} style={styles.snoozeButton}>
+                <Text style={styles.snoozeButtonText}>내일 다시 알림</Text>
+              </Pressable>
+            </>
           ) : null}
           </View>
         </View>
@@ -222,6 +269,8 @@ const styles = StyleSheet.create({
     borderRadius: 15, justifyContent: 'center', minHeight: 52,
   },
   primaryButtonText: { color: CourseColors.white, fontWeight: '900' },
+  snoozeButton: { alignItems: 'center', justifyContent: 'center', minHeight: 48, marginTop: 10 },
+  snoozeButtonText: { color: CourseColors.muted, fontSize: 13, fontWeight: '800' },
   introCard: {
     alignItems: 'center', backgroundColor: CourseColors.white, borderColor: CourseColors.border,
     borderRadius: 26, borderWidth: 1, gap: 14, padding: 26,
