@@ -4,6 +4,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getSurveyErrorMessage, surveyApi } from '@/api/surveyApi';
+import { AiSurveyForm } from '@/components/survey/AiSurveyForm';
 import { ManualSurveyForm } from '@/components/survey/ManualSurveyForm';
 import { SurveyHeader } from '@/components/survey/SurveyHeader';
 import { CourseColors } from '@/constants/course-colors';
@@ -163,20 +164,13 @@ export default function SurveyScreen() {
 
           {!loading && survey && survey.surveyType === 'AI_COURSE'
           && !CLOSED_STATUSES.has(survey.status) && !FINISHED_STATUSES.has(survey.status) ? (
-            <View style={styles.introCard}>
-              <View style={styles.introIcon}>
-                <Text style={styles.introIconText}>✨</Text>
-              </View>
-              <Text style={styles.introTitle}>추천받은 코스는 어떠셨나요?</Text>
-              <Text style={styles.introDescription}>추천 구성과 일정, 이동 동선에 대한 의견을 들려주세요.</Text>
-              <View style={styles.guideBox}>
-                <Text style={styles.guideText}>• 작성 중인 답변은 단계별로 저장돼요.</Text>
-                <Text style={styles.guideText}>• 원하지 않는 체험 평가는 건너뛸 수 있어요.</Text>
-              </View>
-              <View style={styles.readyBox}>
-                <Text style={styles.readyText}>설문 문항은 다음 단계에서 이어집니다.</Text>
-              </View>
-            </View>
+            <AiSurveyForm
+              error={actionError}
+              onSaveDraft={saveDraft}
+              onSubmit={submitSurvey}
+              saving={saving}
+              survey={survey}
+            />
           ) : null}
           </View>
         </View>
