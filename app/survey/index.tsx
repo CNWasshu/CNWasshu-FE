@@ -4,9 +4,10 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getSurveyErrorMessage, surveyApi } from '@/api/surveyApi';
+import { ManualSurveyForm } from '@/components/survey/ManualSurveyForm';
 import { SurveyHeader } from '@/components/survey/SurveyHeader';
 import { CourseColors } from '@/constants/course-colors';
-import type { SurveyDetailResponse } from '@/types/survey';
+import type { SurveyDetailResponse, SurveyDraftRequest } from '@/types/survey';
 import { clearTokens, getAccessToken, isSessionExpiredError } from '@/utils/auth';
 
 const CLOSED_STATUSES = new Set(['CANCELED', 'EXPIRED']);
@@ -24,6 +25,8 @@ export default function SurveyScreen() {
   const [survey, setSurvey] = useState<SurveyDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const loadSurvey = useCallback(async () => {
     if (!surveyId) {
@@ -56,6 +59,45 @@ export default function SurveyScreen() {
   useEffect(() => {
     void loadSurvey();
   }, [loadSurvey]);
+
+  const saveDraft = async (payload: SurveyDraftRequest) => {
+    if (!surveyId) return false;
+    setSaving(true);
+    setActionError(null);
+    try {
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        router.replace('/auth/login');
+        return false;
+      }
+      setSurvey(await surveyApi.saveDraft(surveyId, payload, accessToken));
+      return true;
+    } catch (requestError) {
+      setActionError(getSurveyErrorMessage(requestError));
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const submitSurvey = async (payload: SurveyDraftRequest) => {
+    if (!surveyId) return;
+    setSaving(true);
+    setActionError(null);
+    try {
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        router.replace('/auth/login');
+        return;
+      }
+      await surveyApi.saveDraft(surveyId, payload, accessToken);
+      setSurvey(await surveyApi.submit(surveyId, accessToken));
+    } catch (requestError) {
+      setActionError(getSurveyErrorMessage(requestError));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -108,19 +150,25 @@ export default function SurveyScreen() {
             </View>
           ) : null}
 
-          {!loading && survey && !CLOSED_STATUSES.has(survey.status) && !FINISHED_STATUSES.has(survey.status) ? (
+          {!loading && survey && survey.surveyType === 'USER_COURSE'
+          && !CLOSED_STATUSES.has(survey.status) && !FINISHED_STATUSES.has(survey.status) ? (
+            <ManualSurveyForm
+              error={actionError}
+              onSaveDraft={saveDraft}
+              onSubmit={submitSurvey}
+              saving={saving}
+              survey={survey}
+            />
+          ) : null}
+
+          {!loading && survey && survey.surveyType === 'AI_COURSE'
+          && !CLOSED_STATUSES.has(survey.status) && !FINISHED_STATUSES.has(survey.status) ? (
             <View style={styles.introCard}>
               <View style={styles.introIcon}>
-                <Text style={styles.introIconText}>{survey.surveyType === 'AI_COURSE' ? '✨' : '🌿'}</Text>
+                <Text style={styles.introIconText}>✨</Text>
               </View>
-              <Text style={styles.introTitle}>
-                {survey.surveyType === 'AI_COURSE' ? '추천받은 코스는 어떠셨나요?' : '오늘 여행은 어떠셨나요?'}
-              </Text>
-              <Text style={styles.introDescription}>
-                {survey.surveyType === 'AI_COURSE'
-                  ? '추천 구성과 일정, 이동 동선에 대한 의견을 들려주세요.'
-                  : `${survey.activities.length}개의 체험과 코스 일정에 대한 의견을 들려주세요.`}
-              </Text>
+              <Text style={styles.introTitle}>추천받은 코스는 어떠셨나요?</Text>
+              <Text style={styles.introDescription}>추천 구성과 일정, 이동 동선에 대한 의견을 들려주세요.</Text>
               <View style={styles.guideBox}>
                 <Text style={styles.guideText}>• 작성 중인 답변은 단계별로 저장돼요.</Text>
                 <Text style={styles.guideText}>• 원하지 않는 체험 평가는 건너뛸 수 있어요.</Text>
