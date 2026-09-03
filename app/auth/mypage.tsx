@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,6 +12,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+// 모든 유저의 프로필 사진을 이 마스코트 이미지로 고정한다 (개별 업로드/변경 기능 없음).
+const PROFILE_IMAGE = require('@/assets/images/충남마스코트.jpg');
+
 import { DeleteAccountModal } from '@/components/auth/DeleteAccountModal';
 import { BackHeader } from '@/components/common/BackHeader';
 import { CourseColors } from '@/constants/course-colors';
@@ -18,6 +22,7 @@ import { useDeleteAccount } from '@/hooks/auth/use-delete-account';
 import { useLogout } from '@/hooks/auth/use-logout';
 import { useMe } from '@/hooks/auth/use-me';
 import { useUpdateNickname } from '@/hooks/auth/use-update-nickname';
+import { useMyStampCount } from '@/hooks/stamp/use-my-stamp-count';
 import { getAccessToken } from '@/utils/auth';
 
 export default function MyPageScreen() {
@@ -43,6 +48,7 @@ export default function MyPageScreen() {
     deleteAccount,
     reset: resetDeleteAccount,
   } = useDeleteAccount();
+  const { loading: stampCountLoading, stampCount } = useMyStampCount(accessToken ?? null);
 
   useEffect(() => {
     let cancelled = false;
@@ -156,9 +162,7 @@ export default function MyPageScreen() {
           {!meLoading && !meError && user ? (
             <>
               <View style={styles.profileCard}>
-                <View style={styles.profileAvatar}>
-                  <Text style={styles.profileAvatarText}>Kakao</Text>
-                </View>
+                <Image resizeMode="cover" source={PROFILE_IMAGE} style={styles.profileAvatar} />
                 <View style={styles.profileInfo}>
                   {isEditingNickname ? (
                     <>
@@ -203,17 +207,23 @@ export default function MyPageScreen() {
                       <Text style={styles.profileMeta}>
                         닉네임: {user.nickname || '-'}
                         {'\n'}
-                        이메일: {user.email || '-'}
+                        {user.loginType === 'KAKAO'
+                          ? '카카오 계정으로 로그인'
+                          : `이메일: ${user.email || '-'}`}
                       </Text>
                     </>
                   )}
                 </View>
               </View>
 
-              {/* TODO: 스탬프/코스 API 연동 후 실제 값으로 교체 */}
+              {/* TODO: 코스 도메인이 JWT 인증으로 전환되면 저장 코스도 실제 값으로 교체 */}
               <View style={styles.statGrid}>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>0</Text>
+                  {stampCountLoading ? (
+                    <ActivityIndicator color={CourseColors.primary} size="small" />
+                  ) : (
+                    <Text style={styles.statValue}>{stampCount}</Text>
+                  )}
                   <Text style={styles.statLabel}>완료 스탬프</Text>
                 </View>
                 <View style={styles.statCard}>
@@ -397,12 +407,9 @@ const styles = StyleSheet.create({
     width: 66,
     height: 66,
     borderRadius: 33,
-    backgroundColor: '#FAE100',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: CourseColors.primarySoft,
     flexShrink: 0,
   },
-  profileAvatarText: { color: '#3C1E1E', fontWeight: '900', fontSize: 14 },
   profileInfo: { flex: 1, gap: 4 },
   profileNameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   profileName: { fontSize: 19, fontWeight: '900', color: CourseColors.text },
