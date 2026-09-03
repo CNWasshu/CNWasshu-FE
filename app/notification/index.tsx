@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
+import { type Href, useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -102,10 +102,9 @@ export default function NotificationScreen() {
                       notification.notificationType === 'SURVEY'
                       && notification.courseSurveyId != null
                     ) {
-                      router.push({
-                        pathname: '/survey/index',
-                        params: { surveyId: String(notification.courseSurveyId) },
-                      });
+                      router.push(
+                        `/survey?surveyId=${notification.courseSurveyId}` as Href
+                      );
                     }
                   }}
                 />
