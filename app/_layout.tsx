@@ -13,8 +13,8 @@ export const unstable_settings = {
   anchor: '(tabs)',
 };
 
-// 로그인 없이 접근 가능한 유일한 화면. 나머지는 전부 토큰이 없으면 여기로 리다이렉트된다.
-const PUBLIC_PATH = 'auth/login';
+// 로그인 없이 접근 가능한 화면들. 나머지는 전부 토큰이 없으면 로그인 화면으로 리다이렉트된다.
+const PUBLIC_PATHS = ['auth/login', 'auth/signup'];
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -33,12 +33,12 @@ function AuthGate({ children }: { children: React.ReactNode }) {
         return;
       }
       const currentPath = segments.join('/');
-      if (!token && currentPath !== PUBLIC_PATH) {
+      if (!token && !PUBLIC_PATHS.includes(currentPath)) {
         // 리다이렉트만 걸어두고 isCheckingAuth는 false로 바꾸지 않는다.
         // 그래야 실제로 /auth/login으로 라우트가 바뀌기 전까지 children(홈 등)이
         // 먼저 렌더링돼서 미인증 상태로 API를 호출해버리는 걸 막을 수 있다.
         // 라우트가 바뀌면 segments가 바뀌어 이 effect가 다시 실행되고,
-        // 그때 currentPath === PUBLIC_PATH가 되어 정상적으로 로딩이 풀린다.
+        // 그때 currentPath가 PUBLIC_PATHS에 포함되어 정상적으로 로딩이 풀린다.
         router.replace('/auth/login');
         return;
       }
@@ -72,6 +72,7 @@ export default function RootLayout() {
           <Stack.Screen name="course/[id]" options={{ title: '코스 상세' }} />
           <Stack.Screen name="course/ai" options={{ title: 'AI 코스 추천' }} />
           <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+          <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
           <Stack.Screen name="auth/mypage" options={{ headerShown: false }} />
           <Stack.Screen name="auth/onboarding" options={{ headerShown: false }} />
           <Stack.Screen name="notification/index" options={{ headerShown: false }} />

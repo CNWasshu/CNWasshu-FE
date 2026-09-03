@@ -29,8 +29,9 @@ export function useKakaoLogin() {
       setResult(response);
       setStatus('success');
 
-      // 신규 가입자는 닉네임 온보딩을 거친 뒤에만 홈으로 보낸다.
-      if (response.isNewUser) {
+      // 카카오가 닉네임을 안 줘서 자동생성 값으로 대체된 경우에만 온보딩을 거친다.
+      // 카카오가 실제 닉네임을 줬으면 신규 가입자여도 바로 홈으로 보낸다.
+      if (response.nicknameNeedsSetup) {
         router.replace('/auth/onboarding');
       } else {
         router.replace('/');
