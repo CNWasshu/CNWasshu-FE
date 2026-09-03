@@ -77,6 +77,8 @@ export default function RootLayout() {
           <Stack.Screen name="auth/onboarding" options={{ headerShown: false }} />
           <Stack.Screen name="notification/index" options={{ headerShown: false }} />
           <Stack.Screen name="notification/settings" options={{ headerShown: false }} />
+          <Stack.Screen name="survey/index" options={{ headerShown: false }} />
+          <Stack.Screen name="survey/result" options={{ headerShown: false }} />
           <Stack.Screen name="stamp/index" options={{ headerShown: false }} />
           <Stack.Screen name="stamp/scan" options={{ headerShown: false }} />
           <Stack.Screen name="bookmark/index" options={{ headerShown: false }} />

@@ -131,6 +131,21 @@ export default function NotificationSettingsScreen() {
                 </View>
               </View>
 
+              <View style={styles.whiteCard}>
+                <Text style={styles.cardTitle}>만족도 조사 알림</Text>
+                <Text style={styles.cardDesc}>
+                  여행 일정이 끝난 뒤 체험과 코스에 대한 의견을 요청해요.
+                </Text>
+                <View style={styles.chipRow}>
+                  <SettingChip
+                    active={settings.surveyEnabled}
+                    disabled={savingKey === 'surveyEnabled'}
+                    label={settings.surveyEnabled ? '알림 받는 중' : '알림 받지 않음'}
+                    onPress={() => void toggle('surveyEnabled')}
+                  />
+                </View>
+              </View>
+
               {saveErrorMessage ? (
                 <Text style={styles.saveError}>{saveErrorMessage}</Text>
               ) : null}

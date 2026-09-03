@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { type Href, useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -9,6 +10,7 @@ import { useNotifications } from '@/hooks/notification/use-notifications';
 import { getAccessToken } from '@/utils/auth';
 
 export default function NotificationScreen() {
+  const router = useRouter();
   const [accessToken, setAccessToken] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
@@ -95,6 +97,14 @@ export default function NotificationScreen() {
                   onPress={() => {
                     if (!notification.isRead) {
                       void markAsRead(notification.notificationId);
+                    }
+                    if (
+                      notification.notificationType === 'SURVEY'
+                      && notification.courseSurveyId != null
+                    ) {
+                      router.push(
+                        `/survey?surveyId=${notification.courseSurveyId}` as Href
+                      );
                     }
                   }}
                 />
