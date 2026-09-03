@@ -2,6 +2,8 @@ import type {
   AuthApiErrorBody,
   DeviceRegisterRequest,
   KakaoLoginRequest,
+  LoginRequest,
+  SignupRequest,
   TokenResponse,
   UserDeviceResponse,
   UserSummary,
@@ -12,7 +14,9 @@ const AUTH_PATH = '/api/auth';
 const USERS_PATH = '/api/users';
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  EMAIL_ALREADY_EXISTS: '이미 가입된 이메일입니다.',
   EXPIRED_TOKEN: '로그인이 만료되었습니다. 다시 로그인해 주세요.',
+  INVALID_CREDENTIALS: '이메일 또는 비밀번호가 올바르지 않습니다.',
   INVALID_KAKAO_LOGIN_REQUEST: '카카오 인가코드 또는 액세스 토큰이 필요합니다.',
   INVALID_NICKNAME: '닉네임은 공백일 수 없습니다.',
   INVALID_TOKEN: '유효하지 않은 토큰입니다. 다시 로그인해 주세요.',
@@ -46,7 +50,7 @@ function getBaseUrl() {
   return url;
 }
 
-function getNgrokHeaders(baseUrl: string) {
+function getNgrokHeaders(baseUrl: string): Record<string, string> {
   try {
     const hostname = new URL(baseUrl).hostname;
     if (hostname === 'ngrok.io' || hostname.endsWith('.ngrok.io') ||
@@ -110,6 +114,20 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const authApi = {
   kakaoLogin: (payload: KakaoLoginRequest) =>
     request<TokenResponse>(`${AUTH_PATH}/kakao`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }),
+
+  signup: (payload: SignupRequest) =>
+    request<TokenResponse>(`${AUTH_PATH}/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }),
+
+  login: (payload: LoginRequest) =>
+    request<TokenResponse>(`${AUTH_PATH}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
