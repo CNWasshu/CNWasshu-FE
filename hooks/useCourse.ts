@@ -1,5 +1,6 @@
 import { courseApi, getCourseErrorMessage } from '@/api/courseApi';
 import type { CourseDetail, CourseSummary } from '@/types/course';
+import { getAccessToken } from '@/utils/auth';
 import { useCallback, useEffect, useState } from 'react';
 
 export function useCourses() {
@@ -11,7 +12,8 @@ export function useCourses() {
     setLoading(true);
     setError(null);
     try {
-      setCourses(await courseApi.getCourses());
+      const accessToken = await getAccessToken();
+      setCourses(await courseApi.getCourses(accessToken ?? ''));
     } catch (requestError) {
       setError(getCourseErrorMessage(requestError));
     } finally {
@@ -36,7 +38,8 @@ export function useCourse(courseId: number | null) {
     setLoading(true);
     setError(null);
     try {
-      setCourse(await courseApi.getCourse(courseId));
+      const accessToken = await getAccessToken();
+      setCourse(await courseApi.getCourse(courseId, accessToken ?? ''));
     } catch (requestError) {
       setError(getCourseErrorMessage(requestError));
     } finally {
