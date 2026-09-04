@@ -1,10 +1,21 @@
-import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import DateTimePicker, {
+  type DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { CourseColors } from '@/constants/course-colors';
-import { formatDate, parseDate } from '@/utils/timetable/date';
+import {
+  formatDate,
+  parseDate,
+} from '@/utils/timetable/date';
 
 type CourseDateFieldProps = {
   error?: boolean;
@@ -15,35 +26,81 @@ type CourseDateFieldProps = {
   value: string;
 };
 
-export function CourseDateField({ error, label, minimumDate, onChange, placeholder, value }: CourseDateFieldProps) {
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const selectedDate = value ? parseDate(value) : new Date();
+export function CourseDateField({
+  error,
+  label,
+  minimumDate,
+  onChange,
+  placeholder,
+  value,
+}: CourseDateFieldProps) {
+  const [isPickerOpen, setIsPickerOpen] =
+    useState(false);
 
-  const handleChange = (event: DateTimePickerEvent, date?: Date) => {
+  const selectedDate = value
+    ? parseDate(value)
+    : new Date();
+
+  const handleChange = (
+    event: DateTimePickerEvent,
+    date?: Date,
+  ) => {
     if (Platform.OS === 'android') {
       setIsPickerOpen(false);
     }
+
     if (event.type === 'set' && date) {
       onChange(formatDate(date));
     }
   };
 
   return (
-    <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
+    <View style={styles.wrapper}>
       <Pressable
         accessibilityLabel={`${label} 선택`}
         accessibilityRole="button"
-        onPress={() => setIsPickerOpen((open) => !open)}
-        style={[styles.inputShell, error && styles.inputError]}
+        onPress={() =>
+          setIsPickerOpen((open) => !open)
+        }
+        style={[
+          styles.field,
+          error && styles.fieldError,
+        ]}
       >
-        <Ionicons color={CourseColors.primary} name="calendar-outline" size={18} />
-        <Text style={[styles.value, !value && styles.placeholder]}>{value || placeholder}</Text>
+        <View style={styles.textArea}>
+          <Text style={styles.label}>
+            {label}
+          </Text>
+
+          <Text
+            style={[
+              styles.value,
+              !value && styles.placeholder,
+            ]}
+          >
+            {value || placeholder}
+          </Text>
+        </View>
+
+        <Ionicons
+          color={CourseColors.text}
+          name="calendar-outline"
+          size={20}
+        />
       </Pressable>
+
       {isPickerOpen ? (
         <DateTimePicker
-          display={Platform.OS === 'ios' ? 'inline' : 'default'}
-          minimumDate={minimumDate ? parseDate(minimumDate) : undefined}
+          display={
+            Platform.OS === 'ios'
+              ? 'inline'
+              : 'default'
+          }
+          minimumDate={
+            minimumDate
+              ? parseDate(minimumDate)
+              : undefined
+          }
           mode="date"
           onChange={handleChange}
           value={selectedDate}
@@ -54,20 +111,48 @@ export function CourseDateField({ error, label, minimumDate, onChange, placehold
 }
 
 const styles = StyleSheet.create({
-  field: { flexBasis: '46%', flexGrow: 1, gap: 8 },
-  inputShell: {
+  wrapper: {
+    flexBasis: '46%',
+    flexGrow: 1,
+  },
+
+  field: {
     alignItems: 'center',
     backgroundColor: CourseColors.background,
     borderColor: CourseColors.border,
     borderRadius: 15,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: 8,
-    minHeight: 44,
+    justifyContent: 'space-between',
+    minHeight: 58,
     paddingHorizontal: 13,
+    paddingVertical: 7,
   },
-  inputError: { backgroundColor: '#FFF9F6', borderColor: '#E6BDB3' },
-  label: { color: CourseColors.text, fontSize: 14, fontWeight: '800' },
-  placeholder: { color: '#A49A8A' },
-  value: { color: CourseColors.text, flex: 1, fontSize: 14 },
+
+  fieldError: {
+    backgroundColor: '#FFF9F6',
+    borderColor: '#E6BDB3',
+  },
+
+  textArea: {
+    flex: 1,
+    gap: 2,
+  },
+
+  label: {
+    color: CourseColors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+  },
+
+  value: {
+    color: CourseColors.text,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+
+  placeholder: {
+    color: '#A49A8A',
+    fontWeight: '600',
+  },
 });
