@@ -5,6 +5,7 @@ import { CourseMap } from '@/components/course/CourseMap';
 import { CourseSchedule } from '@/components/course/CourseSchedule';
 import { CourseColors } from '@/constants/course-colors';
 import type { AiRecommendationRequest, AiRecommendationResponse } from '@/types/course';
+import { getAccessToken } from '@/utils/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -26,7 +27,12 @@ export default function AiCourseScreen() {
   const recommend = async (request: AiRecommendationRequest) => {
     if (requestLock.current) return;
     requestLock.current = true; didScrollToResult.current = false; setLoading(true); setError(null); setResult(null); setSaved(false);
-    try { setResult(await courseApi.recommend(request)); setConditions(request); setFormCollapsed(true); }
+    try {
+      const accessToken = await getAccessToken();
+      setResult(await courseApi.recommend(request, accessToken ?? ''));
+      setConditions(request);
+      setFormCollapsed(true);
+    }
     catch (requestError) { setError(getCourseErrorMessage(requestError)); }
     finally { setLoading(false); requestLock.current = false; }
   };
@@ -35,6 +41,7 @@ export default function AiCourseScreen() {
     if (!result || !conditions || requestLock.current) return;
     requestLock.current = true; setSaving(true); setError(null);
     try {
+      const accessToken = await getAccessToken();
       await courseApi.saveRecommendation({
         courseName: result.suggestedCourseName,
         peopleCount: conditions.peopleCount,
@@ -44,7 +51,7 @@ export default function AiCourseScreen() {
         items: result.items.map(({ activityId, reservationId, title, dayNo, startTime, endTime, address, latitude, longitude, memo, sortOrder }) => ({
           activityId, reservationId, title, dayNo, startTime, endTime, address, latitude, longitude, memo, sortOrder,
         })),
-      });
+      }, accessToken ?? '');
       setSaved(true);
       setTimeout(() => router.replace('/(tabs)/course'), 700);
     } catch (requestError) { setError(getCourseErrorMessage(requestError)); }

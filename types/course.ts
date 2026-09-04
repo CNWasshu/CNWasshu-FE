@@ -66,13 +66,19 @@ export interface CourseItemSaveRequest {
   sortOrder: number;
 }
 
-export interface AiCourseSaveRequest {
+export interface CourseSaveRequest {
   courseName: string;
   peopleCount: number;
   withChild: boolean;
   startDate: string;
   endDate: string;
   items: CourseItemSaveRequest[];
+}
+
+export type AiCourseSaveRequest = CourseSaveRequest;
+
+export interface CourseRenameRequest {
+  courseName: string;
 }
 
 export interface ApiErrorBody {

@@ -4,11 +4,12 @@ import type {
   AiRecommendationResponse,
   ApiErrorBody,
   CourseDetail,
+  CourseRenameRequest,
+  CourseSaveRequest,
   CourseSummary,
 } from '@/types/course';
 
 const COURSE_PATH = '/api/courses';
-const DEV_USER_HEADERS = { 'X-USER-ID': '1' };
 
 export class CourseApiError extends Error {
   constructor(message: string, public readonly status: number, public readonly code?: string) {
@@ -21,6 +22,14 @@ function getBaseUrl() {
   const url = process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/$/, '');
   if (!url) throw new CourseApiError('API 서버 주소가 설정되지 않았습니다.', 0, 'MISSING_API_URL');
   return url;
+}
+
+function getAuthorizationHeaders(accessToken: string) {
+  const token = accessToken.trim();
+  if (!token) {
+    throw new CourseApiError('로그인이 필요한 서비스입니다.', 401, 'MISSING_ACCESS_TOKEN');
+  }
+  return { Authorization: `Bearer ${token}` };
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -46,19 +55,53 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const courseApi = {
-  getCourses: () => request<CourseSummary[]>(COURSE_PATH, { headers: DEV_USER_HEADERS }),
-  getCourse: (courseId: number) =>
-    request<CourseDetail>(`${COURSE_PATH}/${courseId}`, { headers: DEV_USER_HEADERS }),
-  recommend: (payload: AiRecommendationRequest) =>
-    request<AiRecommendationResponse>(`${COURSE_PATH}/ai-recommendations`, {
+  getCourses: (accessToken: string) =>
+    request<CourseSummary[]>(COURSE_PATH, {
+      headers: getAuthorizationHeaders(accessToken),
+    }),
+  getCourse: (courseId: number, accessToken: string) =>
+    request<CourseDetail>(`${COURSE_PATH}/${courseId}`, {
+      headers: getAuthorizationHeaders(accessToken),
+    }),
+  createCourse: (payload: CourseSaveRequest, accessToken: string) =>
+    request<CourseDetail>(COURSE_PATH, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthorizationHeaders(accessToken),
+      },
       body: JSON.stringify(payload),
     }),
-  saveRecommendation: (payload: AiCourseSaveRequest) =>
+  renameCourse: (courseId: number, payload: CourseRenameRequest, accessToken: string) =>
+    request<void>(`${COURSE_PATH}/${courseId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthorizationHeaders(accessToken),
+      },
+      body: JSON.stringify(payload),
+    }),
+  deleteCourse: (courseId: number, accessToken: string) =>
+    request<void>(`${COURSE_PATH}/${courseId}`, {
+      method: 'DELETE',
+      headers: getAuthorizationHeaders(accessToken),
+    }),
+  recommend: (payload: AiRecommendationRequest, accessToken: string) =>
+    request<AiRecommendationResponse>(`${COURSE_PATH}/ai-recommendations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthorizationHeaders(accessToken),
+      },
+      body: JSON.stringify(payload),
+    }),
+  saveRecommendation: (payload: AiCourseSaveRequest, accessToken: string) =>
     request<CourseDetail>(`${COURSE_PATH}/ai-recommendations/save`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...DEV_USER_HEADERS },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthorizationHeaders(accessToken),
+      },
       body: JSON.stringify(payload),
     }),
 };
