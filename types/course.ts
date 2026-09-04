@@ -22,6 +22,8 @@ export interface CourseItem {
   latitude: number | null;
   longitude: number | null;
   memo: string | null;
+  distanceMeters: number | null;
+  travelTimeSeconds: number | null;
 }
 
 export interface CourseDetail {

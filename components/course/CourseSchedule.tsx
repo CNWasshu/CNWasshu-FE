@@ -10,6 +10,16 @@ function displayTime(time: string) {
   return time.slice(0, 5);
 }
 
+function displayTravelTime(seconds: number) {
+  return `${Math.max(1, Math.round(seconds / 60))}분`;
+}
+
+function displayDistance(meters: number) {
+  if (meters < 1000) return `${Math.round(meters)}m`;
+  const kilometers = meters / 1000;
+  return `${(kilometers < 10 ? kilometers.toFixed(1) : kilometers.toFixed(0)).replace('.0', '')}km`;
+}
+
 function openMap(item: CourseItem) {
   void openKakaoMap(item).catch(() => Alert.alert('지도를 열 수 없습니다', '잠시 후 다시 시도해 주세요.'));
 }
@@ -46,21 +56,31 @@ export function CourseSchedule({ enableDayNavigation = false, items }: { enableD
       {visibleGroups.map(([dayNo, dayItems]) => (
         <View key={dayNo} style={styles.day}>
           <View style={styles.dayHeading}><Text style={styles.dayTitle}>Day {dayNo}</Text><View style={styles.dayLine} /></View>
-          {dayItems.map((item, index) => (
-            <View key={`${item.dayNo}-${item.sortOrder}-${item.title}`} style={styles.routeRow}>
-              <View style={styles.rail}>
-                <View style={styles.number}><Text numberOfLines={1} style={styles.numberText}>{displayNumbers.get(item) ?? item.sortOrder}</Text></View>
-                {index < dayItems.length - 1 ? <View style={styles.connector} /> : null}
+          {dayItems.map((item, index) => {
+            const hasNextItem = index < dayItems.length - 1;
+            const distanceMeters = item.distanceMeters;
+            const travelTimeSeconds = item.travelTimeSeconds;
+            const hasTravelInfo = hasNextItem && distanceMeters != null && travelTimeSeconds != null;
+            return <View key={`${item.dayNo}-${item.sortOrder}-${item.title}`} style={styles.routeEntry}>
+              <View style={styles.routeRow}>
+                <View style={styles.rail}>
+                  <View style={styles.number}><Text numberOfLines={1} style={styles.numberText}>{displayNumbers.get(item) ?? item.sortOrder}</Text></View>
+                  {hasNextItem ? <View style={styles.connector} /> : null}
+                </View>
+                <View style={styles.item}>
+                  <Text style={styles.title}>{item.title}</Text>
+                  {item.address?.trim() ? <Text style={styles.address}>{item.address}</Text> : null}
+                  <View style={styles.timeRow}><Ionicons color={CourseColors.primary} name="time-outline" size={15} /><Text style={styles.time}>{displayTime(item.startTime)} ~ {displayTime(item.endTime)}</Text></View>
+                  {item.memo ? <Text style={styles.memo}>{item.memo}</Text> : null}
+                  <Pressable accessibilityLabel={`${item.title} 카카오맵에서 보기`} accessibilityRole="link" hitSlop={2} onPress={() => openMap(item)} style={styles.mapButton}><Ionicons color={CourseColors.primary} name="map-outline" size={16} /><Text style={styles.mapButtonText}>카카오맵에서 보기</Text><Ionicons color={CourseColors.primary} name="open-outline" size={14} /></Pressable>
+                </View>
               </View>
-              <View style={styles.item}>
-                <Text style={styles.title}>{item.title}</Text>
-                {item.address?.trim() ? <Text style={styles.address}>{item.address}</Text> : null}
-                <View style={styles.timeRow}><Ionicons color={CourseColors.primary} name="time-outline" size={15} /><Text style={styles.time}>{displayTime(item.startTime)} ~ {displayTime(item.endTime)}</Text></View>
-                {item.memo ? <Text style={styles.memo}>{item.memo}</Text> : null}
-                <Pressable accessibilityLabel={`${item.title} 카카오맵에서 보기`} accessibilityRole="link" hitSlop={2} onPress={() => openMap(item)} style={styles.mapButton}><Ionicons color={CourseColors.primary} name="map-outline" size={16} /><Text style={styles.mapButtonText}>카카오맵에서 보기</Text><Ionicons color={CourseColors.primary} name="open-outline" size={14} /></Pressable>
-              </View>
-            </View>
-          ))}
+              {hasTravelInfo ? <View style={styles.travelRow}>
+                <View style={styles.travelRail}><Ionicons color="#91AD8E" name="chevron-down" size={15} /></View>
+                <View style={styles.travelInfo}><Ionicons color={CourseColors.primary} name="car-sport-outline" size={17} /><Text style={styles.travelText}>약 {displayTravelTime(travelTimeSeconds)} · {displayDistance(distanceMeters)}</Text></View>
+              </View> : null}
+            </View>;
+          })}
         </View>
       ))}
     </View>
@@ -70,9 +90,9 @@ export function CourseSchedule({ enableDayNavigation = false, items }: { enableD
 const styles = StyleSheet.create({
   container: { gap: 22 }, day: { gap: 8 }, dayHeading: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 2 }, dayTitle: { fontSize: 17, fontWeight: '900', color: CourseColors.text }, dayLine: { flex: 1, height: 1, backgroundColor: '#E9DFCF' },
   dayNavigation: { gap: 7, paddingRight: 16 }, dayChip: { alignItems: 'center', backgroundColor: CourseColors.white, borderColor: CourseColors.border, borderRadius: 14, borderWidth: 1, flexDirection: 'row', gap: 4, minHeight: 44, paddingHorizontal: 13 }, dayChipSelected: { backgroundColor: CourseColors.primary, borderColor: CourseColors.primary }, dayChipText: { color: CourseColors.primaryDark, fontSize: 12, fontWeight: '800' }, dayChipTextSelected: { color: CourseColors.white },
-  routeRow: { flexDirection: 'row', gap: 9, alignItems: 'stretch' }, rail: { width: 26, alignItems: 'center' }, connector: { width: 1, flex: 1, minHeight: 12, backgroundColor: '#C9DBC6', marginTop: 4, marginBottom: -12 },
+  routeEntry: { gap: 2 }, routeRow: { flexDirection: 'row', gap: 9, alignItems: 'stretch' }, rail: { width: 26, alignItems: 'center' }, connector: { width: 1, flex: 1, minHeight: 12, backgroundColor: '#C9DBC6', marginTop: 4, marginBottom: -12 },
   item: { flex: 1, backgroundColor: '#FFFEFB', borderRadius: 16, borderWidth: 1, borderColor: '#EEE4D4', paddingHorizontal: 12, paddingVertical: 10, gap: 4 },
   number: { width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: CourseColors.primary },
   numberText: { color: CourseColors.white, fontSize: 12, lineHeight: 14, fontWeight: '900', textAlign: 'center' }, timeRow: { alignItems: 'center', flexDirection: 'row', gap: 5 }, time: { color: CourseColors.primary, fontWeight: '800', fontSize: 12 }, title: { color: CourseColors.text, fontSize: 15, fontWeight: '900', lineHeight: 21 }, address: { color: CourseColors.muted, fontSize: 12, lineHeight: 17 },
-  memo: { color: CourseColors.muted, lineHeight: 18, fontSize: 12 }, mapButton: { alignItems: 'center', alignSelf: 'flex-start', backgroundColor: CourseColors.primarySoft, borderColor: '#D2E3CE', borderRadius: 999, borderWidth: 1, flexDirection: 'row', gap: 4, minHeight: 40, marginTop: 2, paddingHorizontal: 10 }, mapButtonText: { color: CourseColors.primaryDark, fontSize: 12, fontWeight: '800' }, empty: { alignItems: 'center', gap: 7, paddingVertical: 28 }, emptyTitle: { color: CourseColors.text, fontSize: 15, fontWeight: '900' }, emptyDescription: { color: CourseColors.muted, fontSize: 12, lineHeight: 18, textAlign: 'center' },
+  memo: { color: CourseColors.muted, lineHeight: 18, fontSize: 12 }, mapButton: { alignItems: 'center', alignSelf: 'flex-start', backgroundColor: CourseColors.primarySoft, borderColor: '#D2E3CE', borderRadius: 999, borderWidth: 1, flexDirection: 'row', gap: 4, minHeight: 40, marginTop: 2, paddingHorizontal: 10 }, mapButtonText: { color: CourseColors.primaryDark, fontSize: 12, fontWeight: '800' }, travelRow: { alignItems: 'center', flexDirection: 'row', gap: 9, minHeight: 38 }, travelRail: { alignItems: 'center', width: 26 }, travelInfo: { alignItems: 'center', alignSelf: 'flex-start', flexDirection: 'row', gap: 6, paddingVertical: 7 }, travelText: { color: CourseColors.primaryDark, fontSize: 12, fontWeight: '800' }, empty: { alignItems: 'center', gap: 7, paddingVertical: 28 }, emptyTitle: { color: CourseColors.text, fontSize: 15, fontWeight: '900' }, emptyDescription: { color: CourseColors.muted, fontSize: 12, lineHeight: 18, textAlign: 'center' },
 });
