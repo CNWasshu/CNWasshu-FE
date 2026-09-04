@@ -1,6 +1,6 @@
 import type { CourseItem } from '@/types/course';
 import { CourseColors } from '@/constants/course-colors';
-import { getGoogleMapsPlaceUrl, openExternalMap } from '@/utils/courseMaps';
+import { openKakaoMap } from '@/utils/courseMaps';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -10,8 +10,8 @@ function displayTime(time: string) {
   return time.slice(0, 5);
 }
 
-function openMap(url: string) {
-  void openExternalMap(url).catch(() => Alert.alert('지도를 열 수 없습니다', '잠시 후 다시 시도해 주세요.'));
+function openMap(item: CourseItem) {
+  void openKakaoMap(item).catch(() => Alert.alert('지도를 열 수 없습니다', '잠시 후 다시 시도해 주세요.'));
 }
 
 export function CourseSchedule({ enableDayNavigation = false, items }: { enableDayNavigation?: boolean; items: CourseItem[] }) {
@@ -57,7 +57,7 @@ export function CourseSchedule({ enableDayNavigation = false, items }: { enableD
                 {item.address?.trim() ? <Text style={styles.address}>{item.address}</Text> : null}
                 <View style={styles.timeRow}><Ionicons color={CourseColors.primary} name="time-outline" size={15} /><Text style={styles.time}>{displayTime(item.startTime)} ~ {displayTime(item.endTime)}</Text></View>
                 {item.memo ? <Text style={styles.memo}>{item.memo}</Text> : null}
-                <Pressable accessibilityLabel={`${item.title} Google 지도에서 보기`} accessibilityRole="link" hitSlop={2} onPress={() => openMap(getGoogleMapsPlaceUrl(item))} style={styles.mapButton}><Ionicons color={CourseColors.primary} name="map-outline" size={16} /><Text style={styles.mapButtonText}>Google 지도에서 보기</Text><Ionicons color={CourseColors.primary} name="open-outline" size={14} /></Pressable>
+                <Pressable accessibilityLabel={`${item.title} 카카오맵에서 보기`} accessibilityRole="link" hitSlop={2} onPress={() => openMap(item)} style={styles.mapButton}><Ionicons color={CourseColors.primary} name="map-outline" size={16} /><Text style={styles.mapButtonText}>카카오맵에서 보기</Text><Ionicons color={CourseColors.primary} name="open-outline" size={14} /></Pressable>
               </View>
             </View>
           ))}
