@@ -29,4 +29,11 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     image: require('@/assets/images/onboarding/onboarding-course.png'),
     title: '직접 만들거나\nAI에게 추천받아보세요',
   },
+  {
+    accessibilityLabel: '추천 장소에 방문해 QR 코드를 스캔하고 여행 스탬프북에 도예 체험 스탬프를 획득하는 화면',
+    description: '추천받은 장소를 실제로 방문하고 QR을 스캔하면\n충남 여행 스탬프를 획득할 수 있어요.',
+    eyebrow: '스탬프 · QR 방문 인증',
+    image: require('@/assets/images/onboarding/onboarding-stamp.png'),
+    title: '여행의 순간을\n스탬프로 남겨보세요',
+  },
 ];
