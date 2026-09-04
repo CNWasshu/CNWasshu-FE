@@ -1,5 +1,4 @@
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
   NativeScrollEvent,
@@ -15,24 +14,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ONBOARDING_SLIDES } from '@/constants/onboarding-slides';
 import { CourseColors } from '@/constants/course-colors';
+import { useCompleteOnboarding } from '@/hooks/onboarding/use-complete-onboarding';
 
 const CONTENT_MAX_WIDTH = 480;
 
 export function OnboardingCarousel() {
-  const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
   const { width } = useWindowDimensions();
   const pageWidth = Math.min(width, CONTENT_MAX_WIDTH);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { completeOnboarding, errorMessage, isSubmitting } = useCompleteOnboarding();
   const isLastSlide = currentIndex === ONBOARDING_SLIDES.length - 1;
 
-  const closeOnboarding = () => {
-    router.replace('/');
-  };
+  const closeOnboarding = () => void completeOnboarding('SKIPPED');
 
   const handleNext = () => {
     if (isLastSlide) {
-      closeOnboarding();
+      void completeOnboarding('COMPLETED');
       return;
     }
 
@@ -55,8 +53,9 @@ export function OnboardingCarousel() {
             accessibilityHint="온보딩을 종료하고 홈으로 이동합니다."
             accessibilityRole="button"
             hitSlop={10}
+            disabled={isSubmitting}
             onPress={closeOnboarding}
-            style={styles.skipButton}>
+            style={[styles.skipButton, isSubmitting && styles.disabled]}>
             <Text style={styles.skipText}>건너뛰기</Text>
           </Pressable>
         </View>
@@ -89,6 +88,7 @@ export function OnboardingCarousel() {
         </ScrollView>
 
         <View style={styles.footer}>
+          {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
           <View accessibilityLabel={`${currentIndex + 1} / ${ONBOARDING_SLIDES.length} 페이지`} style={styles.dots}>
             {ONBOARDING_SLIDES.map((slide, index) => (
               <View
@@ -99,10 +99,15 @@ export function OnboardingCarousel() {
           </View>
           <Pressable
             accessibilityRole="button"
+            disabled={isSubmitting}
             onPress={handleNext}
-            style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}>
+            style={({ pressed }) => [
+              styles.primaryButton,
+              pressed && styles.primaryButtonPressed,
+              isSubmitting && styles.disabled,
+            ]}>
             <Text style={styles.primaryButtonText}>
-              {isLastSlide ? '충남 여행 시작하기' : '다음'}
+              {isSubmitting ? '저장 중...' : isLastSlide ? '충남 여행 시작하기' : '다음'}
             </Text>
           </Pressable>
         </View>
@@ -218,6 +223,14 @@ const styles = StyleSheet.create({
   },
   primaryButtonPressed: {
     opacity: 0.86,
+  },
+  disabled: {
+    opacity: 0.55,
+  },
+  errorText: {
+    color: CourseColors.error,
+    fontSize: 13,
+    textAlign: 'center',
   },
   primaryButtonText: {
     color: CourseColors.white,
