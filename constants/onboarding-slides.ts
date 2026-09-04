@@ -22,4 +22,11 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     image: require('@/assets/images/onboarding/onboarding-timetable.png'),
     title: '가고 싶은 곳을\n여행 일정으로 만들어보세요',
   },
+  {
+    accessibilityLabel: '직접 만든 일정을 코스로 저장하거나 AI가 추천한 장소를 연결해 여행 코스를 완성하는 화면',
+    description: '만든 일정을 코스로 저장하고, 어디 갈지 고민될 때는\nAI에게 나만의 여행 코스를 추천받아보세요.',
+    eyebrow: '코스 · 저장 코스 · AI 추천',
+    image: require('@/assets/images/onboarding/onboarding-course.png'),
+    title: '직접 만들거나\nAI에게 추천받아보세요',
+  },
 ];
