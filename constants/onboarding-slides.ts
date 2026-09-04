@@ -15,4 +15,11 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     image: require('@/assets/images/onboarding/onboarding-home.png'),
     title: '숨은 충남을\n발견해보세요',
   },
+  {
+    accessibilityLabel: '도예 체험, 지역 맛집과 딸기 체험 카드를 하루 시간표에 배치하고 빈 슬롯에 자유 일정을 직접 추가하는 화면',
+    description: '담아둔 체험과 맛집을 시간대별로 배치하고\n자유 일정도 직접 추가할 수 있어요.',
+    eyebrow: '타임테이블 · 장소 배치 · 자유 일정',
+    image: require('@/assets/images/onboarding/onboarding-timetable.png'),
+    title: '가고 싶은 곳을\n여행 일정으로 만들어보세요',
+  },
 ];
