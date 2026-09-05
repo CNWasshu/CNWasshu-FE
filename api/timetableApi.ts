@@ -104,6 +104,16 @@ export const timetableApi = {
       },
       body: JSON.stringify(payload),
     }),
+
+  updateTimetable: (courseId: number, payload: TimetableSaveRequest, accessToken: string) =>
+    request<TimetableDetailResponse>(`${TIMETABLE_PATH}/${courseId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthorizationHeaders(accessToken),
+      },
+      body: JSON.stringify(payload),
+    }),
 };
 
 export function getTimetableErrorMessage(error: unknown) {

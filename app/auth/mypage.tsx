@@ -29,6 +29,11 @@ import { useCourses } from '@/hooks/useCourse';
 import type { CourseSummary } from '@/types/course';
 import { getAccessToken } from '@/utils/auth';
 
+// 팀 결정: 만족도조사 로직과 충돌 우려로 수정 기능 비활성화, 코드는 참고용으로 유지.
+// (app/course/edit/[id].tsx 및 관련 PUT /api/timetables/{courseId} 호출부는 그대로 남겨두되,
+//  이 값을 true로 되돌리기 전까지는 어디서도 호출되지 않는다.)
+const SHOW_COURSE_EDIT_BUTTON = false;
+
 export default function MyPageScreen() {
   const router = useRouter();
   const [accessToken, setAccessToken] = useState<string | null | undefined>(undefined);
@@ -376,7 +381,7 @@ export default function MyPageScreen() {
                           </Text>
                         </View>
                         <View style={styles.courseListItemActions}>
-                          {courseTab === 'upcoming' ? (
+                          {SHOW_COURSE_EDIT_BUTTON && courseTab === 'upcoming' ? (
                             <Pressable
                               onPress={(event) => {
                                 event.stopPropagation();

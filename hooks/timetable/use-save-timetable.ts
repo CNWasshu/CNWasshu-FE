@@ -12,7 +12,8 @@ import type {
 
 type SaveStatus = 'error' | 'idle' | 'submitting' | 'success';
 
-export function useSaveTimetable(accessToken?: string) {
+// courseId를 넘기면 새로 만들지 않고 그 코스의 내용을 통째로 교체(수정)한다.
+export function useSaveTimetable(accessToken?: string, courseId?: number) {
   const submittingRef = useRef(false);
   const [error, setError] = useState<TimetableApiError | null>(null);
   const [result, setResult] = useState<TimetableDetailResponse | null>(null);
@@ -29,10 +30,9 @@ export function useSaveTimetable(accessToken?: string) {
       setStatus('submitting');
 
       try {
-        const response = await timetableApi.createTimetable(
-          payload,
-          accessToken ?? ''
-        );
+        const response = courseId != null
+          ? await timetableApi.updateTimetable(courseId, payload, accessToken ?? '')
+          : await timetableApi.createTimetable(payload, accessToken ?? '');
 
         if (!Number.isSafeInteger(response.timetableId) || response.timetableId <= 0) {
           throw new TimetableApiError(
@@ -54,7 +54,7 @@ export function useSaveTimetable(accessToken?: string) {
         submittingRef.current = false;
       }
     },
-    [accessToken]
+    [accessToken, courseId]
   );
 
   const reset = useCallback(() => {
