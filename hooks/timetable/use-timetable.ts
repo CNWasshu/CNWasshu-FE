@@ -32,19 +32,39 @@ function synchronizeSchedules(
   );
 }
 
-export function useTimetable() {
+export type UseTimetableInitialState = {
+  endDate: Date;
+  schedulesByDay: TimetableSchedulesByDay;
+  startDate: Date;
+  timetableName: string;
+};
+
+// 기존 코스를 불러와 수정할 때 초기값으로 씨드한다. 새로 만들 때(initial 없음)는
+// 기존과 동일하게 오늘 날짜 빈 상태로 시작한다.
+export function useTimetable(initial?: UseTimetableInitialState) {
   const minimumStartDate = useMemo(() => startOfDay(new Date()), []);
-  const [startDate, setStartDate] = useState(minimumStartDate);
-  const [endDate, setEndDate] = useState(minimumStartDate);
+  const [startDate, setStartDate] = useState(() =>
+    initial ? startOfDay(initial.startDate) : minimumStartDate
+  );
+  const [endDate, setEndDate] = useState(() =>
+    initial ? startOfDay(initial.endDate) : minimumStartDate
+  );
   const [dateErrorMessage, setDateErrorMessage] = useState<string | null>(null);
   const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
   const [reservationSyncIssues, setReservationSyncIssues] = useState<ReservationSyncIssue[]>([]);
   const [syncedReservationCount, setSyncedReservationCount] = useState(0);
-  const [timetableName, setTimetableName] = useState('');
+  const [timetableName, setTimetableName] = useState(initial?.timetableName ?? '');
   const days = useMemo(() => createTimetableDays(startDate, endDate), [endDate, startDate]);
-  const [selectedDayId, setSelectedDayId] = useState(formatDate(minimumStartDate));
+  const [selectedDayId, setSelectedDayId] = useState(() =>
+    initial ? formatDate(startOfDay(initial.startDate)) : formatDate(minimumStartDate)
+  );
   const [schedulesByDay, setSchedulesByDay] = useState<TimetableSchedulesByDay>(() =>
-    synchronizeSchedules(createTimetableDays(minimumStartDate, minimumStartDate), {})
+    initial
+      ? synchronizeSchedules(
+          createTimetableDays(startOfDay(initial.startDate), startOfDay(initial.endDate)),
+          initial.schedulesByDay
+        )
+      : synchronizeSchedules(createTimetableDays(minimumStartDate, minimumStartDate), {})
   );
   const maximumEndDate = useMemo(
     () => addDays(startDate, MAX_TRIP_DAY_COUNT - 1),

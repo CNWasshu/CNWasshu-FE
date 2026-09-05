@@ -12,6 +12,7 @@ export interface CourseSummary {
 export interface CourseItem {
   id: number | null;
   activityId: number | null;
+  restaurantId: number | null;
   reservationId: number | null;
   title: string;
   dayNo: number;

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -17,13 +17,22 @@ const PROFILE_IMAGE = require('@/assets/images/충남마스코트.jpg');
 
 import { DeleteAccountModal } from '@/components/auth/DeleteAccountModal';
 import { BackHeader } from '@/components/common/BackHeader';
+import { CourseActionModal } from '@/components/course/CourseActionModal';
 import { CourseColors } from '@/constants/course-colors';
 import { useDeleteAccount } from '@/hooks/auth/use-delete-account';
 import { useLogout } from '@/hooks/auth/use-logout';
 import { useMe } from '@/hooks/auth/use-me';
 import { useUpdateNickname } from '@/hooks/auth/use-update-nickname';
+import { useManageCourse } from '@/hooks/course/use-manage-course';
 import { useMyStampCount } from '@/hooks/stamp/use-my-stamp-count';
+import { useCourses } from '@/hooks/useCourse';
+import type { CourseSummary } from '@/types/course';
 import { getAccessToken } from '@/utils/auth';
+
+// 팀 결정: 만족도조사 로직과 충돌 우려로 수정 기능 비활성화, 코드는 참고용으로 유지.
+// (app/course/edit/[id].tsx 및 관련 PUT /api/timetables/{courseId} 호출부는 그대로 남겨두되,
+//  이 값을 true로 되돌리기 전까지는 어디서도 호출되지 않는다.)
+const SHOW_COURSE_EDIT_BUTTON = false;
 
 export default function MyPageScreen() {
   const router = useRouter();
@@ -49,6 +58,35 @@ export default function MyPageScreen() {
     reset: resetDeleteAccount,
   } = useDeleteAccount();
   const { loading: stampCountLoading, stampCount } = useMyStampCount(accessToken ?? null);
+  const { courses, loading: coursesLoading, refetch: refetchCourses } = useCourses();
+  const {
+    deleteCourse,
+    errorMessage: courseActionErrorMessage,
+    isSubmitting: isCourseActionSubmitting,
+    reset: resetCourseAction,
+  } = useManageCourse();
+  const [courseActionTarget, setCourseActionTarget] = useState<CourseSummary | null>(null);
+  const [courseActionMode, setCourseActionMode] = useState<'delete' | null>(null);
+  const [courseTab, setCourseTab] = useState<'upcoming' | 'past'>('upcoming');
+
+  useEffect(() => {
+    void refetchCourses();
+  }, [refetchCourses]);
+
+  // startDate/endDate가 'YYYY-MM-DD' ISO 형식이라 문자열 비교로도 날짜 비교가 그대로 성립한다.
+  // 예정 코스: 아직 끝나지 않은(오늘 포함) 코스, 이전 코스: 이미 끝난 코스.
+  const { pastCourses, upcomingCourses } = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return {
+      pastCourses: courses
+        .filter((course) => course.endDate < today)
+        .sort((a, b) => b.startDate.localeCompare(a.startDate)),
+      upcomingCourses: courses
+        .filter((course) => course.endDate >= today)
+        .sort((a, b) => a.startDate.localeCompare(b.startDate)),
+    };
+  }, [courses]);
+  const activeCourses = courseTab === 'upcoming' ? upcomingCourses : pastCourses;
 
   useEffect(() => {
     let cancelled = false;
@@ -116,6 +154,29 @@ export default function MyPageScreen() {
     if (deleted) {
       setIsDeleteModalVisible(false);
       router.replace('/auth/login');
+    }
+  };
+
+  const handleOpenDeleteCourse = (course: CourseSummary) => {
+    resetCourseAction();
+    setCourseActionTarget(course);
+    setCourseActionMode('delete');
+  };
+
+  const handleCloseCourseAction = () => {
+    setCourseActionTarget(null);
+    setCourseActionMode(null);
+  };
+
+  const handleConfirmDeleteCourse = async () => {
+    if (!accessToken || !courseActionTarget) {
+      return;
+    }
+
+    const deleted = await deleteCourse(courseActionTarget.id, accessToken);
+    if (deleted) {
+      handleCloseCourseAction();
+      void refetchCourses();
     }
   };
 
@@ -216,7 +277,6 @@ export default function MyPageScreen() {
                 </View>
               </View>
 
-              {/* TODO: 코스 도메인이 JWT 인증으로 전환되면 저장 코스도 실제 값으로 교체 */}
               <View style={styles.statGrid}>
                 <View style={styles.statCard}>
                   {stampCountLoading ? (
@@ -227,7 +287,11 @@ export default function MyPageScreen() {
                   <Text style={styles.statLabel}>완료 스탬프</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>0</Text>
+                  {coursesLoading ? (
+                    <ActivityIndicator color={CourseColors.primary} size="small" />
+                  ) : (
+                    <Text style={styles.statValue}>{courses.length}</Text>
+                  )}
                   <Text style={styles.statLabel}>저장 코스</Text>
                 </View>
                 <View style={styles.statCard}>
@@ -237,11 +301,6 @@ export default function MyPageScreen() {
               </View>
 
               <View style={styles.menuCard}>
-                <View style={styles.menuRow}>
-                  <Text style={styles.menuLabel}>내 예정 코스</Text>
-                  {/* TODO: 코스 API 연동 후 다음 예정 코스로 교체 */}
-                  <Text style={styles.menuValue}>저장한 코스에서 선택</Text>
-                </View>
                 <Pressable
                   onPress={() => router.push('/notification/settings')}
                   style={[styles.menuRow, styles.menuRowLast]}>
@@ -273,10 +332,84 @@ export default function MyPageScreen() {
               <View style={styles.whiteCard}>
                 <View style={styles.sectionHeading}>
                   <Text style={styles.cardTitle}>코스 목록</Text>
-                  <Text style={styles.sectionHint}>이름 변경 · 삭제</Text>
                 </View>
-                {/* TODO: 코스 API 연동 후 저장된 코스 목록으로 교체 */}
-                <Text style={styles.cardDesc}>아직 저장된 코스가 없어요.</Text>
+                <View style={styles.courseTabRow}>
+                  <Pressable
+                    onPress={() => setCourseTab('upcoming')}
+                    style={[
+                      styles.courseTabButton,
+                      courseTab === 'upcoming' && styles.courseTabButtonActive,
+                    ]}>
+                    <Text
+                      style={[
+                        styles.courseTabButtonText,
+                        courseTab === 'upcoming' && styles.courseTabButtonTextActive,
+                      ]}>
+                      예정 코스
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => setCourseTab('past')}
+                    style={[
+                      styles.courseTabButton,
+                      courseTab === 'past' && styles.courseTabButtonActive,
+                    ]}>
+                    <Text
+                      style={[
+                        styles.courseTabButtonText,
+                        courseTab === 'past' && styles.courseTabButtonTextActive,
+                      ]}>
+                      이전 코스
+                    </Text>
+                  </Pressable>
+                </View>
+                {activeCourses.length === 0 ? (
+                  <Text style={styles.cardDesc}>
+                    {courseTab === 'upcoming' ? '예정된 코스가 없어요.' : '지난 코스가 없어요.'}
+                  </Text>
+                ) : (
+                  <View style={styles.courseList}>
+                    {activeCourses.map((course) => (
+                      <Pressable
+                        key={course.id}
+                        onPress={() => router.push(`/course/${course.id}`)}
+                        style={styles.courseListItem}>
+                        <View style={styles.courseListItemInfo}>
+                          <Text style={styles.courseListItemName}>{course.courseName}</Text>
+                          <Text style={styles.courseListItemMeta}>
+                            {course.startDate} ~ {course.endDate} · 일정 {course.itemCount}개
+                          </Text>
+                        </View>
+                        <View style={styles.courseListItemActions}>
+                          {SHOW_COURSE_EDIT_BUTTON && courseTab === 'upcoming' ? (
+                            <Pressable
+                              onPress={(event) => {
+                                event.stopPropagation();
+                                router.push(`/course/edit/${course.id}`);
+                              }}
+                              style={styles.courseActionButton}>
+                              <Text style={styles.courseActionButtonText}>수정</Text>
+                            </Pressable>
+                          ) : null}
+                          <Pressable
+                            onPress={(event) => {
+                              event.stopPropagation();
+                              handleOpenDeleteCourse(course);
+                            }}
+                            style={[styles.courseActionButton, styles.courseActionButtonDanger]}>
+                            <Text
+                              style={[
+                                styles.courseActionButtonText,
+                                styles.courseActionButtonDangerText,
+                              ]}>
+                              삭제
+                            </Text>
+                          </Pressable>
+                        </View>
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
               </View>
 
               <Pressable
@@ -302,6 +435,16 @@ export default function MyPageScreen() {
         onClose={() => setIsDeleteModalVisible(false)}
         onConfirm={() => void handleConfirmDelete()}
         visible={isDeleteModalVisible}
+      />
+
+      <CourseActionModal
+        course={courseActionTarget}
+        errorMessage={courseActionErrorMessage}
+        isSubmitting={isCourseActionSubmitting}
+        mode={courseActionMode}
+        onClose={handleCloseCourseAction}
+        onConfirmDelete={() => void handleConfirmDeleteCourse()}
+        onConfirmRename={() => {}}
       />
     </SafeAreaView>
   );
@@ -480,7 +623,7 @@ const styles = StyleSheet.create({
   },
   menuRowLast: { borderBottomWidth: 0 },
   menuLabel: { fontSize: 14, fontWeight: '800', color: CourseColors.text },
-  menuValue: { fontSize: 13, color: CourseColors.muted, textAlign: 'right' },
+  menuValue: { fontSize: 13, color: CourseColors.muted, textAlign: 'right', flexShrink: 1 },
   whiteCard: {
     backgroundColor: CourseColors.white,
     borderWidth: 1,
@@ -497,6 +640,50 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 16, fontWeight: '900', color: CourseColors.text },
   sectionHint: { fontSize: 12, color: CourseColors.muted },
   cardDesc: { fontSize: 12.5, color: CourseColors.muted, lineHeight: 19 },
+  courseTabRow: {
+    flexDirection: 'row',
+    gap: 6,
+    backgroundColor: CourseColors.background,
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 10,
+  },
+  courseTabButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderRadius: 9,
+  },
+  courseTabButtonActive: { backgroundColor: CourseColors.primary },
+  courseTabButtonText: { fontSize: 13, fontWeight: '800', color: CourseColors.muted },
+  courseTabButtonTextActive: { color: CourseColors.white },
+  courseList: { gap: 8 },
+  courseListItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: CourseColors.background,
+    borderWidth: 1,
+    borderColor: CourseColors.border,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  courseListItemInfo: { flex: 1, gap: 4 },
+  courseListItemActions: { flexDirection: 'row', gap: 6, flexShrink: 0 },
+  courseActionButton: {
+    backgroundColor: CourseColors.white,
+    borderWidth: 1,
+    borderColor: CourseColors.border,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  courseActionButtonDanger: { borderColor: '#F2C9C0' },
+  courseActionButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 12 },
+  courseActionButtonDangerText: { color: CourseColors.error },
+  courseListItemName: { fontSize: 14, fontWeight: '800', color: CourseColors.text },
+  courseListItemMeta: { fontSize: 12, color: CourseColors.muted },
   logoutButton: {
     minHeight: 52,
     borderWidth: 1,
