@@ -1,4 +1,9 @@
 import {
+  useEffect,
+  useRef,
+} from 'react';
+import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -38,6 +43,209 @@ const TYPE_FILTERS: {
   },
 ];
 
+function HorizontalScroll({
+  children,
+  contentContainerStyle,
+}: {
+  children: React.ReactNode;
+  contentContainerStyle: any;
+}) {
+  const scrollRef =
+    useRef<ScrollView>(null);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return;
+    }
+
+    const node =
+      scrollRef.current as any;
+
+    if (!node) {
+      return;
+    }
+
+    const element =
+      node.getScrollableNode?.() ??
+      node.getInnerViewNode?.() ??
+      node;
+
+    if (
+      !element ||
+      !element.addEventListener
+    ) {
+      return;
+    }
+
+    let dragging = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+    let moved = false;
+
+    const handleWheel = (
+      event: WheelEvent
+    ) => {
+      const delta =
+        Math.abs(event.deltaY) >
+        Math.abs(event.deltaX)
+          ? event.deltaY
+          : event.deltaX;
+
+      if (!delta) {
+        return;
+      }
+
+      event.preventDefault();
+
+      element.scrollLeft += delta;
+    };
+
+    const handleMouseDown = (
+      event: MouseEvent
+    ) => {
+      dragging = true;
+      moved = false;
+
+      startX = event.pageX;
+      startScrollLeft =
+        element.scrollLeft;
+
+      element.style.cursor =
+        'grabbing';
+
+      element.style.userSelect =
+        'none';
+    };
+
+    const handleMouseMove = (
+      event: MouseEvent
+    ) => {
+      if (!dragging) {
+        return;
+      }
+
+      const distance =
+        event.pageX - startX;
+
+      if (
+        Math.abs(distance) > 3
+      ) {
+        moved = true;
+      }
+
+      element.scrollLeft =
+        startScrollLeft -
+        distance;
+    };
+
+    const stopDragging = () => {
+      dragging = false;
+
+      element.style.cursor =
+        'grab';
+
+      element.style.userSelect =
+        '';
+    };
+
+    const handleClick = (
+      event: MouseEvent
+    ) => {
+      if (!moved) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      moved = false;
+    };
+
+    element.style.cursor =
+      'grab';
+
+    element.addEventListener(
+      'wheel',
+      handleWheel,
+      {
+        passive: false,
+      }
+    );
+
+    element.addEventListener(
+      'mousedown',
+      handleMouseDown
+    );
+
+    window.addEventListener(
+      'mousemove',
+      handleMouseMove
+    );
+
+    window.addEventListener(
+      'mouseup',
+      stopDragging
+    );
+
+    element.addEventListener(
+      'mouseleave',
+      stopDragging
+    );
+
+    element.addEventListener(
+      'click',
+      handleClick,
+      true
+    );
+
+    return () => {
+      element.removeEventListener(
+        'wheel',
+        handleWheel
+      );
+
+      element.removeEventListener(
+        'mousedown',
+        handleMouseDown
+      );
+
+      window.removeEventListener(
+        'mousemove',
+        handleMouseMove
+      );
+
+      window.removeEventListener(
+        'mouseup',
+        stopDragging
+      );
+
+      element.removeEventListener(
+        'mouseleave',
+        stopDragging
+      );
+
+      element.removeEventListener(
+        'click',
+        handleClick,
+        true
+      );
+    };
+  }, []);
+
+  return (
+    <ScrollView
+      ref={scrollRef}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={
+        contentContainerStyle
+      }
+    >
+      {children}
+    </ScrollView>
+  );
+}
+
 export function HomeFilterSection({
   selectedType,
   selectedRegion,
@@ -53,20 +261,26 @@ export function HomeFilterSection({
       <View style={styles.typeFilter}>
         {TYPE_FILTERS.map((filter) => {
           const active =
-            selectedType === filter.value;
+            selectedType ===
+            filter.value;
 
           return (
             <Pressable
               key={filter.value}
               style={[
                 styles.typeButton,
-                active && styles.typeButtonActive,
+                active &&
+                  styles.typeButtonActive,
               ]}
               onPress={() =>
-                onSelectType(filter.value)
+                onSelectType(
+                  filter.value
+                )
               }
             >
-              <Text style={styles.typeIcon}>
+              <Text
+                style={styles.typeIcon}
+              >
                 {filter.icon}
               </Text>
 
@@ -88,10 +302,10 @@ export function HomeFilterSection({
         지역
       </Text>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.regionList}
+      <HorizontalScroll
+        contentContainerStyle={
+          styles.regionList
+        }
       >
         {regions.map((region) => {
           const active =
@@ -121,227 +335,269 @@ export function HomeFilterSection({
             </Pressable>
           );
         })}
-      </ScrollView>
+      </HorizontalScroll>
 
-      <Text style={styles.filterLabel}>
-        카테고리
-      </Text>
+      {selectedType ===
+        'ACTIVITY' && (
+        <>
+          <Text
+            style={styles.filterLabel}
+          >
+            카테고리
+          </Text>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoryList}
-      >
-        {categories.map((category) => {
-          const active =
-            selectedCategory === category;
+          <HorizontalScroll
+            contentContainerStyle={
+              styles.categoryList
+            }
+          >
+            {categories.map(
+              (category) => {
+                const active =
+                  selectedCategory ===
+                  category;
 
-          return (
-            <Pressable
-              key={category}
-              style={styles.categoryButton}
-              onPress={() =>
-                onSelectCategory(category)
+                return (
+                  <Pressable
+                    key={category}
+                    style={
+                      styles.categoryButton
+                    }
+                    onPress={() =>
+                      onSelectCategory(
+                        category
+                      )
+                    }
+                  >
+                    <View
+                      style={[
+                        styles.categoryIcon,
+                        active &&
+                          styles.categoryIconActive,
+                      ]}
+                    >
+                      <Text
+                        style={
+                          styles.categoryEmoji
+                        }
+                      >
+                        {getCategoryIcon(
+                          category
+                        )}
+                      </Text>
+                    </View>
+
+                    <Text
+                      style={[
+                        styles.categoryText,
+                        active &&
+                          styles.categoryTextActive,
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {category}
+                    </Text>
+                  </Pressable>
+                );
               }
-            >
-              <View
-                style={[
-                  styles.categoryIcon,
-                  active &&
-                    styles.categoryIconActive,
-                ]}
-              >
-                <Text
-                  style={styles.categoryEmoji}
-                >
-                  {getCategoryIcon(
-                    category,
-                    selectedType
-                  )}
-                </Text>
-              </View>
-
-              <Text
-                style={[
-                  styles.categoryText,
-                  active &&
-                    styles.categoryTextActive,
-                ]}
-                numberOfLines={1}
-              >
-                {category}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+            )}
+          </HorizontalScroll>
+        </>
+      )}
     </>
   );
 }
 
 function getCategoryIcon(
-  categoryName: string,
-  type: HomeItemType
+  categoryName: string
 ) {
-  if (categoryName === '전체') {
-    return type === 'RESTAURANT'
-      ? '🍽️'
-      : '🌾';
-  }
-
   if (
-    categoryName.includes('한식') ||
-    categoryName.includes('음식') ||
-    categoryName.includes('맛집')
+    categoryName === '전체'
   ) {
-    return '🍲';
+    return '🌾';
   }
 
   if (
-    categoryName.includes('카페') ||
-    categoryName.includes('디저트')
-  ) {
-    return '☕';
-  }
-
-  if (
-    categoryName.includes('농촌') ||
-    categoryName.includes('체험')
+    categoryName.includes(
+      '농촌'
+    ) ||
+    categoryName.includes(
+      '체험'
+    )
   ) {
     return '🧑‍🌾';
   }
 
   if (
-    categoryName.includes('축제') ||
-    categoryName.includes('행사')
+    categoryName.includes(
+      '축제'
+    ) ||
+    categoryName.includes(
+      '행사'
+    )
   ) {
     return '🌸';
   }
 
   if (
-    categoryName.includes('치유') ||
-    categoryName.includes('힐링')
+    categoryName.includes(
+      '치유'
+    ) ||
+    categoryName.includes(
+      '힐링'
+    ) ||
+    categoryName.includes(
+      '건강'
+    )
   ) {
     return '🌿';
+  }
+
+  if (
+    categoryName.includes(
+      '만들기'
+    )
+  ) {
+    return '🧶';
+  }
+
+  if (
+    categoryName.includes(
+      '전통'
+    )
+  ) {
+    return '🏺';
+  }
+
+  if (
+    categoryName.includes(
+      '자연'
+    ) ||
+    categoryName.includes(
+      '생태'
+    )
+  ) {
+    return '🌱';
   }
 
   return '📍';
 }
 
-const styles = StyleSheet.create({
-  typeFilter: {
-    flexDirection: 'row',
-    gap: 8,
-    padding: 5,
-    borderRadius: 16,
-    backgroundColor: '#F0E6D3',
-  },
+const styles =
+  StyleSheet.create({
+    typeFilter: {
+      flexDirection: 'row',
+      gap: 8,
+      padding: 5,
+      borderRadius: 16,
+      backgroundColor: '#F0E6D3',
+    },
 
-  typeButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 5,
-    paddingVertical: 10,
-    borderRadius: 12,
-  },
+    typeButton: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 5,
+      paddingVertical: 10,
+      borderRadius: 12,
+    },
 
-  typeButtonActive: {
-    backgroundColor: '#FFFFFF',
-  },
+    typeButtonActive: {
+      backgroundColor: '#FFFFFF',
+    },
 
-  typeIcon: {
-    fontSize: 15,
-  },
+    typeIcon: {
+      fontSize: 15,
+    },
 
-  typeButtonText: {
-    color: '#6C5A37',
-    fontSize: 12,
-    fontWeight: '800',
-  },
+    typeButtonText: {
+      color: '#6C5A37',
+      fontSize: 12,
+      fontWeight: '800',
+    },
 
-  typeButtonTextActive: {
-    color: '#3F7D46',
-  },
+    typeButtonTextActive: {
+      color: '#3F7D46',
+    },
 
-  filterLabel: {
-    marginTop: 18,
-    marginBottom: 8,
-    color: '#5F5139',
-    fontSize: 12,
-    fontWeight: '800',
-  },
+    filterLabel: {
+      marginTop: 18,
+      marginBottom: 8,
+      color: '#5F5139',
+      fontSize: 12,
+      fontWeight: '800',
+    },
 
-  regionList: {
-    gap: 7,
-    paddingRight: 18,
-  },
+    regionList: {
+      gap: 7,
+      paddingRight: 18,
+    },
 
-  regionChip: {
-    paddingHorizontal: 13,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: '#EADCC4',
-    borderRadius: 999,
-    backgroundColor: '#FFFFFF',
-  },
+    regionChip: {
+      paddingHorizontal: 13,
+      paddingVertical: 8,
+      borderWidth: 1,
+      borderColor: '#EADCC4',
+      borderRadius: 999,
+      backgroundColor: '#FFFFFF',
+    },
 
-  regionChipActive: {
-    borderColor: '#3F7D46',
-    backgroundColor: '#3F7D46',
-  },
+    regionChipActive: {
+      borderColor: '#3F7D46',
+      backgroundColor: '#3F7D46',
+    },
 
-  regionChipText: {
-    color: '#6B5730',
-    fontSize: 12,
-    fontWeight: '800',
-  },
+    regionChipText: {
+      color: '#6B5730',
+      fontSize: 12,
+      fontWeight: '800',
+    },
 
-  regionChipTextActive: {
-    color: '#FFFFFF',
-  },
+    regionChipTextActive: {
+      color: '#FFFFFF',
+    },
 
-  categoryList: {
-    gap: 10,
-    paddingRight: 18,
-  },
+    categoryList: {
+      gap: 10,
+      paddingRight: 18,
+    },
 
-  categoryButton: {
-    width: 67,
-    alignItems: 'center',
-  },
+    categoryButton: {
+      width: 67,
+      alignItems: 'center',
+    },
 
-  categoryIcon: {
-    width: 50,
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#EADCC4',
-    borderRadius: 25,
-    backgroundColor: '#FFFFFF',
-  },
+    categoryIcon: {
+      width: 50,
+      height: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: '#EADCC4',
+      borderRadius: 25,
+      backgroundColor: '#FFFFFF',
+    },
 
-  categoryIconActive: {
-    borderColor: '#ABD19C',
-    backgroundColor: '#E8F5E4',
-  },
+    categoryIconActive: {
+      borderColor: '#ABD19C',
+      backgroundColor: '#E8F5E4',
+    },
 
-  categoryEmoji: {
-    fontSize: 22,
-  },
+    categoryEmoji: {
+      fontSize: 22,
+    },
 
-  categoryText: {
-    width: 67,
-    marginTop: 6,
-    color: '#72664E',
-    fontSize: 10,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
+    categoryText: {
+      width: 67,
+      marginTop: 6,
+      color: '#72664E',
+      fontSize: 10,
+      fontWeight: '800',
+      textAlign: 'center',
+    },
 
-  categoryTextActive: {
-    color: '#3F7D46',
-  },
-});
+    categoryTextActive: {
+      color: '#3F7D46',
+    },
+  });

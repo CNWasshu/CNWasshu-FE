@@ -1,16 +1,43 @@
-import { clearTokens, getAccessToken } from '@/utils/auth';
+import {
+  clearTokens,
+  getAccessToken,
+} from '@/utils/auth';
+
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { HomeApiError, getHomeErrorMessage, homeApi } from '@/api/homeApi';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+
+import {
+  HomeApiError,
+  getHomeErrorMessage,
+  homeApi,
+} from '@/api/homeApi';
+
 import { HomeContent } from '@/components/home/HomeContent';
-import { CHUNGNAM_REGIONS } from '@/constants/regions';
+
 import { useBookmarks } from '@/hooks/bookmark/use-bookmarks';
+
 import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-notification-count';
-import type { HomeItem, HomeItemType } from '@/types/home';
+
+import type {
+  ActivityHomeSort,
+  HomeFilterOption,
+  HomeItem,
+  HomeItemType,
+  RestaurantHomeSort,
+} from '@/types/home';
 
 const ITEMS_PER_PAGE = 8;
+
+type HomeSort =
+  | ActivityHomeSort
+  | RestaurantHomeSort;
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -27,296 +54,675 @@ export default function HomeScreen() {
     unreadCount: unreadNotificationCount,
   } = useUnreadNotificationCount();
 
-  const [items, setItems] = useState<HomeItem[]>([]);
+  const [items, setItems] =
+    useState<HomeItem[]>([]);
 
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [
+    filterRegions,
+    setFilterRegions,
+  ] = useState<HomeFilterOption[]>([]);
 
-  const [selectedType, setSelectedType] =
-    useState<HomeItemType>('ACTIVITY');
+  const [
+    filterCategories,
+    setFilterCategories,
+  ] = useState<HomeFilterOption[]>([]);
 
-  const [selectedRegion, setSelectedRegion] =
-    useState('전체');
+  const [loading, setLoading] =
+    useState(true);
 
-  const [selectedCategory, setSelectedCategory] =
-    useState('전체');
+  const [refreshing, setRefreshing] =
+    useState(false);
 
-  const [visibleCount, setVisibleCount] =
-    useState(ITEMS_PER_PAGE);
+  const [loadingMore, setLoadingMore] =
+    useState(false);
 
-  const fetchHomeItems = async () => {
-  try {
-    setErrorMessage('');
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('');
 
-    const accessToken = await getAccessToken();
+  const [
+    selectedType,
+    setSelectedType,
+  ] =
+    useState<HomeItemType>(
+      'ACTIVITY'
+    );
 
-    if (!accessToken) {
-      throw new Error('로그인이 필요합니다.');
-    }
+  const [
+    selectedRegionId,
+    setSelectedRegionId,
+  ] = useState<number | null>(
+    null
+  );
 
-    const data =
-      await homeApi.getHomeItems(accessToken);
+  const [
+    selectedCategoryId,
+    setSelectedCategoryId,
+  ] = useState<number | null>(
+    null
+  );
 
-    setItems(data);
-  } catch (error) {
-    // 저장된 토큰이 있어도 만료/무효면 서버가 401을 준다.
-    // 이 경우 에러 카드만 띄우면 막다른 골목이라, 토큰을 지우고 로그인 화면으로 보낸다.
-    if (error instanceof HomeApiError && error.status === 401) {
+  const [
+    activitySort,
+    setActivitySort,
+  ] =
+    useState<ActivityHomeSort>(
+      'DEFAULT'
+    );
+
+  const [
+    restaurantSort,
+    setRestaurantSort,
+  ] =
+    useState<RestaurantHomeSort>(
+      'NAME'
+    );
+
+  const [
+    currentPage,
+    setCurrentPage,
+  ] = useState(0);
+
+  const [hasNext, setHasNext] =
+    useState(false);
+
+  const [
+    totalItemCount,
+    setTotalItemCount,
+  ] = useState(0);
+
+  const selectedSort: HomeSort =
+    selectedType === 'ACTIVITY'
+      ? activitySort
+      : restaurantSort;
+
+  const handleUnauthorized =
+    useCallback(async () => {
       await clearTokens();
       router.replace('/auth/login');
-      return;
-    }
-    setErrorMessage(getHomeErrorMessage(error));
-  } finally {
-    setLoading(false);
-    setRefreshing(false);
-  }
-};
+    }, [router]);
+
+  const fetchFilterOptions =
+    useCallback(
+      async (
+        type: HomeItemType
+      ) => {
+        try {
+          const accessToken =
+            await getAccessToken();
+
+          if (!accessToken) {
+            throw new Error(
+              '로그인이 필요합니다.'
+            );
+          }
+
+          const data =
+            await homeApi.getFilterOptions(
+              accessToken,
+              type
+            );
+
+          setFilterRegions(
+            data.regions
+          );
+
+          if (
+            type === 'ACTIVITY'
+          ) {
+            setFilterCategories(
+              data.categories
+            );
+          } else {
+            setFilterCategories(
+              []
+            );
+          }
+        } catch (error) {
+          if (
+            error instanceof
+              HomeApiError &&
+            error.status === 401
+          ) {
+            await handleUnauthorized();
+            return;
+          }
+
+          setErrorMessage(
+            getHomeErrorMessage(
+              error
+            )
+          );
+        }
+      },
+      [handleUnauthorized]
+    );
+
+  const fetchHomeItems =
+    useCallback(
+      async (
+        pageNumber = 0,
+        append = false,
+        showLoading = true
+      ) => {
+        try {
+          if (
+            showLoading &&
+            !append
+          ) {
+            setLoading(true);
+          }
+
+          if (append) {
+            setLoadingMore(true);
+          }
+
+          setErrorMessage('');
+
+          const accessToken =
+            await getAccessToken();
+
+          if (!accessToken) {
+            throw new Error(
+              '로그인이 필요합니다.'
+            );
+          }
+
+          const data =
+            selectedType ===
+            'ACTIVITY'
+              ? await homeApi.getActivities(
+                  accessToken,
+                  {
+                    sort: activitySort,
+                    regionId:
+                      selectedRegionId,
+                    categoryId:
+                      selectedCategoryId,
+                    page: pageNumber,
+                    size: ITEMS_PER_PAGE,
+                  }
+                )
+              : await homeApi.getRestaurants(
+                  accessToken,
+                  {
+                    sort: restaurantSort,
+                    regionId:
+                      selectedRegionId,
+                    page: pageNumber,
+                    size: ITEMS_PER_PAGE,
+                  }
+                );
+
+          if (append) {
+            setItems(
+              (
+                previousItems
+              ) => [
+                ...previousItems,
+                ...data.items,
+              ]
+            );
+          } else {
+            setItems(data.items);
+          }
+
+          setCurrentPage(
+            data.page
+          );
+
+          setHasNext(
+            data.hasNext
+          );
+
+          setTotalItemCount(
+            data.totalElements
+          );
+        } catch (error) {
+          if (
+            error instanceof
+              HomeApiError &&
+            error.status === 401
+          ) {
+            await handleUnauthorized();
+            return;
+          }
+
+          setErrorMessage(
+            getHomeErrorMessage(
+              error
+            )
+          );
+        } finally {
+          setLoading(false);
+          setRefreshing(false);
+          setLoadingMore(false);
+        }
+      },
+      [
+        selectedType,
+        selectedRegionId,
+        selectedCategoryId,
+        activitySort,
+        restaurantSort,
+        handleUnauthorized,
+      ]
+    );
 
   useEffect(() => {
-    fetchHomeItems();
-  }, []);
+    fetchFilterOptions(
+      selectedType
+    );
+  }, [
+    selectedType,
+    fetchFilterOptions,
+  ]);
+
+  useEffect(() => {
+    fetchHomeItems(
+      0,
+      false,
+      false
+    );
+  }, [fetchHomeItems]);
 
   useFocusEffect(
     useCallback(() => {
       fetchBookmarks();
       fetchUnreadNotificationCount();
-    }, [fetchBookmarks, fetchUnreadNotificationCount])
+    }, [
+      fetchBookmarks,
+      fetchUnreadNotificationCount,
+    ])
   );
 
+  const selectedRegion =
+    useMemo(() => {
+      if (
+        selectedRegionId ===
+        null
+      ) {
+        return '전체';
+      }
 
-  useEffect(() => {
-    setVisibleCount(ITEMS_PER_PAGE);
-  }, [
-    selectedType,
-    selectedRegion,
-    selectedCategory,
-  ]);
+      return (
+        filterRegions.find(
+          (region) =>
+            region.id ===
+            selectedRegionId
+        )?.name ?? '전체'
+      );
+    }, [
+      selectedRegionId,
+      filterRegions,
+    ]);
 
-  const regions = useMemo(() => {
-    const regionNames = Array.from(
-      new Set(
-        items
-          .filter(
-            (item) => item.type === selectedType
-          )
-          .map((item) => item.regionName)
-          .filter(Boolean)
-      )
-    );
-    const availableRegions = new Set(regionNames);
-    const knownRegions = CHUNGNAM_REGIONS.filter((region) =>
-      availableRegions.has(region)
-    );
-    const otherRegions = regionNames.filter(
-      (region) => !CHUNGNAM_REGIONS.includes(region as (typeof CHUNGNAM_REGIONS)[number])
-    );
+  const selectedCategory =
+    useMemo(() => {
+      if (
+        selectedCategoryId ===
+        null
+      ) {
+        return '전체';
+      }
 
-    return ['전체', ...knownRegions, ...otherRegions];
-  }, [items, selectedType]);
+      return (
+        filterCategories.find(
+          (category) =>
+            category.id ===
+            selectedCategoryId
+        )?.name ?? '전체'
+      );
+    }, [
+      selectedCategoryId,
+      filterCategories,
+    ]);
 
-  const categories = useMemo(() => {
-    const categoryNames = Array.from(
-      new Set(
-        items
-          .filter(
-            (item) => item.type === selectedType
-          )
-          .map((item) => item.categoryName)
-          .filter(Boolean)
-      )
-    );
+  const regions = useMemo(
+    () => [
+      '전체',
+      ...filterRegions.map(
+        (region) =>
+          region.name
+      ),
+    ],
+    [filterRegions]
+  );
 
-    return ['전체', ...categoryNames];
-  }, [items, selectedType]);
+  const categories = useMemo(
+    () => {
+      if (
+        selectedType ===
+        'RESTAURANT'
+      ) {
+        return ['전체'];
+      }
 
-  const filteredItems = useMemo(() => {
-    return items
-      .filter((item) => {
-        const typeMatched =
-          item.type === selectedType;
-
-        const regionMatched =
-          selectedRegion === '전체' ||
-          item.regionName === selectedRegion;
-
-        const categoryMatched =
-          selectedCategory === '전체' ||
-          item.categoryName === selectedCategory;
-
-        return (
-          typeMatched &&
-          regionMatched &&
-          categoryMatched
-        );
-      })
-      .sort((a, b) => a.id - b.id);
-  }, [
-    items,
-    selectedType,
-    selectedRegion,
-    selectedCategory,
-  ]);
-
-  const visibleItems = useMemo(() => {
-    return filteredItems.slice(
-      0,
-      visibleCount
-    );
-  }, [
-    filteredItems,
-    visibleCount,
-  ]);
+      return [
+        '전체',
+        ...filterCategories.map(
+          (category) =>
+            category.name
+        ),
+      ];
+    },
+    [
+      selectedType,
+      filterCategories,
+    ]
+  );
 
   const handleSelectType = (
     type: HomeItemType
   ) => {
+    if (
+      type === selectedType
+    ) {
+      return;
+    }
+
     setSelectedType(type);
-
-    setSelectedRegion('전체');
-    setSelectedCategory('전체');
+    setSelectedRegionId(null);
+    setSelectedCategoryId(null);
+    setCurrentPage(0);
+    setHasNext(false);
   };
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
+  const handleSelectRegion = (
+    regionName: string
+  ) => {
+    if (
+      regionName === '전체'
+    ) {
+      setSelectedRegionId(
+        null
+      );
+      return;
+    }
 
-    await Promise.all([
-      fetchHomeItems(),
-      fetchBookmarks(),
-    ]);
-  };
+    const region =
+      filterRegions.find(
+        (item) =>
+          item.name ===
+          regionName
+      );
 
-  const handleRetry = () => {
-    setLoading(true);
-    fetchHomeItems();
-  };
+    if (!region) {
+      return;
+    }
 
-  const handleLoadMore = () => {
-    setVisibleCount((previousCount) =>
-      Math.min(
-        previousCount + ITEMS_PER_PAGE,
-        filteredItems.length
-      )
+    setSelectedRegionId(
+      region.id
     );
   };
 
-  /**
-   * 홈 카드 클릭
-   */
+  const handleSelectCategory = (
+    categoryName: string
+  ) => {
+    if (
+      selectedType !==
+      'ACTIVITY'
+    ) {
+      return;
+    }
+
+    if (
+      categoryName ===
+      '전체'
+    ) {
+      setSelectedCategoryId(
+        null
+      );
+      return;
+    }
+
+    const category =
+      filterCategories.find(
+        (item) =>
+          item.name ===
+          categoryName
+      );
+
+    if (!category) {
+      return;
+    }
+
+    setSelectedCategoryId(
+      category.id
+    );
+  };
+
+  const handleSelectSort = (
+    sort: HomeSort
+  ) => {
+    if (
+      selectedType ===
+      'ACTIVITY'
+    ) {
+      setActivitySort(
+        sort as ActivityHomeSort
+      );
+    } else {
+      setRestaurantSort(
+        sort as RestaurantHomeSort
+      );
+    }
+
+    setCurrentPage(0);
+    setHasNext(false);
+  };
+
+  const handleRefresh =
+    async () => {
+      setRefreshing(true);
+
+      await Promise.all([
+        fetchHomeItems(
+          0,
+          false,
+          false
+        ),
+        fetchFilterOptions(
+          selectedType
+        ),
+        fetchBookmarks(),
+      ]);
+    };
+
+  const handleRetry = () => {
+    fetchHomeItems(
+      0,
+      false,
+      true
+    );
+  };
+
+  const handleLoadMore =
+    async () => {
+      if (
+        !hasNext ||
+        loadingMore
+      ) {
+        return;
+      }
+
+      await fetchHomeItems(
+        currentPage + 1,
+        true,
+        false
+      );
+    };
+
   const handleItemPress = (
     item: HomeItem
   ) => {
-    if (item.type === 'ACTIVITY') {
+    if (
+      item.type ===
+      'ACTIVITY'
+    ) {
       router.push({
-        pathname: '/activity/[id]',
+        pathname:
+          '/activity/[id]',
         params: {
           id: String(item.id),
         },
       });
+
       return;
     }
-    if (item.type === 'RESTAURANT') {
-      router.push({
-        pathname: '/restaurant/[id]',
-        params: {
-          id: String(item.id),
-        },
-      });
-    }
-    
+
+    router.push({
+      pathname:
+        '/restaurant/[id]',
+      params: {
+        id: String(item.id),
+      },
+    });
   };
 
   const handleIsBookmarked = (
     item: HomeItem
-  ) => {
-    return isBookmarked(
-      item.type,
-      item.id
-    );
-  };
-
-  const handleItemBookmarkPress = async (
-    item: HomeItem
-  ) => {
-    const bookmarked = isBookmarked(
+  ) =>
+    isBookmarked(
       item.type,
       item.id
     );
 
-    if (bookmarked) {
-      await removeBookmark({
-        type: item.type,
-        targetId: item.id,
-      });
+  const handleItemBookmarkPress =
+    async (
+      item: HomeItem
+    ) => {
+      const bookmarked =
+        isBookmarked(
+          item.type,
+          item.id
+        );
 
-      return;
-    }
+      if (bookmarked) {
+        await removeBookmark({
+          type: item.type,
+          targetId: item.id,
+        });
 
-    const success = await addBookmark({
-      type: item.type,
-      targetId: item.id,
-    });
+        return;
+      }
 
-    if (success) {
-      await fetchBookmarks();
-    }
-  };
+      const success =
+        await addBookmark({
+          type: item.type,
+          targetId: item.id,
+        });
 
-  const handleBookmarkPress = () => {
-    router.push('/bookmark');
-  };
+      if (success) {
+        await fetchBookmarks();
+      }
+    };
 
-  const handleMyPagePress = () => {
-    router.push('/auth/mypage');
-  };
+  const handleBookmarkPress =
+    () => {
+      router.push(
+        '/bookmark'
+      );
+    };
 
-  const handleNotificationPress = () => {
-    router.push('/notification');
-  };
+  const handleMyPagePress =
+    () => {
+      router.push(
+        '/auth/mypage'
+      );
+    };
 
-  const handleAiRecommend = () => {
-    router.push('/course/ai');
-  };
+  const handleNotificationPress =
+    () => {
+      router.push(
+        '/notification'
+      );
+    };
+
+  const handleAiRecommend =
+    () => {
+      router.push(
+        '/course/ai'
+      );
+    };
 
   return (
     <HomeContent
       loading={loading}
       refreshing={refreshing}
-      errorMessage={errorMessage}
-
-      items={visibleItems}
-
-      selectedType={selectedType}
-      selectedRegion={selectedRegion}
-      selectedCategory={selectedCategory}
-
-      regions={regions}
-      categories={categories}
-
-      totalItemCount={filteredItems.length}
-
-      canLoadMore={
-        visibleCount < filteredItems.length
+      errorMessage={
+        errorMessage
       }
-
-      onSelectType={handleSelectType}
-      onSelectRegion={setSelectedRegion}
-      onSelectCategory={setSelectedCategory}
-
-      onRefresh={handleRefresh}
-      onRetry={handleRetry}
-      onLoadMore={handleLoadMore}
-
-      onItemPress={handleItemPress}
-      onItemBookmarkPress={handleItemBookmarkPress}
-      isBookmarked={handleIsBookmarked}
-
-      onAiRecommend={handleAiRecommend}
-      onBookmarkPress={handleBookmarkPress}
-      onMyPagePress={handleMyPagePress}
-      onNotificationPress={handleNotificationPress}
-      unreadNotificationCount={unreadNotificationCount}
+      items={items}
+      selectedType={
+        selectedType
+      }
+      selectedRegion={
+        selectedRegion
+      }
+      selectedCategory={
+        selectedCategory
+      }
+      selectedSort={
+        selectedSort
+      }
+      regions={regions}
+      categories={
+        categories
+      }
+      totalItemCount={
+        totalItemCount
+      }
+      canLoadMore={
+        hasNext &&
+        !loadingMore
+      }
+      onSelectType={
+        handleSelectType
+      }
+      onSelectRegion={
+        handleSelectRegion
+      }
+      onSelectCategory={
+        handleSelectCategory
+      }
+      onSelectSort={
+        handleSelectSort
+      }
+      onRefresh={
+        handleRefresh
+      }
+      onRetry={
+        handleRetry
+      }
+      onLoadMore={
+        handleLoadMore
+      }
+      onItemPress={
+        handleItemPress
+      }
+      onItemBookmarkPress={
+        handleItemBookmarkPress
+      }
+      isBookmarked={
+        handleIsBookmarked
+      }
+      onAiRecommend={
+        handleAiRecommend
+      }
+      onBookmarkPress={
+        handleBookmarkPress
+      }
+      onMyPagePress={
+        handleMyPagePress
+      }
+      onNotificationPress={
+        handleNotificationPress
+      }
+      unreadNotificationCount={
+        unreadNotificationCount
+      }
     />
   );
 }

@@ -13,7 +13,18 @@ import { HomeFilterSection } from '@/components/home/HomeFilterSection';
 import { HomeHero } from '@/components/home/HomeHero';
 import { HomeItemCard } from '@/components/home/HomeItemCard';
 import { HomeLoadMore } from '@/components/home/HomeLoadMore';
-import type { HomeItem, HomeItemType } from '@/types/home';
+import { HomeSortDropdown } from '@/components/home/HomeSortDropdown';
+
+import type {
+  ActivityHomeSort,
+  HomeItem,
+  HomeItemType,
+  RestaurantHomeSort,
+} from '@/types/home';
+
+type HomeSort =
+  | ActivityHomeSort
+  | RestaurantHomeSort;
 
 type HomeContentProps = {
   loading: boolean;
@@ -25,6 +36,7 @@ type HomeContentProps = {
   selectedType: HomeItemType;
   selectedRegion: string;
   selectedCategory: string;
+  selectedSort: HomeSort;
 
   regions: string[];
   categories: string[];
@@ -35,6 +47,7 @@ type HomeContentProps = {
   onSelectType: (type: HomeItemType) => void;
   onSelectRegion: (region: string) => void;
   onSelectCategory: (category: string) => void;
+  onSelectSort: (sort: HomeSort) => void;
 
   onRefresh: () => void;
   onRetry: () => void;
@@ -61,6 +74,7 @@ export function HomeContent({
   selectedType,
   selectedRegion,
   selectedCategory,
+  selectedSort,
 
   regions,
   categories,
@@ -71,6 +85,7 @@ export function HomeContent({
   onSelectType,
   onSelectRegion,
   onSelectCategory,
+  onSelectSort,
 
   onRefresh,
   onRetry,
@@ -148,7 +163,9 @@ export function HomeContent({
             onBookmarkPress={onBookmarkPress}
             onMyPagePress={onMyPagePress}
             onNotificationPress={onNotificationPress}
-            unreadNotificationCount={unreadNotificationCount}
+            unreadNotificationCount={
+              unreadNotificationCount
+            }
           />
 
           <View style={styles.content}>
@@ -174,19 +191,15 @@ export function HomeContent({
             />
 
             <View style={styles.resultHeader}>
-              <Text style={styles.resultNote}>
-                {selectedRegion === '전체'
-                  ? selectedType === 'ACTIVITY'
-                    ? '충남 전체의 체험을 둘러보세요.'
-                    : '충남 전체의 맛집을 둘러보세요.'
-                  : selectedType === 'ACTIVITY'
-                    ? `${selectedRegion}의 체험을 모아보고 있어요.`
-                    : `${selectedRegion}의 맛집을 모아보고 있어요.`}
-              </Text>
-
               <Text style={styles.resultCount}>
                 총 {totalItemCount}개
               </Text>
+
+              <HomeSortDropdown
+                selectedType={selectedType}
+                selectedSort={selectedSort}
+                onSelectSort={onSelectSort}
+              />
             </View>
 
             <View style={styles.itemList}>
@@ -318,18 +331,14 @@ const styles = StyleSheet.create({
   },
 
   resultHeader: {
-    marginTop: 14,
+    position: 'relative',
+    zIndex: 20,
+    marginTop: 18,
     marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 10,
-  },
-
-  resultNote: {
-    flex: 1,
-    color: '#766749',
-    fontSize: 12,
+    gap: 12,
   },
 
   resultCount: {
@@ -339,6 +348,7 @@ const styles = StyleSheet.create({
   },
 
   itemList: {
+    zIndex: 1,
     gap: 13,
   },
 

@@ -1,4 +1,10 @@
-import type { HomeResponse } from '@/types/home';
+import type {
+  ActivityHomeSort,
+  HomeFilterOptionsResponse,
+  HomeItemType,
+  HomePageResponse,
+  RestaurantHomeSort,
+} from '@/types/home';
 
 const HOME_PATH = '/api/home';
 
@@ -61,21 +67,131 @@ async function request<T>(
   return response.json() as Promise<T>;
 }
 
+interface GetActivitiesParams {
+  sort?: ActivityHomeSort;
+  regionId?: number | null;
+  categoryId?: number | null;
+  page?: number;
+  size?: number;
+}
+
+interface GetRestaurantsParams {
+  sort?: RestaurantHomeSort;
+  regionId?: number | null;
+  page?: number;
+  size?: number;
+}
+
+function buildQueryString(
+  params: Record<
+    string,
+    string | number | null | undefined
+  >
+) {
+  const searchParams =
+    new URLSearchParams();
+
+  Object.entries(params).forEach(
+    ([key, value]) => {
+      if (
+        value === null ||
+        value === undefined
+      ) {
+        return;
+      }
+
+      searchParams.append(
+        key,
+        String(value)
+      );
+    }
+  );
+
+  const queryString =
+    searchParams.toString();
+
+  return queryString
+    ? `?${queryString}`
+    : '';
+}
+
 export const homeApi = {
-  getHomeItems: (
-    accessToken: string
-  ) =>
-    request<HomeResponse>(
-      HOME_PATH,
+  getActivities: (
+    accessToken: string,
+    params: GetActivitiesParams = {}
+  ) => {
+    const {
+      sort = 'DEFAULT',
+      regionId = null,
+      categoryId = null,
+      page = 0,
+      size = 8,
+    } = params;
+
+    const queryString =
+      buildQueryString({
+        sort,
+        regionId,
+        categoryId,
+        page,
+        size,
+      });
+
+    return request<HomePageResponse>(
+      `${HOME_PATH}/activities${queryString}`,
       accessToken
-    ),
+    );
+  },
+
+  getRestaurants: (
+    accessToken: string,
+    params: GetRestaurantsParams = {}
+  ) => {
+    const {
+      sort = 'NAME',
+      regionId = null,
+      page = 0,
+      size = 8,
+    } = params;
+
+    const queryString =
+      buildQueryString({
+        sort,
+        regionId,
+        page,
+        size,
+      });
+
+    return request<HomePageResponse>(
+      `${HOME_PATH}/restaurants${queryString}`,
+      accessToken
+    );
+  },
+
+  getFilterOptions: (
+    accessToken: string,
+    type: HomeItemType
+  ) => {
+    const queryString =
+      buildQueryString({
+        type,
+      });
+
+    return request<HomeFilterOptionsResponse>(
+      `${HOME_PATH}/filters${queryString}`,
+      accessToken
+    );
+  },
 };
 
 export function getHomeErrorMessage(
   error: unknown
 ) {
   if (error instanceof Error) {
-    if (error.message === '로그인이 필요합니다.') {
+    if (
+      error.message ===
+      '로그인이 필요합니다.'
+    ) {
       return error.message;
     }
   }
