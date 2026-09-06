@@ -1,8 +1,8 @@
 import {
   ActivityIndicator,
+  FlatList,
+  Platform,
   Pressable,
-  RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -13,7 +13,18 @@ import { HomeFilterSection } from '@/components/home/HomeFilterSection';
 import { HomeHero } from '@/components/home/HomeHero';
 import { HomeItemCard } from '@/components/home/HomeItemCard';
 import { HomeLoadMore } from '@/components/home/HomeLoadMore';
-import type { HomeItem, HomeItemType } from '@/types/home';
+import { HomeSortDropdown } from '@/components/home/HomeSortDropdown';
+
+import type {
+  ActivityHomeSort,
+  HomeItem,
+  HomeItemType,
+  RestaurantHomeSort,
+} from '@/types/home';
+
+type HomeSort =
+  | ActivityHomeSort
+  | RestaurantHomeSort;
 
 type HomeContentProps = {
   loading: boolean;
@@ -25,6 +36,7 @@ type HomeContentProps = {
   selectedType: HomeItemType;
   selectedRegion: string;
   selectedCategory: string;
+  selectedSort: HomeSort;
 
   regions: string[];
   categories: string[];
@@ -35,6 +47,7 @@ type HomeContentProps = {
   onSelectType: (type: HomeItemType) => void;
   onSelectRegion: (region: string) => void;
   onSelectCategory: (category: string) => void;
+  onSelectSort: (sort: HomeSort) => void;
 
   onRefresh: () => void;
   onRetry: () => void;
@@ -55,31 +68,25 @@ export function HomeContent({
   loading,
   refreshing,
   errorMessage,
-
   items,
-
   selectedType,
   selectedRegion,
   selectedCategory,
-
+  selectedSort,
   regions,
   categories,
-
   totalItemCount,
   canLoadMore,
-
   onSelectType,
   onSelectRegion,
   onSelectCategory,
-
+  onSelectSort,
   onRefresh,
   onRetry,
   onLoadMore,
-
   onItemPress,
   onItemBookmarkPress,
   isBookmarked,
-
   onAiRecommend,
   onBookmarkPress,
   onMyPagePress,
@@ -131,102 +138,126 @@ export function HomeContent({
       edges={['top']}
       style={styles.safeArea}
     >
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
+      <FlatList
+        data={items}
+        keyExtractor={(item) =>
+          `${item.type}-${item.id}`
         }
-      >
-        <View style={styles.screen}>
-          <HomeHero
-            onAiRecommend={onAiRecommend}
-            onBookmarkPress={onBookmarkPress}
-            onMyPagePress={onMyPagePress}
-            onNotificationPress={onNotificationPress}
-            unreadNotificationCount={unreadNotificationCount}
-          />
-
-          <View style={styles.content}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>
-                충남에서 뭐 할까?
-              </Text>
-
-              <Text style={styles.sectionDescription}>
-                지역별 즐길 거리
-              </Text>
-            </View>
-
-            <HomeFilterSection
-              selectedType={selectedType}
-              selectedRegion={selectedRegion}
-              selectedCategory={selectedCategory}
-              regions={regions}
-              categories={categories}
-              onSelectType={onSelectType}
-              onSelectRegion={onSelectRegion}
-              onSelectCategory={onSelectCategory}
+        renderItem={({ item }) => (
+          <View style={styles.itemWrapper}>
+            <HomeItemCard
+              item={item}
+              isBookmarked={isBookmarked(item)}
+              onPress={onItemPress}
+              onBookmarkPress={
+                onItemBookmarkPress
+              }
+            />
+          </View>
+        )}
+        ListHeaderComponent={
+          <View style={styles.screen}>
+            <HomeHero
+              onAiRecommend={onAiRecommend}
+              onBookmarkPress={onBookmarkPress}
+              onMyPagePress={onMyPagePress}
+              onNotificationPress={
+                onNotificationPress
+              }
+              unreadNotificationCount={
+                unreadNotificationCount
+              }
             />
 
-            <View style={styles.resultHeader}>
-              <Text style={styles.resultNote}>
-                {selectedRegion === '전체'
-                  ? selectedType === 'ACTIVITY'
-                    ? '충남 전체의 체험을 둘러보세요.'
-                    : '충남 전체의 맛집을 둘러보세요.'
-                  : selectedType === 'ACTIVITY'
-                    ? `${selectedRegion}의 체험을 모아보고 있어요.`
-                    : `${selectedRegion}의 맛집을 모아보고 있어요.`}
-              </Text>
+            <View style={styles.content}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>
+                  충남에서 뭐 할까?
+                </Text>
 
-              <Text style={styles.resultCount}>
-                총 {totalItemCount}개
-              </Text>
-            </View>
+                <Text
+                  style={
+                    styles.sectionDescription
+                  }
+                >
+                  지역별 즐길 거리
+                </Text>
+              </View>
 
-            <View style={styles.itemList}>
-              {items.length === 0 ? (
-                <View style={styles.emptyBox}>
-                  <Text style={styles.emptyTitle}>
-                    조건에 맞는 장소가 없어요.
-                  </Text>
+              <HomeFilterSection
+                selectedType={selectedType}
+                selectedRegion={selectedRegion}
+                selectedCategory={
+                  selectedCategory
+                }
+                regions={regions}
+                categories={categories}
+                onSelectType={onSelectType}
+                onSelectRegion={onSelectRegion}
+                onSelectCategory={
+                  onSelectCategory
+                }
+              />
 
-                  <Text style={styles.emptyDescription}>
-                    다른 지역이나 카테고리를 선택해보세요.
-                  </Text>
-                </View>
-              ) : (
-                <>
-                  {items.map((item) => (
-                    <HomeItemCard
-                      key={`${item.type}-${item.id}`}
-                      item={item}
-                      isBookmarked={isBookmarked(item)}
-                      onPress={() =>
-                        onItemPress(item)
-                      }
-                      onBookmarkPress={() =>
-                        onItemBookmarkPress(item)
-                      }
-                    />
-                  ))}
+              <View style={styles.resultHeader}>
+                <Text style={styles.resultCount}>
+                  총 {totalItemCount}개
+                </Text>
 
-                  {canLoadMore && (
-                    <HomeLoadMore
-                      onPress={onLoadMore}
-                    />
-                  )}
-                </>
-              )}
+                <HomeSortDropdown
+                  selectedType={selectedType}
+                  selectedSort={selectedSort}
+                  onSelectSort={onSelectSort}
+                />
+              </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
+        }
+        ListHeaderComponentStyle={
+          styles.listHeader
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyWrapper}>
+            <View style={styles.emptyBox}>
+              <Text style={styles.emptyTitle}>
+                조건에 맞는 장소가 없어요.
+              </Text>
+
+              <Text
+                style={styles.emptyDescription}
+              >
+                다른 지역이나 카테고리를
+                선택해보세요.
+              </Text>
+            </View>
+          </View>
+        }
+        ListFooterComponent={
+          items.length > 0 ? (
+            <View style={styles.footerWrapper}>
+              {canLoadMore && (
+                <HomeLoadMore
+                  onPress={onLoadMore}
+                />
+              )}
+            </View>
+          ) : null
+        }
+        ItemSeparatorComponent={() => (
+          <View style={styles.itemSeparator} />
+        )}
+        style={styles.list}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={5}
+        removeClippedSubviews={
+          Platform.OS !== 'web'
+        }
+      />
     </SafeAreaView>
   );
 }
@@ -237,20 +268,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFAF1',
   },
 
-  scroll: {
+  list: {
     flex: 1,
   },
 
-  scrollContent: {
-    alignItems: 'center',
+  listContent: {
     flexGrow: 1,
+    paddingBottom: 24,
     backgroundColor: '#FFFAF1',
+  },
+
+  listHeader: {
+    position: 'relative',
+    zIndex: 100,
+    elevation: 100,
+    overflow: 'visible',
   },
 
   screen: {
     width: '100%',
     maxWidth: 430,
-    flex: 1,
+    alignSelf: 'center',
+    position: 'relative',
+    zIndex: 100,
+    overflow: 'visible',
     backgroundColor: '#FFFAF1',
   },
 
@@ -296,7 +337,11 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    padding: 18,
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    position: 'relative',
+    zIndex: 100,
+    overflow: 'visible',
   },
 
   sectionHeader: {
@@ -318,18 +363,16 @@ const styles = StyleSheet.create({
   },
 
   resultHeader: {
-    marginTop: 14,
+    position: 'relative',
+    zIndex: 200,
+    elevation: 200,
+    overflow: 'visible',
+    marginTop: 18,
     marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 10,
-  },
-
-  resultNote: {
-    flex: 1,
-    color: '#766749',
-    fontSize: 12,
+    gap: 12,
   },
 
   resultCount: {
@@ -338,8 +381,32 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  itemList: {
-    gap: 13,
+  itemWrapper: {
+    width: '100%',
+    maxWidth: 430,
+    alignSelf: 'center',
+    paddingHorizontal: 18,
+    position: 'relative',
+    zIndex: 1,
+  },
+
+  itemSeparator: {
+    height: 13,
+  },
+
+  footerWrapper: {
+    width: '100%',
+    maxWidth: 430,
+    alignSelf: 'center',
+    paddingHorizontal: 18,
+    paddingTop: 13,
+  },
+
+  emptyWrapper: {
+    width: '100%',
+    maxWidth: 430,
+    alignSelf: 'center',
+    paddingHorizontal: 18,
   },
 
   emptyBox: {
@@ -361,5 +428,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
     color: '#777777',
     fontSize: 12,
+    textAlign: 'center',
   },
 });

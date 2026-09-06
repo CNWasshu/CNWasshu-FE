@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { memo } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -11,208 +12,253 @@ import type { HomeItem } from '@/types/home';
 type HomeItemCardProps = {
   item: HomeItem;
   isBookmarked: boolean;
-  onPress: () => void;
-  onBookmarkPress: () => void;
+  onPress: (item: HomeItem) => void;
+  onBookmarkPress: (item: HomeItem) => void;
 };
 
-export function HomeItemCard({
-  item,
-  isBookmarked,
-  onPress,
-  onBookmarkPress,
-}: HomeItemCardProps) {
-  const isActivity = item.type === 'ACTIVITY';
+export const HomeItemCard = memo(
+  function HomeItemCard({
+    item,
+    isBookmarked,
+    onPress,
+    onBookmarkPress,
+  }: HomeItemCardProps) {
+    const isActivity =
+      item.type === 'ACTIVITY';
 
-  const showMaxParticipants =
-    isActivity &&
-    item.reservationRequired === true &&
-    item.maxParticipants !== null &&
-    item.maxParticipants > 0;
+    const showMaxParticipants =
+      isActivity &&
+      item.reservationRequired === true &&
+      item.maxParticipants !== null &&
+      item.maxParticipants > 0;
 
-  return (
-    <View style={styles.card}>
-      {item.thumbnail ? (
-        <Image
-          source={{
-            uri: item.thumbnail,
-          }}
-          style={styles.cardImage}
-          contentFit="cover"
-          transition={200}
-        />
-      ) : (
-        <View style={styles.imagePlaceholder}>
-          <Text style={styles.placeholderEmoji}>
-            {isActivity ? '🌿' : '🍽️'}
-          </Text>
-        </View>
-      )}
-
+    return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={
-          isBookmarked
-            ? '장바구니에서 삭제'
-            : '장바구니에 담기'
-        }
-        style={styles.heartButton}
-        onPress={(event) => {
-          event.stopPropagation();
-          onBookmarkPress();
-        }}
+        accessibilityLabel={`${item.title} 상세 보기`}
+        style={({ pressed }) => [
+          styles.card,
+          pressed && styles.cardPressed,
+        ]}
+        onPress={() => onPress(item)}
       >
-        <Text
-          style={[
-            styles.heartIcon,
-            isBookmarked &&
-              styles.bookmarkedHeartIcon,
-          ]}
+        {item.thumbnail ? (
+          <Image
+            source={{
+              uri: item.thumbnail,
+            }}
+            style={styles.cardImage}
+            contentFit="cover"
+            transition={200}
+            cachePolicy="memory-disk"
+          />
+        ) : (
+          <View
+            style={styles.imagePlaceholder}
+          >
+            <Text
+              style={styles.placeholderEmoji}
+            >
+              {isActivity ? '🌿' : '🍽️'}
+            </Text>
+          </View>
+        )}
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={
+            isBookmarked
+              ? '장바구니에서 삭제'
+              : '장바구니에 담기'
+          }
+          style={styles.heartButton}
+          onPress={(event) => {
+            event.stopPropagation();
+            onBookmarkPress(item);
+          }}
         >
-          {isBookmarked ? '♥' : '♡'}
-        </Text>
-      </Pressable>
-
-      <View style={styles.typeBadge}>
-        <Text style={styles.typeBadgeText}>
-          {isActivity ? '체험' : '맛집'}
-        </Text>
-      </View>
-
-      <View style={styles.cardContent}>
-        <View style={styles.tagList}>
-          <View
+          <Text
             style={[
-              styles.tag,
-              styles.regionTag,
+              styles.heartIcon,
+              isBookmarked &&
+                styles.bookmarkedHeartIcon,
             ]}
           >
-            <Text style={styles.regionTagText}>
-              {item.regionName}
-            </Text>
-          </View>
+            {isBookmarked ? '♥' : '♡'}
+          </Text>
+        </Pressable>
 
-          <View
-            style={[
-              styles.tag,
-              styles.categoryTag,
-            ]}
-          >
-            <Text style={styles.categoryTagText}>
-              {item.categoryName}
-            </Text>
-          </View>
+        <View style={styles.typeBadge}>
+          <Text style={styles.typeBadgeText}>
+            {isActivity ? '체험' : '맛집'}
+          </Text>
+        </View>
 
-          {item.todayAvailable === true && (
+        <View style={styles.cardContent}>
+          <View style={styles.tagList}>
             <View
               style={[
                 styles.tag,
-                styles.todayTag,
+                styles.regionTag,
               ]}
             >
-              <Text style={styles.todayTagText}>
-                당일 참여 O
+              <Text
+                style={styles.regionTagText}
+              >
+                {item.regionName}
               </Text>
             </View>
-          )}
-        </View>
 
-        <Text style={styles.cardTitle}>
-          {item.title}
-        </Text>
-
-        {(item.operatingStartTime ||
-          item.operatingEndTime) && (
-          <Text style={styles.operatingTime}>
-            🕒 {formatOperatingTime(item)}
-          </Text>
-        )}
-
-        {item.shortDescription && (
-          <Text
-            style={styles.cardDescription}
-            numberOfLines={2}
-          >
-            {item.shortDescription}
-          </Text>
-        )}
-
-        {item.weatherTags.length > 0 && (
-          <View style={styles.weatherTagList}>
-            {item.weatherTags
-              .slice(0, 3)
-              .map((tag) => (
-                <View
-                  key={tag}
-                  style={[
-                    styles.tag,
-                    styles.weatherTag,
-                  ]}
-                >
-                  <Text style={styles.weatherTagText}>
-                    {tag}
-                  </Text>
-                </View>
-              ))}
-          </View>
-        )}
-
-        {item.tags.length > 0 && (
-          <View style={styles.extraTagList}>
-            {item.tags
-              .slice(0, 3)
-              .map((tag) => (
-                <Text
-                  key={tag}
-                  style={styles.extraTagText}
-                >
-                  #{tag}
-                </Text>
-              ))}
-          </View>
-        )}
-
-        <View style={styles.cardFooter}>
-          {item.reservationRequired === true ? (
-            <View style={styles.reservationInfo}>
-              <Text style={styles.reservationText}>
-                예약 필요
+            <View
+              style={[
+                styles.tag,
+                styles.categoryTag,
+              ]}
+            >
+              <Text
+                style={styles.categoryTagText}
+              >
+                {item.categoryName}
               </Text>
-
-              {showMaxParticipants && (
-                <Text
-                  style={styles.maxParticipantsText}
-                >
-                  · 최대 {item.maxParticipants}인
-                </Text>
-              )}
             </View>
-          ) : (
-            <View />
-          )}
 
-          <Pressable
-            accessibilityRole="button"
-            style={styles.detailButton}
-            onPress={onPress}
-          >
-            <Text style={styles.detailButtonText}>
-              상세 보기
+            {item.todayAvailable === true && (
+              <View
+                style={[
+                  styles.tag,
+                  styles.todayTag,
+                ]}
+              >
+                <Text
+                  style={styles.todayTagText}
+                >
+                  당일 참여 O
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <Text style={styles.cardTitle}>
+            {item.title}
+          </Text>
+
+          {(item.operatingStartTime ||
+            item.operatingEndTime) && (
+            <Text
+              style={styles.operatingTime}
+            >
+              🕒 {formatOperatingTime(item)}
             </Text>
-          </Pressable>
+          )}
+
+          {item.shortDescription && (
+            <Text
+              style={styles.cardDescription}
+              numberOfLines={2}
+            >
+              {item.shortDescription}
+            </Text>
+          )}
+
+          {item.weatherTags.length > 0 && (
+            <View
+              style={styles.weatherTagList}
+            >
+              {item.weatherTags
+                .slice(0, 3)
+                .map((tag) => (
+                  <View
+                    key={tag}
+                    style={[
+                      styles.tag,
+                      styles.weatherTag,
+                    ]}
+                  >
+                    <Text
+                      style={
+                        styles.weatherTagText
+                      }
+                    >
+                      {tag}
+                    </Text>
+                  </View>
+                ))}
+            </View>
+          )}
+
+          {item.tags.length > 0 && (
+            <View style={styles.extraTagList}>
+              {item.tags
+                .slice(0, 3)
+                .map((tag) => (
+                  <Text
+                    key={tag}
+                    style={styles.extraTagText}
+                  >
+                    #{tag}
+                  </Text>
+                ))}
+            </View>
+          )}
+
+          <View style={styles.cardFooter}>
+            {item.reservationRequired === true ? (
+              <View style={styles.reservationInfo}>
+                <Text
+                  style={styles.reservationText}
+                >
+                  예약 필요
+                </Text>
+
+                {showMaxParticipants && (
+                  <Text
+                    style={
+                      styles.maxParticipantsText
+                    }
+                  >
+                    · 최대 {item.maxParticipants}인
+                  </Text>
+                )}
+              </View>
+            ) : (
+              <View />
+            )}
+
+            <Pressable
+              accessibilityRole="button"
+              style={styles.detailButton}
+              onPress={(event) => {
+                event.stopPropagation();
+                onPress(item);
+              }}
+            >
+              <Text
+                style={styles.detailButtonText}
+              >
+                상세 보기
+              </Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
-    </View>
-  );
-}
+      </Pressable>
+    );
+  }
+);
 
 function formatOperatingTime(
   item: HomeItem
 ) {
   const start =
-    item.operatingStartTime?.slice(0, 5);
+    item.operatingStartTime?.slice(
+      0,
+      5
+    );
 
   const end =
-    item.operatingEndTime?.slice(0, 5);
+    item.operatingEndTime?.slice(
+      0,
+      5
+    );
 
   if (start && end) {
     return `${start} ~ ${end}`;
@@ -237,6 +283,10 @@ const styles = StyleSheet.create({
     borderColor: '#EFE3CE',
     borderRadius: 22,
     backgroundColor: '#FFFFFF',
+  },
+
+  cardPressed: {
+    opacity: 0.96,
   },
 
   cardImage: {
