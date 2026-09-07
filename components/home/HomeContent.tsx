@@ -1,4 +1,7 @@
 import {
+  useRef,
+} from 'react';
+import {
   ActivityIndicator,
   FlatList,
   Platform,
@@ -33,12 +36,12 @@ type HomeContentProps = {
 
   items: HomeItem[];
 
-  searchText: string;
-
   selectedType: HomeItemType;
   selectedRegion: string;
   selectedCategory: string;
   selectedSort: HomeSort;
+
+  searchText: string;
 
   regions: string[];
   categories: string[];
@@ -46,49 +49,27 @@ type HomeContentProps = {
   totalItemCount: number;
   canLoadMore: boolean;
 
-  onChangeSearchText: (
-    value: string
-  ) => void;
+  onSelectType: (type: HomeItemType) => void;
+  onSelectRegion: (region: string) => void;
+  onSelectCategory: (category: string) => void;
+  onSelectSort: (sort: HomeSort) => void;
 
+  onChangeSearchText: (value: string) => void;
   onClearSearch: () => void;
-
-  onSelectType: (
-    type: HomeItemType
-  ) => void;
-
-  onSelectRegion: (
-    region: string
-  ) => void;
-
-  onSelectCategory: (
-    category: string
-  ) => void;
-
-  onSelectSort: (
-    sort: HomeSort
-  ) => void;
 
   onRefresh: () => void;
   onRetry: () => void;
   onLoadMore: () => void;
 
-  onItemPress: (
-    item: HomeItem
-  ) => void;
-
-  onItemBookmarkPress: (
-    item: HomeItem
-  ) => void;
-
-  isBookmarked: (
-    item: HomeItem
-  ) => boolean;
+  onItemPress: (item: HomeItem) => void;
+  onItemBookmarkPress: (item: HomeItem) => void;
+  isBookmarked: (item: HomeItem) => boolean;
 
   onAiRecommend: () => void;
+  onPromotionPress: () => void;
   onBookmarkPress: () => void;
   onMyPagePress: () => void;
   onNotificationPress: () => void;
-
   unreadNotificationCount: number;
 };
 
@@ -97,21 +78,21 @@ export function HomeContent({
   refreshing,
   errorMessage,
   items,
-  searchText,
   selectedType,
   selectedRegion,
   selectedCategory,
   selectedSort,
+  searchText,
   regions,
   categories,
   totalItemCount,
   canLoadMore,
-  onChangeSearchText,
-  onClearSearch,
   onSelectType,
   onSelectRegion,
   onSelectCategory,
   onSelectSort,
+  onChangeSearchText,
+  onClearSearch,
   onRefresh,
   onRetry,
   onLoadMore,
@@ -119,11 +100,33 @@ export function HomeContent({
   onItemBookmarkPress,
   isBookmarked,
   onAiRecommend,
+  onPromotionPress,
   onBookmarkPress,
   onMyPagePress,
   onNotificationPress,
   unreadNotificationCount,
 }: HomeContentProps) {
+  const listRef =
+    useRef<FlatList<HomeItem>>(null);
+
+  const contentYRef =
+    useRef(0);
+
+  const handlePromotionPress =
+    () => {
+      onPromotionPress();
+
+      setTimeout(() => {
+        listRef.current?.scrollToOffset({
+          offset: Math.max(
+            0,
+            contentYRef.current + 250
+          ),
+          animated: true,
+        });
+      }, 100);
+    };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -170,6 +173,7 @@ export function HomeContent({
       style={styles.safeArea}
     >
       <FlatList
+        ref={listRef}
         data={items}
         keyExtractor={(item) =>
           `${item.type}-${item.id}`
@@ -178,9 +182,7 @@ export function HomeContent({
           <View style={styles.itemWrapper}>
             <HomeItemCard
               item={item}
-              isBookmarked={
-                isBookmarked(item)
-              }
+              isBookmarked={isBookmarked(item)}
               onPress={onItemPress}
               onBookmarkPress={
                 onItemBookmarkPress
@@ -192,12 +194,11 @@ export function HomeContent({
           <View style={styles.screen}>
             <HomeHero
               onAiRecommend={onAiRecommend}
-              onBookmarkPress={
-                onBookmarkPress
+              onPromotionPress={
+                handlePromotionPress
               }
-              onMyPagePress={
-                onMyPagePress
-              }
+              onBookmarkPress={onBookmarkPress}
+              onMyPagePress={onMyPagePress}
               onNotificationPress={
                 onNotificationPress
               }
@@ -206,7 +207,13 @@ export function HomeContent({
               }
             />
 
-            <View style={styles.content}>
+            <View
+              style={styles.content}
+              onLayout={(event) => {
+                contentYRef.current =
+                  event.nativeEvent.layout.y;
+              }}
+            >
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>
                   충남에서 뭐 할까?
@@ -223,9 +230,7 @@ export function HomeContent({
 
               <HomeFilterSection
                 selectedType={selectedType}
-                selectedRegion={
-                  selectedRegion
-                }
+                selectedRegion={selectedRegion}
                 selectedCategory={
                   selectedCategory
                 }
@@ -238,12 +243,8 @@ export function HomeContent({
                 onClearSearch={
                   onClearSearch
                 }
-                onSelectType={
-                  onSelectType
-                }
-                onSelectRegion={
-                  onSelectRegion
-                }
+                onSelectType={onSelectType}
+                onSelectRegion={onSelectRegion}
                 onSelectCategory={
                   onSelectCategory
                 }
@@ -255,15 +256,9 @@ export function HomeContent({
                 </Text>
 
                 <HomeSortDropdown
-                  selectedType={
-                    selectedType
-                  }
-                  selectedSort={
-                    selectedSort
-                  }
-                  onSelectSort={
-                    onSelectSort
-                  }
+                  selectedType={selectedType}
+                  selectedSort={selectedSort}
+                  onSelectSort={onSelectSort}
                 />
               </View>
             </View>
@@ -276,13 +271,11 @@ export function HomeContent({
           <View style={styles.emptyWrapper}>
             <View style={styles.emptyBox}>
               <Text style={styles.emptyTitle}>
-                검색 결과가 없어요.
+                조건에 맞는 장소가 없어요.
               </Text>
 
               <Text
-                style={
-                  styles.emptyDescription
-                }
+                style={styles.emptyDescription}
               >
                 다른 검색어나 지역,
                 카테고리를 선택해보세요.
@@ -292,11 +285,7 @@ export function HomeContent({
         }
         ListFooterComponent={
           items.length > 0 ? (
-            <View
-              style={
-                styles.footerWrapper
-              }
-            >
+            <View style={styles.footerWrapper}>
               {canLoadMore && (
                 <HomeLoadMore
                   onPress={onLoadMore}
@@ -306,17 +295,11 @@ export function HomeContent({
           ) : null
         }
         ItemSeparatorComponent={() => (
-          <View
-            style={styles.itemSeparator}
-          />
+          <View style={styles.itemSeparator} />
         )}
         style={styles.list}
-        contentContainerStyle={
-          styles.listContent
-        }
-        showsVerticalScrollIndicator={
-          false
-        }
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
         refreshing={refreshing}
         onRefresh={onRefresh}
         initialNumToRender={8}
@@ -496,7 +479,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
     color: '#777777',
     fontSize: 12,
-    lineHeight: 18,
     textAlign: 'center',
   },
 });

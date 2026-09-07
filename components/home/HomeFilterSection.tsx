@@ -2,7 +2,6 @@ import {
   useEffect,
   useRef,
 } from 'react';
-
 import {
   Platform,
   Pressable,
@@ -12,13 +11,9 @@ import {
   View,
 } from 'react-native';
 
-import {
-  HomeSearchBar,
-} from '@/components/home/HomeSearchBar';
+import { HomeSearchBar } from '@/components/home/HomeSearchBar';
 
-import type {
-  HomeItemType,
-} from '@/types/home';
+import type { HomeItemType } from '@/types/home';
 
 type HomeFilterSectionProps = {
   selectedType: HomeItemType;
@@ -30,23 +25,12 @@ type HomeFilterSectionProps = {
   regions: string[];
   categories: string[];
 
-  onChangeSearchText: (
-    value: string
-  ) => void;
+  onSelectType: (type: HomeItemType) => void;
+  onSelectRegion: (region: string) => void;
+  onSelectCategory: (category: string) => void;
 
+  onChangeSearchText: (value: string) => void;
   onClearSearch: () => void;
-
-  onSelectType: (
-    type: HomeItemType
-  ) => void;
-
-  onSelectRegion: (
-    region: string
-  ) => void;
-
-  onSelectCategory: (
-    category: string
-  ) => void;
 };
 
 const TYPE_FILTERS: {
@@ -66,20 +50,40 @@ const TYPE_FILTERS: {
   },
 ];
 
+type HorizontalScrollProps = {
+  children: React.ReactNode;
+  contentContainerStyle: any;
+  scrollToX?: number | null;
+};
+
 function HorizontalScroll({
   children,
   contentContainerStyle,
-}: {
-  children: React.ReactNode;
-  contentContainerStyle: any;
-}) {
+  scrollToX = null,
+}: HorizontalScrollProps) {
   const scrollRef =
     useRef<ScrollView>(null);
 
   useEffect(() => {
     if (
-      Platform.OS !== 'web'
+      scrollToX === null
     ) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({
+        x: Math.max(
+          0,
+          scrollToX
+        ),
+        animated: true,
+      });
+    });
+  }, [scrollToX]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
       return;
     }
 
@@ -151,7 +155,8 @@ function HorizontalScroll({
       }
 
       const distance =
-        event.pageX - startX;
+        event.pageX -
+        startX;
 
       if (
         Math.abs(distance) > 3
@@ -262,9 +267,7 @@ function HorizontalScroll({
     <ScrollView
       ref={scrollRef}
       horizontal
-      showsHorizontalScrollIndicator={
-        false
-      }
+      showsHorizontalScrollIndicator={false}
       contentContainerStyle={
         contentContainerStyle
       }
@@ -281,69 +284,80 @@ export function HomeFilterSection({
   searchText,
   regions,
   categories,
-  onChangeSearchText,
-  onClearSearch,
   onSelectType,
   onSelectRegion,
   onSelectCategory,
+  onChangeSearchText,
+  onClearSearch,
 }: HomeFilterSectionProps) {
+  const regionPositionsRef =
+    useRef<
+      Record<
+        string,
+        {
+          x: number;
+          width: number;
+        }
+      >
+    >({});
+
+  const selectedRegionPosition =
+    regionPositionsRef.current[
+      selectedRegion
+    ];
+
+  const regionScrollX =
+    selectedRegionPosition
+      ? Math.max(
+          0,
+          selectedRegionPosition.x -
+            120
+        )
+      : null;
+
   return (
     <>
-      <View
-        style={
-          styles.typeFilter
-        }
-      >
-        {TYPE_FILTERS.map(
-          (filter) => {
-            const active =
-              selectedType ===
-              filter.value;
+      <View style={styles.typeFilter}>
+        {TYPE_FILTERS.map((filter) => {
+          const active =
+            selectedType ===
+            filter.value;
 
-            return (
-              <Pressable
-                key={
+          return (
+            <Pressable
+              key={filter.value}
+              style={[
+                styles.typeButton,
+                active &&
+                  styles.typeButtonActive,
+              ]}
+              onPress={() =>
+                onSelectType(
                   filter.value
-                }
-                style={[
-                  styles.typeButton,
-                  active &&
-                    styles.typeButtonActive,
-                ]}
-                onPress={() =>
-                  onSelectType(
-                    filter.value
-                  )
-                }
+                )
+              }
+            >
+              <Text
+                style={styles.typeIcon}
               >
-                <Text
-                  style={
-                    styles.typeIcon
-                  }
-                >
-                  {filter.icon}
-                </Text>
+                {filter.icon}
+              </Text>
 
-                <Text
-                  style={[
-                    styles.typeButtonText,
-                    active &&
-                      styles.typeButtonTextActive,
-                  ]}
-                >
-                  {filter.label}
-                </Text>
-              </Pressable>
-            );
-          }
-        )}
+              <Text
+                style={[
+                  styles.typeButtonText,
+                  active &&
+                    styles.typeButtonTextActive,
+                ]}
+              >
+                {filter.label}
+              </Text>
+            </Pressable>
+          );
+        })}
       </View>
 
-      <View
-        style={
-          styles.searchWrapper
-        }
-      >
+      <View style={styles.searchWrapper}>
         <HomeSearchBar
           value={searchText}
           selectedType={
@@ -358,11 +372,7 @@ export function HomeFilterSection({
         />
       </View>
 
-      <Text
-        style={
-          styles.filterLabel
-        }
-      >
+      <Text style={styles.filterLabel}>
         지역
       </Text>
 
@@ -370,49 +380,56 @@ export function HomeFilterSection({
         contentContainerStyle={
           styles.regionList
         }
+        scrollToX={
+          regionScrollX
+        }
       >
-        {regions.map(
-          (region) => {
-            const active =
-              selectedRegion ===
-              region;
+        {regions.map((region) => {
+          const active =
+            selectedRegion === region;
 
-            return (
-              <Pressable
-                key={region}
+          return (
+            <Pressable
+              key={region}
+              style={[
+                styles.regionChip,
+                active &&
+                  styles.regionChipActive,
+              ]}
+              onLayout={(event) => {
+                regionPositionsRef.current[
+                  region
+                ] = {
+                  x: event.nativeEvent
+                    .layout.x,
+                  width:
+                    event.nativeEvent
+                      .layout.width,
+                };
+              }}
+              onPress={() =>
+                onSelectRegion(region)
+              }
+            >
+              <Text
                 style={[
-                  styles.regionChip,
+                  styles.regionChipText,
                   active &&
-                    styles.regionChipActive,
+                    styles.regionChipTextActive,
                 ]}
-                onPress={() =>
-                  onSelectRegion(
-                    region
-                  )
-                }
               >
-                <Text
-                  style={[
-                    styles.regionChipText,
-                    active &&
-                      styles.regionChipTextActive,
-                  ]}
-                >
-                  {region}
-                </Text>
-              </Pressable>
-            );
-          }
-        )}
+                {region}
+              </Text>
+            </Pressable>
+          );
+        })}
       </HorizontalScroll>
 
       {selectedType ===
         'ACTIVITY' && (
         <>
           <Text
-            style={
-              styles.filterLabel
-            }
+            style={styles.filterLabel}
           >
             카테고리
           </Text>
@@ -430,9 +447,7 @@ export function HomeFilterSection({
 
                 return (
                   <Pressable
-                    key={
-                      category
-                    }
+                    key={category}
                     style={
                       styles.categoryButton
                     }
@@ -466,9 +481,7 @@ export function HomeFilterSection({
                         active &&
                           styles.categoryTextActive,
                       ]}
-                      numberOfLines={
-                        1
-                      }
+                      numberOfLines={1}
                     >
                       {category}
                     </Text>
@@ -565,24 +578,21 @@ const styles =
       gap: 8,
       padding: 5,
       borderRadius: 16,
-      backgroundColor:
-        '#F0E6D3',
+      backgroundColor: '#F0E6D3',
     },
 
     typeButton: {
       flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent:
-        'center',
+      justifyContent: 'center',
       gap: 5,
       paddingVertical: 10,
       borderRadius: 12,
     },
 
     typeButtonActive: {
-      backgroundColor:
-        '#FFFFFF',
+      backgroundColor: '#FFFFFF',
     },
 
     typeIcon: {
@@ -620,18 +630,14 @@ const styles =
       paddingHorizontal: 13,
       paddingVertical: 8,
       borderWidth: 1,
-      borderColor:
-        '#EADCC4',
+      borderColor: '#EADCC4',
       borderRadius: 999,
-      backgroundColor:
-        '#FFFFFF',
+      backgroundColor: '#FFFFFF',
     },
 
     regionChipActive: {
-      borderColor:
-        '#3F7D46',
-      backgroundColor:
-        '#3F7D46',
+      borderColor: '#3F7D46',
+      backgroundColor: '#3F7D46',
     },
 
     regionChipText: {
@@ -658,21 +664,16 @@ const styles =
       width: 50,
       height: 50,
       alignItems: 'center',
-      justifyContent:
-        'center',
+      justifyContent: 'center',
       borderWidth: 1,
-      borderColor:
-        '#EADCC4',
+      borderColor: '#EADCC4',
       borderRadius: 25,
-      backgroundColor:
-        '#FFFFFF',
+      backgroundColor: '#FFFFFF',
     },
 
     categoryIconActive: {
-      borderColor:
-        '#ABD19C',
-      backgroundColor:
-        '#E8F5E4',
+      borderColor: '#ABD19C',
+      backgroundColor: '#E8F5E4',
     },
 
     categoryEmoji: {
