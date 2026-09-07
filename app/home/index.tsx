@@ -3,8 +3,13 @@ import {
   getAccessToken,
 } from '@/utils/auth';
 
-import { useFocusEffect } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
+import {
+  useFocusEffect,
+} from '@react-navigation/native';
+
+import {
+  useRouter,
+} from 'expo-router';
 
 import {
   useCallback,
@@ -19,11 +24,17 @@ import {
   homeApi,
 } from '@/api/homeApi';
 
-import { HomeContent } from '@/components/home/HomeContent';
+import {
+  HomeContent,
+} from '@/components/home/HomeContent';
 
-import { useBookmarks } from '@/hooks/bookmark/use-bookmarks';
+import {
+  useBookmarks,
+} from '@/hooks/bookmark/use-bookmarks';
 
-import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-notification-count';
+import {
+  useUnreadNotificationCount,
+} from '@/hooks/notification/use-unread-notification-count';
 
 import type {
   ActivityHomeSort,
@@ -31,6 +42,7 @@ import type {
   HomeItem,
   HomeItemType,
   RestaurantHomeSort,
+  WeatherResponse,
 } from '@/types/home';
 
 const ITEMS_PER_PAGE = 8;
@@ -41,7 +53,8 @@ type HomeSort =
   | RestaurantHomeSort;
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const router =
+    useRouter();
 
   const {
     fetchBookmarks,
@@ -52,104 +65,190 @@ export default function HomeScreen() {
 
   const {
     fetchUnreadNotificationCount,
-    unreadCount: unreadNotificationCount,
-  } = useUnreadNotificationCount();
+    unreadCount:
+      unreadNotificationCount,
+  } =
+    useUnreadNotificationCount();
 
-  const [items, setItems] =
+  const [
+    items,
+    setItems,
+  ] =
     useState<HomeItem[]>([]);
+
+  const [
+    weather,
+    setWeather,
+  ] =
+    useState<WeatherResponse[]>(
+      []
+    );
 
   const [
     filterRegions,
     setFilterRegions,
-  ] = useState<HomeFilterOption[]>([]);
+  ] =
+    useState<
+      HomeFilterOption[]
+    >([]);
 
   const [
     filterCategories,
     setFilterCategories,
-  ] = useState<HomeFilterOption[]>([]);
+  ] =
+    useState<
+      HomeFilterOption[]
+    >([]);
 
-  const [loading, setLoading] =
+  const [
+    loading,
+    setLoading,
+  ] =
     useState(true);
 
-  const [refreshing, setRefreshing] =
+  const [
+    refreshing,
+    setRefreshing,
+  ] =
     useState(false);
 
-  const [loadingMore, setLoadingMore] =
+  const [
+    loadingMore,
+    setLoadingMore,
+  ] =
     useState(false);
 
   const [
     errorMessage,
     setErrorMessage,
-  ] = useState('');
+  ] =
+    useState('');
 
   const [
     selectedType,
     setSelectedType,
-  ] = useState<HomeItemType>(
-    'ACTIVITY'
-  );
+  ] =
+    useState<HomeItemType>(
+      'ACTIVITY'
+    );
 
   const [
     selectedRegionId,
     setSelectedRegionId,
-  ] = useState<number | null>(
-    null
-  );
+  ] =
+    useState<number | null>(
+      null
+    );
 
   const [
     selectedCategoryId,
     setSelectedCategoryId,
-  ] = useState<number | null>(
-    null
-  );
+  ] =
+    useState<number | null>(
+      null
+    );
 
   const [
     activitySort,
     setActivitySort,
-  ] = useState<ActivityHomeSort>(
-    'DEFAULT'
-  );
+  ] =
+    useState<ActivityHomeSort>(
+      'DEFAULT'
+    );
 
   const [
     restaurantSort,
     setRestaurantSort,
-  ] = useState<RestaurantHomeSort>(
-    'NAME'
-  );
+  ] =
+    useState<RestaurantHomeSort>(
+      'NAME'
+    );
 
   const [
     currentPage,
     setCurrentPage,
-  ] = useState(0);
+  ] =
+    useState(0);
 
-  const [hasNext, setHasNext] =
+  const [
+    hasNext,
+    setHasNext,
+  ] =
     useState(false);
 
   const [
     totalItemCount,
     setTotalItemCount,
-  ] = useState(0);
+  ] =
+    useState(0);
 
   const [
     searchText,
     setSearchText,
-  ] = useState('');
+  ] =
+    useState('');
 
   const [
     debouncedKeyword,
     setDebouncedKeyword,
-  ] = useState('');
+  ] =
+    useState('');
 
-  const selectedSort: HomeSort =
-    selectedType === 'ACTIVITY'
-      ? activitySort
-      : restaurantSort;
+  const selectedSort:
+    HomeSort =
+      selectedType ===
+      'ACTIVITY'
+        ? activitySort
+        : restaurantSort;
 
   const handleUnauthorized =
-    useCallback(async () => {
-      await clearTokens();
-      router.replace('/auth/login');
-    }, [router]);
+    useCallback(
+      async () => {
+        await clearTokens();
+
+        router.replace(
+          '/auth/login'
+        );
+      },
+      [router]
+    );
+
+  const fetchWeather =
+    useCallback(
+      async () => {
+        try {
+          const accessToken =
+            await getAccessToken();
+
+          if (!accessToken) {
+            throw new Error(
+              '로그인이 필요합니다.'
+            );
+          }
+
+          const data =
+            await homeApi.getWeather(
+              accessToken
+            );
+
+          setWeather(data);
+        } catch (error) {
+          if (
+            error instanceof
+              HomeApiError &&
+            error.status === 401
+          ) {
+            await handleUnauthorized();
+            return;
+          }
+
+          setWeather([]);
+        }
+      },
+      [
+        handleUnauthorized,
+      ]
+    );
 
   const fetchFilterOptions =
     useCallback(
@@ -167,17 +266,19 @@ export default function HomeScreen() {
           }
 
           const data =
-            await homeApi.getFilterOptions(
-              accessToken,
-              type
-            );
+            await homeApi
+              .getFilterOptions(
+                accessToken,
+                type
+              );
 
           setFilterRegions(
             data.regions
           );
 
           if (
-            type === 'ACTIVITY'
+            type ===
+            'ACTIVITY'
           ) {
             setFilterCategories(
               data.categories
@@ -204,7 +305,9 @@ export default function HomeScreen() {
           );
         }
       },
-      [handleUnauthorized]
+      [
+        handleUnauthorized,
+      ]
     );
 
   const fetchHomeItems =
@@ -243,32 +346,42 @@ export default function HomeScreen() {
           const data =
             selectedType ===
             'ACTIVITY'
-              ? await homeApi.getActivities(
-                  accessToken,
-                  {
-                    sort: activitySort,
-                    regionId:
-                      selectedRegionId,
-                    categoryId:
-                      selectedCategoryId,
-                    keyword:
-                      keyword || null,
-                    page: pageNumber,
-                    size: ITEMS_PER_PAGE,
-                  }
-                )
-              : await homeApi.getRestaurants(
-                  accessToken,
-                  {
-                    sort: restaurantSort,
-                    regionId:
-                      selectedRegionId,
-                    keyword:
-                      keyword || null,
-                    page: pageNumber,
-                    size: ITEMS_PER_PAGE,
-                  }
-                );
+              ? await homeApi
+                  .getActivities(
+                    accessToken,
+                    {
+                      sort:
+                        activitySort,
+                      regionId:
+                        selectedRegionId,
+                      categoryId:
+                        selectedCategoryId,
+                      keyword:
+                        keyword ||
+                        null,
+                      page:
+                        pageNumber,
+                      size:
+                        ITEMS_PER_PAGE,
+                    }
+                  )
+              : await homeApi
+                  .getRestaurants(
+                    accessToken,
+                    {
+                      sort:
+                        restaurantSort,
+                      regionId:
+                        selectedRegionId,
+                      keyword:
+                        keyword ||
+                        null,
+                      page:
+                        pageNumber,
+                      size:
+                        ITEMS_PER_PAGE,
+                    }
+                  );
 
           if (append) {
             setItems(
@@ -280,7 +393,9 @@ export default function HomeScreen() {
               ]
             );
           } else {
-            setItems(data.items);
+            setItems(
+              data.items
+            );
           }
 
           setCurrentPage(
@@ -327,16 +442,18 @@ export default function HomeScreen() {
     );
 
   useEffect(() => {
-    const timeout = setTimeout(
-      () => {
-        setDebouncedKeyword(
-          searchText
-        );
-        setCurrentPage(0);
-        setHasNext(false);
-      },
-      SEARCH_DEBOUNCE_TIME
-    );
+    const timeout =
+      setTimeout(
+        () => {
+          setDebouncedKeyword(
+            searchText
+          );
+
+          setCurrentPage(0);
+          setHasNext(false);
+        },
+        SEARCH_DEBOUNCE_TIME
+      );
 
     return () => {
       clearTimeout(timeout);
@@ -358,7 +475,15 @@ export default function HomeScreen() {
       false,
       false
     );
-  }, [fetchHomeItems]);
+  }, [
+    fetchHomeItems,
+  ]);
+
+  useEffect(() => {
+    fetchWeather();
+  }, [
+    fetchWeather,
+  ]);
 
   useFocusEffect(
     useCallback(() => {
@@ -412,16 +537,19 @@ export default function HomeScreen() {
       filterCategories,
     ]);
 
-  const regions = useMemo(
-    () => [
-      '전체',
-      ...filterRegions.map(
-        (region) =>
-          region.name
-      ),
-    ],
-    [filterRegions]
-  );
+  const regions =
+    useMemo(
+      () => [
+        '전체',
+        ...filterRegions.map(
+          (region) =>
+            region.name
+        ),
+      ],
+      [
+        filterRegions,
+      ]
+    );
 
   const categories =
     useMemo(() => {
@@ -429,17 +557,20 @@ export default function HomeScreen() {
         selectedType ===
         'RESTAURANT'
       ) {
-        return ['전체'];
+        return [
+          '전체',
+        ];
       }
 
-      const priorityCategories = [
-        '농작물경작체험',
-        '만들기체험',
-        '자연생태체험',
-        '전통문화체험',
-        '건강',
-        '기타',
-      ];
+      const priorityCategories =
+        [
+          '농작물경작체험',
+          '만들기체험',
+          '자연생태체험',
+          '전통문화체험',
+          '건강',
+          '기타',
+        ];
 
       const normalizeCategoryName =
         (name: string) =>
@@ -448,49 +579,59 @@ export default function HomeScreen() {
             ''
           );
 
-      const sortedCategories = [
-        ...filterCategories,
-      ].sort((a, b) => {
-        const aName =
-          normalizeCategoryName(
-            a.name
-          );
+      const sortedCategories =
+        [
+          ...filterCategories,
+        ].sort(
+          (a, b) => {
+            const aName =
+              normalizeCategoryName(
+                a.name
+              );
 
-        const bName =
-          normalizeCategoryName(
-            b.name
-          );
+            const bName =
+              normalizeCategoryName(
+                b.name
+              );
 
-        const aIndex =
-          priorityCategories.indexOf(
-            aName
-          );
+            const aIndex =
+              priorityCategories.indexOf(
+                aName
+              );
 
-        const bIndex =
-          priorityCategories.indexOf(
-            bName
-          );
+            const bIndex =
+              priorityCategories.indexOf(
+                bName
+              );
 
-        if (
-          aIndex === -1 &&
-          bIndex === -1
-        ) {
-          return a.name.localeCompare(
-            b.name,
-            'ko'
-          );
-        }
+            if (
+              aIndex === -1 &&
+              bIndex === -1
+            ) {
+              return a.name.localeCompare(
+                b.name,
+                'ko'
+              );
+            }
 
-        if (aIndex === -1) {
-          return 1;
-        }
+            if (
+              aIndex === -1
+            ) {
+              return 1;
+            }
 
-        if (bIndex === -1) {
-          return -1;
-        }
+            if (
+              bIndex === -1
+            ) {
+              return -1;
+            }
 
-        return aIndex - bIndex;
-      });
+            return (
+              aIndex -
+              bIndex
+            );
+          }
+        );
 
       return [
         '전체',
@@ -529,8 +670,10 @@ export default function HomeScreen() {
       setSelectedRegionId(
         null
       );
+
       setCurrentPage(0);
       setHasNext(false);
+
       return;
     }
 
@@ -548,49 +691,54 @@ export default function HomeScreen() {
     setSelectedRegionId(
       region.id
     );
+
     setCurrentPage(0);
     setHasNext(false);
   };
 
-  const handleSelectCategory = (
-    categoryName: string
-  ) => {
-    if (
-      selectedType !==
-      'ACTIVITY'
-    ) {
-      return;
-    }
+  const handleSelectCategory =
+    (
+      categoryName: string
+    ) => {
+      if (
+        selectedType !==
+        'ACTIVITY'
+      ) {
+        return;
+      }
 
-    if (
-      categoryName ===
-      '전체'
-    ) {
+      if (
+        categoryName ===
+        '전체'
+      ) {
+        setSelectedCategoryId(
+          null
+        );
+
+        setCurrentPage(0);
+        setHasNext(false);
+
+        return;
+      }
+
+      const category =
+        filterCategories.find(
+          (item) =>
+            item.name ===
+            categoryName
+        );
+
+      if (!category) {
+        return;
+      }
+
       setSelectedCategoryId(
-        null
+        category.id
       );
+
       setCurrentPage(0);
       setHasNext(false);
-      return;
-    }
-
-    const category =
-      filterCategories.find(
-        (item) =>
-          item.name ===
-          categoryName
-      );
-
-    if (!category) {
-      return;
-    }
-
-    setSelectedCategoryId(
-      category.id
-    );
-    setCurrentPage(0);
-    setHasNext(false);
-  };
+    };
 
   const handleSelectSort = (
     sort: HomeSort
@@ -634,16 +782,18 @@ export default function HomeScreen() {
           selectedType
         ),
         fetchBookmarks(),
+        fetchWeather(),
       ]);
     };
 
-  const handleRetry = () => {
-    fetchHomeItems(
-      0,
-      false,
-      true
-    );
-  };
+  const handleRetry =
+    () => {
+      fetchHomeItems(
+        0,
+        false,
+        true
+      );
+    };
 
   const handleLoadMore =
     async () => {
@@ -685,18 +835,21 @@ export default function HomeScreen() {
       pathname:
         '/restaurant/[id]',
       params: {
-        id: String(item.id),
+        id: String(
+          item.id
+        ),
       },
     });
   };
 
-  const handleIsBookmarked = (
-    item: HomeItem
-  ) =>
-    isBookmarked(
-      item.type,
-      item.id
-    );
+  const handleIsBookmarked =
+    (
+      item: HomeItem
+    ) =>
+      isBookmarked(
+        item.type,
+        item.id
+      );
 
   const handleItemBookmarkPress =
     async (
@@ -788,16 +941,21 @@ export default function HomeScreen() {
 
       setCurrentPage(0);
       setHasNext(false);
-    }, [filterRegions]);
+    }, [
+      filterRegions,
+    ]);
 
   return (
     <HomeContent
       loading={loading}
-      refreshing={refreshing}
+      refreshing={
+        refreshing
+      }
       errorMessage={
         errorMessage
       }
       items={items}
+      weather={weather}
       selectedType={
         selectedType
       }
@@ -813,7 +971,9 @@ export default function HomeScreen() {
       searchText={
         searchText
       }
-      regions={regions}
+      regions={
+        regions
+      }
       categories={
         categories
       }

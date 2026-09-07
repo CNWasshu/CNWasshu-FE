@@ -60,7 +60,16 @@ export interface HomeFilterOptionsResponse {
   categories: HomeFilterOption[];
 }
 
-/**
- * 기존 코드와의 호환성을 위해 일단 유지
- */
+export interface WeatherResponse {
+  regionName: string;
+  temperature: number;
+  condition:
+    | 'SUNNY'
+    | 'CLOUDY'
+    | 'RAIN'
+    | 'RAIN_SNOW'
+    | 'SNOW'
+    | 'UNKNOWN';
+}
+
 export type HomeResponse = HomeItem[];

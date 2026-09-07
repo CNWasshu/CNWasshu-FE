@@ -4,6 +4,7 @@ import type {
   HomeItemType,
   HomePageResponse,
   RestaurantHomeSort,
+  WeatherResponse,
 } from '@/types/home';
 
 const HOME_PATH = '/api/home';
@@ -14,6 +15,7 @@ export class HomeApiError extends Error {
     public readonly status: number
   ) {
     super(message);
+
     this.name = 'HomeApiError';
   }
 }
@@ -185,6 +187,15 @@ export const homeApi = {
 
     return request<HomeFilterOptionsResponse>(
       `${HOME_PATH}/filters${queryString}`,
+      accessToken
+    );
+  },
+
+  getWeather: (
+    accessToken: string
+  ) => {
+    return request<WeatherResponse[]>(
+      `${HOME_PATH}/weather`,
       accessToken
     );
   },
