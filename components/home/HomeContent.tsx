@@ -33,6 +33,8 @@ type HomeContentProps = {
 
   items: HomeItem[];
 
+  searchText: string;
+
   selectedType: HomeItemType;
   selectedRegion: string;
   selectedCategory: string;
@@ -44,23 +46,49 @@ type HomeContentProps = {
   totalItemCount: number;
   canLoadMore: boolean;
 
-  onSelectType: (type: HomeItemType) => void;
-  onSelectRegion: (region: string) => void;
-  onSelectCategory: (category: string) => void;
-  onSelectSort: (sort: HomeSort) => void;
+  onChangeSearchText: (
+    value: string
+  ) => void;
+
+  onClearSearch: () => void;
+
+  onSelectType: (
+    type: HomeItemType
+  ) => void;
+
+  onSelectRegion: (
+    region: string
+  ) => void;
+
+  onSelectCategory: (
+    category: string
+  ) => void;
+
+  onSelectSort: (
+    sort: HomeSort
+  ) => void;
 
   onRefresh: () => void;
   onRetry: () => void;
   onLoadMore: () => void;
 
-  onItemPress: (item: HomeItem) => void;
-  onItemBookmarkPress: (item: HomeItem) => void;
-  isBookmarked: (item: HomeItem) => boolean;
+  onItemPress: (
+    item: HomeItem
+  ) => void;
+
+  onItemBookmarkPress: (
+    item: HomeItem
+  ) => void;
+
+  isBookmarked: (
+    item: HomeItem
+  ) => boolean;
 
   onAiRecommend: () => void;
   onBookmarkPress: () => void;
   onMyPagePress: () => void;
   onNotificationPress: () => void;
+
   unreadNotificationCount: number;
 };
 
@@ -69,6 +97,7 @@ export function HomeContent({
   refreshing,
   errorMessage,
   items,
+  searchText,
   selectedType,
   selectedRegion,
   selectedCategory,
@@ -77,6 +106,8 @@ export function HomeContent({
   categories,
   totalItemCount,
   canLoadMore,
+  onChangeSearchText,
+  onClearSearch,
   onSelectType,
   onSelectRegion,
   onSelectCategory,
@@ -147,7 +178,9 @@ export function HomeContent({
           <View style={styles.itemWrapper}>
             <HomeItemCard
               item={item}
-              isBookmarked={isBookmarked(item)}
+              isBookmarked={
+                isBookmarked(item)
+              }
               onPress={onItemPress}
               onBookmarkPress={
                 onItemBookmarkPress
@@ -159,8 +192,12 @@ export function HomeContent({
           <View style={styles.screen}>
             <HomeHero
               onAiRecommend={onAiRecommend}
-              onBookmarkPress={onBookmarkPress}
-              onMyPagePress={onMyPagePress}
+              onBookmarkPress={
+                onBookmarkPress
+              }
+              onMyPagePress={
+                onMyPagePress
+              }
               onNotificationPress={
                 onNotificationPress
               }
@@ -186,14 +223,27 @@ export function HomeContent({
 
               <HomeFilterSection
                 selectedType={selectedType}
-                selectedRegion={selectedRegion}
+                selectedRegion={
+                  selectedRegion
+                }
                 selectedCategory={
                   selectedCategory
                 }
+                searchText={searchText}
                 regions={regions}
                 categories={categories}
-                onSelectType={onSelectType}
-                onSelectRegion={onSelectRegion}
+                onChangeSearchText={
+                  onChangeSearchText
+                }
+                onClearSearch={
+                  onClearSearch
+                }
+                onSelectType={
+                  onSelectType
+                }
+                onSelectRegion={
+                  onSelectRegion
+                }
                 onSelectCategory={
                   onSelectCategory
                 }
@@ -205,9 +255,15 @@ export function HomeContent({
                 </Text>
 
                 <HomeSortDropdown
-                  selectedType={selectedType}
-                  selectedSort={selectedSort}
-                  onSelectSort={onSelectSort}
+                  selectedType={
+                    selectedType
+                  }
+                  selectedSort={
+                    selectedSort
+                  }
+                  onSelectSort={
+                    onSelectSort
+                  }
                 />
               </View>
             </View>
@@ -220,21 +276,27 @@ export function HomeContent({
           <View style={styles.emptyWrapper}>
             <View style={styles.emptyBox}>
               <Text style={styles.emptyTitle}>
-                조건에 맞는 장소가 없어요.
+                검색 결과가 없어요.
               </Text>
 
               <Text
-                style={styles.emptyDescription}
+                style={
+                  styles.emptyDescription
+                }
               >
-                다른 지역이나 카테고리를
-                선택해보세요.
+                다른 검색어나 지역,
+                카테고리를 선택해보세요.
               </Text>
             </View>
           </View>
         }
         ListFooterComponent={
           items.length > 0 ? (
-            <View style={styles.footerWrapper}>
+            <View
+              style={
+                styles.footerWrapper
+              }
+            >
               {canLoadMore && (
                 <HomeLoadMore
                   onPress={onLoadMore}
@@ -244,11 +306,17 @@ export function HomeContent({
           ) : null
         }
         ItemSeparatorComponent={() => (
-          <View style={styles.itemSeparator} />
+          <View
+            style={styles.itemSeparator}
+          />
         )}
         style={styles.list}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
+        contentContainerStyle={
+          styles.listContent
+        }
+        showsVerticalScrollIndicator={
+          false
+        }
         refreshing={refreshing}
         onRefresh={onRefresh}
         initialNumToRender={8}
@@ -428,6 +496,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     color: '#777777',
     fontSize: 12,
+    lineHeight: 18,
     textAlign: 'center',
   },
 });

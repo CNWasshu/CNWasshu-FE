@@ -71,6 +71,7 @@ interface GetActivitiesParams {
   sort?: ActivityHomeSort;
   regionId?: number | null;
   categoryId?: number | null;
+  keyword?: string | null;
   page?: number;
   size?: number;
 }
@@ -78,6 +79,7 @@ interface GetActivitiesParams {
 interface GetRestaurantsParams {
   sort?: RestaurantHomeSort;
   regionId?: number | null;
+  keyword?: string | null;
   page?: number;
   size?: number;
 }
@@ -124,6 +126,7 @@ export const homeApi = {
       sort = 'DEFAULT',
       regionId = null,
       categoryId = null,
+      keyword = null,
       page = 0,
       size = 8,
     } = params;
@@ -133,6 +136,7 @@ export const homeApi = {
         sort,
         regionId,
         categoryId,
+        keyword,
         page,
         size,
       });
@@ -150,6 +154,7 @@ export const homeApi = {
     const {
       sort = 'NAME',
       regionId = null,
+      keyword = null,
       page = 0,
       size = 8,
     } = params;
@@ -158,6 +163,7 @@ export const homeApi = {
       buildQueryString({
         sort,
         regionId,
+        keyword,
         page,
         size,
       });

@@ -3,8 +3,13 @@ import {
   getAccessToken,
 } from '@/utils/auth';
 
-import { useFocusEffect } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
+import {
+  useFocusEffect,
+} from '@react-navigation/native';
+
+import {
+  useRouter,
+} from 'expo-router';
 
 import {
   useCallback,
@@ -19,11 +24,17 @@ import {
   homeApi,
 } from '@/api/homeApi';
 
-import { HomeContent } from '@/components/home/HomeContent';
+import {
+  HomeContent,
+} from '@/components/home/HomeContent';
 
-import { useBookmarks } from '@/hooks/bookmark/use-bookmarks';
+import {
+  useBookmarks,
+} from '@/hooks/bookmark/use-bookmarks';
 
-import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-notification-count';
+import {
+  useUnreadNotificationCount,
+} from '@/hooks/notification/use-unread-notification-count';
 
 import type {
   ActivityHomeSort,
@@ -34,6 +45,8 @@ import type {
 } from '@/types/home';
 
 const ITEMS_PER_PAGE = 8;
+const SEARCH_DEBOUNCE_TIME =
+  350;
 
 type HomeSort =
   | ActivityHomeSort
@@ -51,8 +64,10 @@ export default function HomeScreen() {
 
   const {
     fetchUnreadNotificationCount,
-    unreadCount: unreadNotificationCount,
-  } = useUnreadNotificationCount();
+    unreadCount:
+      unreadNotificationCount,
+  } =
+    useUnreadNotificationCount();
 
   const [items, setItems] =
     useState<HomeItem[]>([]);
@@ -60,21 +75,31 @@ export default function HomeScreen() {
   const [
     filterRegions,
     setFilterRegions,
-  ] = useState<HomeFilterOption[]>([]);
+  ] =
+    useState<
+      HomeFilterOption[]
+    >([]);
 
   const [
     filterCategories,
     setFilterCategories,
-  ] = useState<HomeFilterOption[]>([]);
+  ] =
+    useState<
+      HomeFilterOption[]
+    >([]);
 
   const [loading, setLoading] =
     useState(true);
 
-  const [refreshing, setRefreshing] =
-    useState(false);
+  const [
+    refreshing,
+    setRefreshing,
+  ] = useState(false);
 
-  const [loadingMore, setLoadingMore] =
-    useState(false);
+  const [
+    loadingMore,
+    setLoadingMore,
+  ] = useState(false);
 
   const [
     errorMessage,
@@ -92,16 +117,18 @@ export default function HomeScreen() {
   const [
     selectedRegionId,
     setSelectedRegionId,
-  ] = useState<number | null>(
-    null
-  );
+  ] =
+    useState<number | null>(
+      null
+    );
 
   const [
     selectedCategoryId,
     setSelectedCategoryId,
-  ] = useState<number | null>(
-    null
-  );
+  ] =
+    useState<number | null>(
+      null
+    );
 
   const [
     activitySort,
@@ -120,12 +147,24 @@ export default function HomeScreen() {
     );
 
   const [
+    searchText,
+    setSearchText,
+  ] = useState('');
+
+  const [
+    debouncedKeyword,
+    setDebouncedKeyword,
+  ] = useState('');
+
+  const [
     currentPage,
     setCurrentPage,
   ] = useState(0);
 
-  const [hasNext, setHasNext] =
-    useState(false);
+  const [
+    hasNext,
+    setHasNext,
+  ] = useState(false);
 
   const [
     totalItemCount,
@@ -140,7 +179,10 @@ export default function HomeScreen() {
   const handleUnauthorized =
     useCallback(async () => {
       await clearTokens();
-      router.replace('/auth/login');
+
+      router.replace(
+        '/auth/login'
+      );
     }, [router]);
 
   const fetchFilterOptions =
@@ -229,6 +271,9 @@ export default function HomeScreen() {
             );
           }
 
+          const keyword =
+            debouncedKeyword.trim();
+
           const data =
             selectedType ===
             'ACTIVITY'
@@ -240,6 +285,9 @@ export default function HomeScreen() {
                       selectedRegionId,
                     categoryId:
                       selectedCategoryId,
+                    keyword:
+                      keyword ||
+                      null,
                     page: pageNumber,
                     size: ITEMS_PER_PAGE,
                   }
@@ -250,6 +298,9 @@ export default function HomeScreen() {
                     sort: restaurantSort,
                     regionId:
                       selectedRegionId,
+                    keyword:
+                      keyword ||
+                      null,
                     page: pageNumber,
                     size: ITEMS_PER_PAGE,
                   }
@@ -306,9 +357,25 @@ export default function HomeScreen() {
         selectedCategoryId,
         activitySort,
         restaurantSort,
+        debouncedKeyword,
         handleUnauthorized,
       ]
     );
+
+  useEffect(() => {
+    const timeout =
+      setTimeout(() => {
+        setDebouncedKeyword(
+          searchText
+        );
+        setCurrentPage(0);
+        setHasNext(false);
+      }, SEARCH_DEBOUNCE_TIME);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [searchText]);
 
   useEffect(() => {
     fetchFilterOptions(
@@ -330,6 +397,7 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchBookmarks();
+
       fetchUnreadNotificationCount();
     }, [
       fetchBookmarks,
@@ -379,39 +447,112 @@ export default function HomeScreen() {
       filterCategories,
     ]);
 
-  const regions = useMemo(
-    () => [
-      '전체',
-      ...filterRegions.map(
-        (region) =>
-          region.name
-      ),
-    ],
-    [filterRegions]
-  );
+  const regions =
+    useMemo(
+      () => [
+        '전체',
+        ...filterRegions.map(
+          (region) =>
+            region.name
+        ),
+      ],
+      [filterRegions]
+    );
 
-  const categories = useMemo(
-    () => {
+  const categories =
+  useMemo(() => {
+    if (
+      selectedType ===
+      'RESTAURANT'
+    ) {
+      return ['전체'];
+    }
+
+    const priorityCategories = [
+      '농작물경작체험',
+      '만들기체험',
+      '자연생태체험',
+      '전통문화체험',
+      '건강',
+      '기타',
+    ];
+
+    const normalizeCategoryName = (
+      name: string
+    ) =>
+      name.replace(/\s/g, '');
+
+    const sortedCategories = [
+      ...filterCategories,
+    ].sort((a, b) => {
+      const aName =
+        normalizeCategoryName(
+          a.name
+        );
+
+      const bName =
+        normalizeCategoryName(
+          b.name
+        );
+
+      const aIndex =
+        priorityCategories.indexOf(
+          aName
+        );
+
+      const bIndex =
+        priorityCategories.indexOf(
+          bName
+        );
+
       if (
-        selectedType ===
-        'RESTAURANT'
+        aIndex === -1 &&
+        bIndex === -1
       ) {
-        return ['전체'];
+        return a.name.localeCompare(
+          b.name,
+          'ko'
+        );
       }
 
-      return [
-        '전체',
-        ...filterCategories.map(
-          (category) =>
-            category.name
-        ),
-      ];
-    },
-    [
-      selectedType,
-      filterCategories,
-    ]
-  );
+      if (aIndex === -1) {
+        return 1;
+      }
+
+      if (bIndex === -1) {
+        return -1;
+      }
+
+      return aIndex - bIndex;
+    });
+
+    return [
+      '전체',
+      ...sortedCategories.map(
+        (category) =>
+          category.name
+      ),
+    ];
+  }, [
+    selectedType,
+    filterCategories,
+  ]);
+
+  const handleSearchTextChange =
+    useCallback(
+      (value: string) => {
+        setSearchText(value);
+      },
+      []
+    );
+
+  const handleClearSearch =
+    useCallback(() => {
+      setSearchText('');
+      setDebouncedKeyword('');
+      setCurrentPage(0);
+      setHasNext(false);
+    }, []);
 
   const handleSelectType = (
     type: HomeItemType
@@ -565,7 +706,9 @@ export default function HomeScreen() {
         pathname:
           '/activity/[id]',
         params: {
-          id: String(item.id),
+          id: String(
+            item.id
+          ),
         },
       });
 
@@ -576,7 +719,9 @@ export default function HomeScreen() {
       pathname:
         '/restaurant/[id]',
       params: {
-        id: String(item.id),
+        id: String(
+          item.id
+        ),
       },
     });
   };
@@ -602,7 +747,8 @@ export default function HomeScreen() {
       if (bookmarked) {
         await removeBookmark({
           type: item.type,
-          targetId: item.id,
+          targetId:
+            item.id,
         });
 
         return;
@@ -611,7 +757,8 @@ export default function HomeScreen() {
       const success =
         await addBookmark({
           type: item.type,
-          targetId: item.id,
+          targetId:
+            item.id,
         });
 
       if (success) {
@@ -650,11 +797,16 @@ export default function HomeScreen() {
   return (
     <HomeContent
       loading={loading}
-      refreshing={refreshing}
+      refreshing={
+        refreshing
+      }
       errorMessage={
         errorMessage
       }
       items={items}
+      searchText={
+        searchText
+      }
       selectedType={
         selectedType
       }
@@ -677,6 +829,12 @@ export default function HomeScreen() {
       canLoadMore={
         hasNext &&
         !loadingMore
+      }
+      onChangeSearchText={
+        handleSearchTextChange
+      }
+      onClearSearch={
+        handleClearSearch
       }
       onSelectType={
         handleSelectType
