@@ -1,21 +1,38 @@
 import {
+  Pressable,
   ScrollView,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
+import {
+  SafeAreaView,
+} from 'react-native-safe-area-context';
 
 import { BookmarkCard } from '@/components/bookmark/BookmarkCard';
 import { BookmarkEmpty } from '@/components/bookmark/BookmarkEmpty';
 import { BookmarkError } from '@/components/bookmark/BookmarkError';
 import { BookmarkHeader } from '@/components/bookmark/BookmarkHeader';
 import { BookmarkLoading } from '@/components/bookmark/BookmarkLoading';
-import type { BookmarkResponse } from '@/types/bookmark';
+
+import type {
+  BookmarkResponse,
+} from '@/types/bookmark';
 
 interface BookmarkContentProps {
   bookmarks: BookmarkResponse[];
+  totalBookmarkCount: number;
+
+  regions: string[];
+  selectedRegion: string;
+
   loading: boolean;
   errorMessage: string;
+
+  onSelectRegion: (
+    region: string
+  ) => void;
 
   onPress: (
     bookmark: BookmarkResponse
@@ -30,8 +47,12 @@ interface BookmarkContentProps {
 
 export function BookmarkContent({
   bookmarks,
+  totalBookmarkCount,
+  regions,
+  selectedRegion,
   loading,
   errorMessage,
+  onSelectRegion,
   onPress,
   onRemove,
   onRetry,
@@ -52,8 +73,60 @@ export function BookmarkContent({
       >
         <View style={styles.screen}>
           <BookmarkHeader
-            count={bookmarks.length}
+            count={totalBookmarkCount}
           />
+
+          {!loading &&
+            !errorMessage &&
+            totalBookmarkCount > 0 && (
+              <View
+                style={
+                  styles.filterSection
+                }
+              >
+                <View
+                  style={
+                    styles.regionList
+                  }
+                >
+                  {regions.map(
+                    (region) => {
+                      const selected =
+                        region ===
+                        selectedRegion;
+
+                      return (
+                        <Pressable
+                          key={region}
+                          accessibilityRole="button"
+                          onPress={() =>
+                            onSelectRegion(
+                              region
+                            )
+                          }
+                          style={[
+                            styles.regionChip,
+                            selected &&
+                              styles.regionChipSelected,
+                          ]}
+                        >
+                          <Text
+                            numberOfLines={1}
+                            style={[
+                              styles.regionChipText,
+                              selected &&
+                                styles.regionChipTextSelected,
+                            ]}
+                          >
+                            {region}
+                          </Text>
+                        </Pressable>
+                      );
+                    }
+                  )}
+                </View>
+              </View>
+            )}
 
           {loading ? (
             <BookmarkLoading />
@@ -62,8 +135,34 @@ export function BookmarkContent({
               message={errorMessage}
               onRetry={onRetry}
             />
-          ) : bookmarks.length === 0 ? (
+          ) : totalBookmarkCount ===
+            0 ? (
             <BookmarkEmpty />
+          ) : bookmarks.length ===
+            0 ? (
+            <View
+              style={
+                styles.regionEmpty
+              }
+            >
+              <Text
+                style={
+                  styles.regionEmptyTitle
+                }
+              >
+                이 지역에 저장한
+                장소가 없어요.
+              </Text>
+
+              <Text
+                style={
+                  styles.regionEmptyDescription
+                }
+              >
+                다른 지역을
+                선택해보세요.
+              </Text>
+            </View>
           ) : (
             <View style={styles.grid}>
               {bookmarks.map(
@@ -77,12 +176,18 @@ export function BookmarkContent({
                     }
                   >
                     <BookmarkCard
-                      bookmark={bookmark}
+                      bookmark={
+                        bookmark
+                      }
                       onPress={() =>
-                        onPress(bookmark)
+                        onPress(
+                          bookmark
+                        )
                       }
                       onRemove={() =>
-                        onRemove(bookmark)
+                        onRemove(
+                          bookmark
+                        )
                       }
                     />
                   </View>
@@ -123,6 +228,50 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFAF1',
   },
 
+  filterSection: {
+    width: '100%',
+    marginTop: 14,
+    marginBottom: 18,
+  },
+
+  regionList: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: 8,
+    rowGap: 8,
+  },
+
+  regionChip: {
+    width: '18.3%',
+    minHeight: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    paddingVertical: 7,
+    borderWidth: 1,
+    borderColor: '#E8DCC8',
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+  },
+
+  regionChipSelected: {
+    borderColor: '#3F7D46',
+    backgroundColor: '#3F7D46',
+  },
+
+  regionChipText: {
+    color: '#6F675C',
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+
+  regionChipTextSelected: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+  },
+
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -133,5 +282,25 @@ const styles = StyleSheet.create({
     width: '50%',
     paddingHorizontal: 6,
     marginBottom: 12,
+  },
+
+  regionEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 54,
+  },
+
+  regionEmptyTitle: {
+    color: '#29251E',
+    fontSize: 15,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+
+  regionEmptyDescription: {
+    marginTop: 7,
+    color: '#888178',
+    fontSize: 12,
+    textAlign: 'center',
   },
 });

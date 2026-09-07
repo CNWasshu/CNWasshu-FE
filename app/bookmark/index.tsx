@@ -1,13 +1,18 @@
 import { useRouter } from 'expo-router';
+
 import {
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 
 import { BookmarkContent } from '@/components/bookmark/BookmarkContent';
 import { BookmarkDeleteModal } from '@/components/bookmark/BookmarkDeleteModal';
 import { useBookmarks } from '@/hooks/bookmark/use-bookmarks';
-import type { BookmarkResponse } from '@/types/bookmark';
+
+import type {
+  BookmarkResponse,
+} from '@/types/bookmark';
 
 export default function BookmarkScreen() {
   const router = useRouter();
@@ -34,9 +39,76 @@ export default function BookmarkScreen() {
     setDeleteModalVisible,
   ] = useState(false);
 
+  const [
+    selectedRegion,
+    setSelectedRegion,
+  ] = useState('전체');
+
   useEffect(() => {
     fetchBookmarks();
   }, [fetchBookmarks]);
+
+  const regions =
+    useMemo(() => {
+      const regionNames =
+        Array.from(
+          new Set(
+            bookmarks
+              .map(
+                (bookmark) =>
+                  bookmark.regionName
+              )
+              .filter(Boolean)
+          )
+        ).sort((a, b) =>
+          a.localeCompare(b, 'ko')
+        );
+
+      return [
+        '전체',
+        ...regionNames,
+      ];
+    }, [bookmarks]);
+
+  const filteredBookmarks =
+    useMemo(() => {
+      if (
+        selectedRegion === '전체'
+      ) {
+        return bookmarks;
+      }
+
+      return bookmarks.filter(
+        (bookmark) =>
+          bookmark.regionName ===
+          selectedRegion
+      );
+    }, [
+      bookmarks,
+      selectedRegion,
+    ]);
+
+  useEffect(() => {
+    if (
+      selectedRegion === '전체'
+    ) {
+      return;
+    }
+
+    const regionExists =
+      bookmarks.some(
+        (bookmark) =>
+          bookmark.regionName ===
+          selectedRegion
+      );
+
+    if (!regionExists) {
+      setSelectedRegion('전체');
+    }
+  }, [
+    bookmarks,
+    selectedRegion,
+  ]);
 
   const handleBookmarkPress = (
     bookmark: BookmarkResponse
@@ -47,6 +119,7 @@ export default function BookmarkScreen() {
       router.push(
         `/activity/${bookmark.targetId}`
       );
+
       return;
     }
 
@@ -102,20 +175,38 @@ export default function BookmarkScreen() {
   return (
     <>
       <BookmarkContent
-        bookmarks={bookmarks}
+        bookmarks={
+          filteredBookmarks
+        }
+        totalBookmarkCount={
+          bookmarks.length
+        }
+        regions={regions}
+        selectedRegion={
+          selectedRegion
+        }
         loading={loading}
-        errorMessage={errorMessage}
+        errorMessage={
+          errorMessage
+        }
+        onSelectRegion={
+          setSelectedRegion
+        }
         onPress={
           handleBookmarkPress
         }
         onRemove={
           handleRemovePress
         }
-        onRetry={handleRetry}
+        onRetry={
+          handleRetry
+        }
       />
 
       <BookmarkDeleteModal
-        visible={deleteModalVisible}
+        visible={
+          deleteModalVisible
+        }
         onConfirm={
           handleConfirmRemove
         }
