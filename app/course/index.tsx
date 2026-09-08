@@ -1,7 +1,7 @@
 import { CourseListItem } from '@/components/course/CourseListItem';
 import { CourseColors } from '@/constants/course-colors';
 import { useCourses } from '@/hooks/useCourse';
-import { filterCourses, getTripStatus, type CourseFilter, type TripStatus } from '@/utils/course-list';
+import { filterCourses, getTripStatus, type CourseFilter, type CourseStatusFilter, type TripStatus } from '@/utils/course-list';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
@@ -13,11 +13,16 @@ export default function CourseListScreen() {
   const { width } = useWindowDimensions();
   const { courses, loading, error, refetch } = useCourses();
   const [filter, setFilter] = useState<CourseFilter>('ALL');
-  const [statusFilter, setStatusFilter] = useState<TripStatus>('ONGOING');
+  const [statusFilter, setStatusFilter] = useState<CourseStatusFilter>('ALL');
   const [statusFilterOpen, setStatusFilterOpen] = useState(false);
   const singleColumn = width < 600;
   const filteredCourses = useMemo(() => filterCourses(courses, filter), [courses, filter]);
-  const statusFilteredCourses = useMemo(() => filteredCourses.filter((course) => getTripStatus(course).type === statusFilter), [filteredCourses, statusFilter]);
+  const statusFilteredCourses = useMemo(
+    () => statusFilter === 'ALL'
+      ? filteredCourses
+      : filteredCourses.filter((course) => getTripStatus(course).type === statusFilter),
+    [filteredCourses, statusFilter]
+  );
 
   useFocusEffect(useCallback(() => { void refetch(); }, [refetch]));
 
@@ -66,7 +71,7 @@ export default function CourseListScreen() {
               </View>
             </View>
             {filteredCourses.length === 0 ? <FilteredEmptyState filter={filter} onAiPress={() => router.push('/course/ai')} /> : null}
-            {filteredCourses.length > 0 && statusFilteredCourses.length === 0 ? <StatusFilteredEmptyState status={statusFilter} /> : null}
+            {filteredCourses.length > 0 && statusFilter !== 'ALL' && statusFilteredCourses.length === 0 ? <StatusFilteredEmptyState status={statusFilter} /> : null}
             {statusFilteredCourses.length > 0 ? <View style={styles.list}>{statusFilteredCourses.map((course) => <CourseListItem key={course.id} course={course} onPress={() => router.push(`/course/${course.id}`)} singleColumn={singleColumn} />)}</View> : null}
           </View> : null}
         </View>
@@ -76,8 +81,8 @@ export default function CourseListScreen() {
 }
 
 const FILTER_OPTIONS: { label: string; value: CourseFilter }[] = [{ label: '전체', value: 'ALL' }, { label: 'AI 추천', value: 'AI' }, { label: '직접 만든 코스', value: 'USER' }];
-const STATUS_FILTER_OPTIONS: { label: string; value: TripStatus }[] = [{ label: '여행 중', value: 'ONGOING' }, { label: '다가오는 여행', value: 'UPCOMING' }, { label: '지난 여행', value: 'PAST' }];
-const STATUS_FILTER_LABELS = Object.fromEntries(STATUS_FILTER_OPTIONS.map((option) => [option.value, option.label])) as Record<TripStatus, string>;
+const STATUS_FILTER_OPTIONS: { label: string; value: CourseStatusFilter }[] = [{ label: '전체', value: 'ALL' }, { label: '여행 중', value: 'ONGOING' }, { label: '다가오는 여행', value: 'UPCOMING' }, { label: '지난 여행', value: 'PAST' }];
+const STATUS_FILTER_LABELS = Object.fromEntries(STATUS_FILTER_OPTIONS.map((option) => [option.value, option.label])) as Record<CourseStatusFilter, string>;
 
 function FilteredEmptyState({ filter, onAiPress }: { filter: CourseFilter; onAiPress: () => void }) {
   const isAi = filter === 'AI';
