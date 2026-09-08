@@ -10,6 +10,9 @@ import type {
 } from '@/types/course';
 
 const COURSE_PATH = '/api/courses';
+const AI_RECOMMENDATION_TIMEOUT_MS = 30_000;
+const AI_RECOMMENDATION_MAX_ATTEMPTS = 3;
+const RETRYABLE_AI_STATUSES = new Set([429, 500, 502, 503, 504]);
 
 export class CourseApiError extends Error {
   constructor(message: string, public readonly status: number, public readonly code?: string) {
@@ -36,8 +39,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`${getBaseUrl()}${path}`, init);
-  } catch {
-    throw new CourseApiError('서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.', 0);
+  } catch (error) {
+    if (error instanceof CourseApiError) throw error;
+    throw new CourseApiError('서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.', 0, 'NETWORK_ERROR');
   }
 
   if (!response.ok) {
@@ -52,6 +56,53 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
+}
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryableAiError(error: unknown) {
+  return error instanceof CourseApiError
+    && (error.code === 'AI_RECOMMENDATION_TIMEOUT'
+      || error.code === 'NETWORK_ERROR'
+      || RETRYABLE_AI_STATUSES.has(error.status));
+}
+
+async function requestAiRecommendation(payload: AiRecommendationRequest, accessToken: string) {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < AI_RECOMMENDATION_MAX_ATTEMPTS; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), AI_RECOMMENDATION_TIMEOUT_MS);
+
+    try {
+      return await request<AiRecommendationResponse>(`${COURSE_PATH}/ai-recommendations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthorizationHeaders(accessToken),
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+    } catch (error) {
+      const normalizedError = controller.signal.aborted
+        ? new CourseApiError('AI 추천 응답이 지연되고 있습니다.', 408, 'AI_RECOMMENDATION_TIMEOUT')
+        : error;
+      lastError = normalizedError;
+
+      const isLastAttempt = attempt === AI_RECOMMENDATION_MAX_ATTEMPTS - 1;
+      if (isLastAttempt || !isRetryableAiError(normalizedError)) throw normalizedError;
+
+      // 정상 요청에는 지연이 없고, 일시 실패한 경우에만 짧게 쉬었다 재시도한다.
+      await wait(600 * (attempt + 1));
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  throw lastError;
 }
 
 export const courseApi = {
@@ -86,15 +137,7 @@ export const courseApi = {
       method: 'DELETE',
       headers: getAuthorizationHeaders(accessToken),
     }),
-  recommend: (payload: AiRecommendationRequest, accessToken: string) =>
-    request<AiRecommendationResponse>(`${COURSE_PATH}/ai-recommendations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...getAuthorizationHeaders(accessToken),
-      },
-      body: JSON.stringify(payload),
-    }),
+  recommend: requestAiRecommendation,
   saveRecommendation: (payload: AiCourseSaveRequest, accessToken: string) =>
     request<CourseDetail>(`${COURSE_PATH}/ai-recommendations/save`, {
       method: 'POST',
