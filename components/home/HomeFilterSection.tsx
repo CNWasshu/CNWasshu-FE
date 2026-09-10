@@ -490,10 +490,12 @@ export function HomeFilterSection({
                         styles.categoryText,
                         active &&
                           styles.categoryTextActive,
+                        Platform.OS === 'web' &&
+                          styles.categoryTextWeb,
                       ]}
-                      numberOfLines={1}
+                      numberOfLines={2}
                     >
-                      {category}
+                      {formatCategoryLabel(category)}
                     </Text>
                   </Pressable>
                 );
@@ -504,6 +506,18 @@ export function HomeFilterSection({
       )}
     </>
   );
+}
+
+// '농작물경작체험'처럼 공백 없이 긴 카테고리명이 2줄로 넘어갈 때,
+// 글자 단위(word-break)로 아무 데서나 잘리면 "농작물경작체" / "험"처럼
+// 어색하게 끊긴다. 대부분 이름이 '체험'으로 끝나므로 그 앞에서
+// 줄바꿈을 강제해서 "농작물경작" / "체험"처럼 자연스럽게 나뉘도록 한다.
+function formatCategoryLabel(category: string) {
+  if (category.endsWith('체험') && category.length > 2) {
+    return `${category.slice(0, -2)}\n체험`;
+  }
+
+  return category;
 }
 
 function getCategoryIcon(
@@ -667,12 +681,12 @@ const styles =
     },
 
     categoryList: {
-      gap: 10,
+      gap: 8,
       paddingRight: 18,
     },
 
     categoryButton: {
-      width: 67,
+      width: 78,
       alignItems: 'center',
     },
 
@@ -697,13 +711,21 @@ const styles =
     },
 
     categoryText: {
-      width: 67,
+      width: 78,
       marginTop: 6,
       color: '#72664E',
       fontSize: 12,
+      lineHeight: 15,
       fontWeight: '800',
       textAlign: 'center',
     },
+
+    // RN Web은 공백 없는 한글 카테고리명(예: '농작물경작체험')에서
+    // 줄바꿈 지점을 못 찾아 2줄 허용을 줘도 그냥 말줄임(...)돼버린다.
+    // 강제로 글자 단위 줄바꿈을 허용해서 실제로 2줄로 내려가게 한다.
+    categoryTextWeb: {
+      wordBreak: 'break-all',
+    } as any,
 
     categoryTextActive: {
       color: '#3F7D46',
