@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   cardHeadingText: { flex: 1, gap: 2 },
   cardIcon: { alignItems: 'center', backgroundColor: CourseColors.primarySoft, borderRadius: 18, height: 36, justifyContent: 'center', width: 36 },
   cardTitle: { fontSize: 16, fontWeight: '900', color: CourseColors.text },
-  cardDesc: { fontSize: 12.5, color: CourseColors.muted, lineHeight: 19 },
+  cardDesc: { fontSize: 14, color: CourseColors.muted, lineHeight: 20 },
   scanButton: {
     marginTop: 10,
     minHeight: 50,
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
   },
-  errorText: { color: CourseColors.error, fontSize: 13, textAlign: 'center' },
+  errorText: { color: CourseColors.error, fontSize: 14, textAlign: 'center' },
   retryButton: {
     paddingHorizontal: 16,
     paddingVertical: 9,
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: CourseColors.primary,
   },
-  retryButtonText: { color: CourseColors.primary, fontWeight: '800', fontSize: 12 },
+  retryButtonText: { color: CourseColors.primary, fontWeight: '800', fontSize: 14 },
   stampGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   },
   stampBoard: { backgroundColor: '#EAF3DE', borderColor: '#C9DEB5', borderRadius: 24, borderWidth: 1, marginTop: 12, overflow: 'hidden', padding: 14 },
   stampHeadingRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
-  progressCount: { backgroundColor: CourseColors.primarySoft, borderRadius: 999, color: CourseColors.primaryDark, fontSize: 12, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 10, paddingVertical: 5 },
+  progressCount: { backgroundColor: CourseColors.primarySoft, borderRadius: 999, color: CourseColors.primaryDark, fontSize: 13, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 10, paddingVertical: 5 },
   stampCell: {
     width: '18.5%',
     aspectRatio: 1,
@@ -247,12 +247,12 @@ const styles = StyleSheet.create({
   },
   stampInner: { alignItems: 'center', borderColor: '#DDCBAA', borderRadius: 999, borderWidth: 1, gap: 2, height: '100%', justifyContent: 'center', width: '100%' },
   stampInnerDone: { borderColor: '#86B487' },
-  nextTripText: { color: '#9C875F', fontSize: 9, fontWeight: '800' },
+  nextTripText: { color: '#9C875F', fontSize: 12, fontWeight: '800' },
   stampCellText: { color: '#8F7950', fontWeight: '900', fontSize: 9, letterSpacing: 0.2 },
   stampCellDoneText: {
     color: CourseColors.primaryDark,
     fontWeight: '900',
-    fontSize: 11,
+    fontSize: 13,
     paddingHorizontal: 2,
   },
   stampNumber: { color: '#668565', fontSize: 8, fontWeight: '800', letterSpacing: 0.15 },

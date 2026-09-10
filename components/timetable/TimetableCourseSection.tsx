@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: '#FFFFFF',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
   },
   container: {
@@ -109,8 +109,8 @@ const styles = StyleSheet.create({
   },
   description: {
     color: TIMETABLE_COLORS.secondaryText,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     marginTop: 3,
   },
   headingRow: {
@@ -138,8 +138,8 @@ const styles = StyleSheet.create({
   },
   saveError: {
     color: '#B84738',
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: 13,
+    lineHeight: 18,
     marginTop: 14,
   },
   title: {

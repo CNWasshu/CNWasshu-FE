@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
 
   sub: {
     marginTop: 4,
-    fontSize: 11.5,
+    fontSize: 13,
     color: '#817664',
   },
 
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
 
   choiceText: {
-    fontSize: 12.5,
+    fontSize: 13,
     fontWeight: '700',
     color: '#6b5730',
   },

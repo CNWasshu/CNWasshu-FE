@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: 6,
     textAlign: 'center',
-    fontSize: 12.5,
+    fontSize: 14,
     color: '#7d715f',
   },
 
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
 
   info: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#766749',
   },
 
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
 
   meta: {
     marginTop: 8,
-    fontSize: 12,
+    fontSize: 13,
     color: '#766749',
   },
 
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#ffffff',
   },

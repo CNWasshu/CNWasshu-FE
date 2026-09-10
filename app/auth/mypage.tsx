@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
   heroTitle: { color: CourseColors.white, fontSize: 30, fontWeight: '900' },
   heroBadge: {
     color: '#E6F3E3',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
     borderLeftWidth: 1,
     borderLeftColor: '#8DB392',
@@ -554,14 +554,14 @@ const styles = StyleSheet.create({
   profileInfo: { flex: 1, gap: 4 },
   profileNameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   profileName: { fontSize: 19, fontWeight: '900', color: CourseColors.text },
-  profileMeta: { fontSize: 12, color: CourseColors.muted, lineHeight: 18, marginTop: 4 },
+  profileMeta: { fontSize: 13, color: CourseColors.muted, lineHeight: 18, marginTop: 4 },
   editButton: {
     backgroundColor: CourseColors.primarySoft,
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
-  editButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 12 },
+  editButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 14 },
   nicknameInput: {
     borderWidth: 1,
     borderColor: CourseColors.border,
@@ -572,7 +572,7 @@ const styles = StyleSheet.create({
     color: CourseColors.text,
     backgroundColor: CourseColors.background,
   },
-  nicknameError: { color: CourseColors.error, fontSize: 12, marginTop: 6 },
+  nicknameError: { color: CourseColors.error, fontSize: 13, marginTop: 6 },
   nicknameActions: { flexDirection: 'row', gap: 8, marginTop: 8 },
   nicknameCancelButton: {
     flex: 1,
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: CourseColors.beige,
   },
-  nicknameCancelText: { color: CourseColors.text, fontWeight: '800', fontSize: 13 },
+  nicknameCancelText: { color: CourseColors.text, fontWeight: '800', fontSize: 14 },
   nicknameSaveButton: {
     flex: 1,
     alignItems: 'center',
@@ -589,7 +589,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: CourseColors.primary,
   },
-  nicknameSaveText: { color: CourseColors.white, fontWeight: '800', fontSize: 13 },
+  nicknameSaveText: { color: CourseColors.white, fontWeight: '800', fontSize: 14 },
   statGrid: { flexDirection: 'row', gap: 10 },
   statCard: {
     flex: 1,
@@ -602,7 +602,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: { fontSize: 22, fontWeight: '900', color: CourseColors.primary, marginBottom: 6 },
-  statLabel: { fontSize: 12, color: CourseColors.muted, fontWeight: '700' },
+  statLabel: { fontSize: 13, color: CourseColors.muted, fontWeight: '700' },
   menuCard: {
     backgroundColor: CourseColors.white,
     borderWidth: 1,
@@ -636,8 +636,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardTitle: { fontSize: 16, fontWeight: '900', color: CourseColors.text },
-  sectionHint: { fontSize: 12, color: CourseColors.muted },
-  cardDesc: { fontSize: 12.5, color: CourseColors.muted, lineHeight: 19 },
+  sectionHint: { fontSize: 13, color: CourseColors.muted },
+  cardDesc: { fontSize: 14, color: CourseColors.muted, lineHeight: 20 },
   courseTabRow: {
     flexDirection: 'row',
     gap: 6,
@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
     borderRadius: 9,
   },
   courseTabButtonActive: { backgroundColor: CourseColors.primary },
-  courseTabButtonText: { fontSize: 13, fontWeight: '800', color: CourseColors.muted },
+  courseTabButtonText: { fontSize: 14, fontWeight: '800', color: CourseColors.muted },
   courseTabButtonTextActive: { color: CourseColors.white },
   courseList: { gap: 8 },
   courseListItem: {
@@ -678,10 +678,10 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   courseActionButtonDanger: { borderColor: '#F2C9C0' },
-  courseActionButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 12 },
+  courseActionButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 14 },
   courseActionButtonDangerText: { color: CourseColors.error },
   courseListItemName: { fontSize: 14, fontWeight: '800', color: CourseColors.text },
-  courseListItemMeta: { fontSize: 12, color: CourseColors.muted },
+  courseListItemMeta: { fontSize: 13, color: CourseColors.muted },
   logoutButton: {
     minHeight: 52,
     borderWidth: 1,
@@ -693,6 +693,6 @@ const styles = StyleSheet.create({
   },
   logoutButtonText: { color: CourseColors.primary, fontWeight: '900', fontSize: 15 },
   deleteButton: { alignItems: 'center', paddingVertical: 10 },
-  deleteButtonText: { color: CourseColors.error, fontWeight: '700', fontSize: 13 },
+  deleteButtonText: { color: CourseColors.error, fontWeight: '700', fontSize: 14 },
   disabled: { opacity: 0.55 },
 });

@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   sectionSub: {
     marginTop: 4,
     marginBottom: 11,
-    fontSize: 11.5,
+    fontSize: 13,
     color: '#817664',
   },
 
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   },
 
   guideText: {
-    fontSize: 12.5,
+    fontSize: 14,
     fontWeight: '600',
     color: '#766749',
   },
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
 
   loadingText: {
     marginTop: 9,
-    fontSize: 12.5,
+    fontSize: 14,
     color: '#766749',
   },
 
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   },
 
   errorText: {
-    fontSize: 12.5,
+    fontSize: 14,
     color: '#a55731',
   },
 

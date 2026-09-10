@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   heroBadge: {
     color: '#E6F3E3',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
     letterSpacing: 1.2,
   },

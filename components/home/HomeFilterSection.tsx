@@ -606,12 +606,12 @@ const styles =
     },
 
     typeIcon: {
-      fontSize: 15,
+      fontSize: 18,
     },
 
     typeButtonText: {
       color: '#6C5A37',
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '800',
     },
 
@@ -627,7 +627,7 @@ const styles =
       marginTop: 18,
       marginBottom: 8,
       color: '#5F5139',
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: '800',
     },
 
@@ -658,7 +658,7 @@ const styles =
 
     regionChipText: {
       color: '#6B5730',
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: '800',
     },
 
@@ -693,14 +693,14 @@ const styles =
     },
 
     categoryEmoji: {
-      fontSize: 22,
+      fontSize: 25,
     },
 
     categoryText: {
       width: 67,
       marginTop: 6,
       color: '#72664E',
-      fontSize: 10,
+      fontSize: 12,
       fontWeight: '800',
       textAlign: 'center',
     },

@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
 
   countSummary: {
     color: '#5F5139',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
   },
 
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
 
   regionChipText: {
     color: '#6F675C',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
     textAlign: 'center',
   },
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
 
   regionEmptyTitle: {
     color: '#29251E',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '800',
     textAlign: 'center',
   },
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   regionEmptyDescription: {
     marginTop: 7,
     color: '#888178',
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
   },
 });

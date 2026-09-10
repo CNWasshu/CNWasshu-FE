@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     color: TIMETABLE_COLORS.secondaryText,
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '600',
   },
   fields: {
@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
   },
   helperText: {
     color: TIMETABLE_COLORS.secondaryText,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     marginTop: 10,
   },
   title: {

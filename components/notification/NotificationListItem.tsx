@@ -79,10 +79,10 @@ const styles = StyleSheet.create({
   },
   typeTag: {
     color: CourseColors.primaryDark,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '900',
   },
-  time: { color: CourseColors.muted, fontSize: 11 },
+  time: { color: CourseColors.muted, fontSize: 12 },
   title: { color: CourseColors.text, fontWeight: '800', fontSize: 15 },
-  content: { color: CourseColors.muted, fontSize: 13, lineHeight: 19 },
+  content: { color: CourseColors.muted, fontSize: 14, lineHeight: 20 },
 });

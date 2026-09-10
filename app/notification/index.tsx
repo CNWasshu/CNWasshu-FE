@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emptyIconText: { fontSize: 28 },
+  emptyIconText: { fontSize: 32 },
   emptyTitle: { fontSize: 20, fontWeight: '900', color: CourseColors.text, textAlign: 'center' },
   stateDescription: { color: CourseColors.muted, textAlign: 'center', lineHeight: 22 },
   list: { gap: 12 },

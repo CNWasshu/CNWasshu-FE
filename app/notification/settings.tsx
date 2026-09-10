@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   cardTitle: { fontSize: 16, fontWeight: '900', color: CourseColors.text },
-  cardDesc: { fontSize: 12.5, color: CourseColors.muted, lineHeight: 19 },
+  cardDesc: { fontSize: 14, color: CourseColors.muted, lineHeight: 20 },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     borderColor: CourseColors.primary,
   },
   chipDisabled: { opacity: 0.5 },
-  chipText: { color: CourseColors.text, fontWeight: '800', fontSize: 13 },
+  chipText: { color: CourseColors.text, fontWeight: '800', fontSize: 14 },
   chipTextActive: { color: CourseColors.white },
-  saveError: { color: CourseColors.error, fontSize: 12.5, textAlign: 'center' },
+  saveError: { color: CourseColors.error, fontSize: 14, textAlign: 'center' },
 });

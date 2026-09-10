@@ -542,12 +542,12 @@ const styles =
 
     statusTitle: {
       color: '#FFFFFF',
-      fontSize: 13,
+      fontSize: 14,
       fontWeight: '800',
     },
 
     statusTitleDesktop: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '900',
     },
 
@@ -577,7 +577,7 @@ const styles =
 
     bookmarkLabel: {
       color: '#FFFFFF',
-      fontSize: 13,
+      fontSize: 14,
       fontWeight: '800',
     },
 
@@ -649,7 +649,7 @@ const styles =
 
     bannerBadgeText: {
       color: '#3F7D46',
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: '900',
     },
 
@@ -679,8 +679,8 @@ const styles =
       marginTop: 14,
       color:
         'rgba(255, 255, 255, 0.92)',
-      fontSize: 13,
-      lineHeight: 20,
+      fontSize: 14,
+      lineHeight: 21,
     },
 
     aiCard: {
@@ -700,8 +700,8 @@ const styles =
       marginTop: 12,
       color:
         'rgba(255, 255, 255, 0.9)',
-      fontSize: 13,
-      lineHeight: 20,
+      fontSize: 14,
+      lineHeight: 21,
     },
 
     bannerButton: {
@@ -716,7 +716,7 @@ const styles =
 
     aiButtonText: {
       color: '#3F7D46',
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '900',
     },
 
@@ -736,7 +736,7 @@ const styles =
 
     promotionBadgeText: {
       color: '#3F7D46',
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: '900',
     },
 
@@ -752,8 +752,8 @@ const styles =
     promotionDescription: {
       marginTop: 8,
       color: 'rgba(255, 255, 255, 0.9)',
-      fontSize: 12,
-      lineHeight: 18,
+      fontSize: 14,
+      lineHeight: 20,
     },
 
     promotionAction: {
@@ -771,7 +771,7 @@ const styles =
 
     promotionActionText: {
       color: '#3F7D46',
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '900',
     },
 

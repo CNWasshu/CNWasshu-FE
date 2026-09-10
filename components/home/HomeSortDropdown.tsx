@@ -177,13 +177,13 @@ const styles = StyleSheet.create({
 
   triggerText: {
     color: '#5E5139',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '800',
   },
 
   arrow: {
     color: '#7B6B4F',
-    fontSize: 11,
+    fontSize: 12,
   },
 
   arrowOpen: {
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
 
   menuItemText: {
     color: '#5F5139',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '700',
   },
 

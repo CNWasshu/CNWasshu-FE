@@ -64,13 +64,13 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: TIMETABLE_COLORS.secondaryText,
-    fontSize: 12,
+    fontSize: 14,
     paddingBottom: 12,
     textAlign: 'center',
   },
   hour: {
     color: '#568438',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '700',
     width: 44,
   },

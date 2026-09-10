@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: 'rgba(0,0,0,0.45)',
   },
-  closeButtonText: { color: CourseColors.white, fontWeight: '800', fontSize: 13 },
+  closeButtonText: { color: CourseColors.white, fontWeight: '800', fontSize: 14 },
   frameArea: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  statusText: { color: CourseColors.muted, fontWeight: '700', fontSize: 13 },
+  statusText: { color: CourseColors.muted, fontWeight: '700', fontSize: 14 },
   successTitle: { color: CourseColors.primary, fontSize: 20, fontWeight: '900' },
   successDescription: { color: CourseColors.text, fontSize: 14, fontWeight: '700' },
   errorTitle: {
@@ -236,8 +236,8 @@ const styles = StyleSheet.create({
   permissionTitle: { color: CourseColors.text, fontSize: 18, fontWeight: '900' },
   permissionDescription: {
     color: CourseColors.muted,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 14,
+    lineHeight: 21,
     textAlign: 'center',
   },
   primaryButton: {
@@ -256,5 +256,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
-  secondaryButtonText: { color: CourseColors.muted, fontWeight: '700', fontSize: 13 },
+  secondaryButtonText: { color: CourseColors.muted, fontWeight: '700', fontSize: 14 },
 });

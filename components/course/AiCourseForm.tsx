@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
 
   sectionDescription: {
     color: CourseColors.muted,
-    fontSize: 12,
+    fontSize: 14,
     marginTop: 1,
   },
 
@@ -586,12 +586,12 @@ const styles = StyleSheet.create({
   label: {
     color: CourseColors.text,
     fontWeight: '800',
-    fontSize: 13,
+    fontSize: 14,
   },
 
   regionGuide: {
     color: CourseColors.muted,
-    fontSize: 12,
+    fontSize: 13,
   },
 
   regionShell: {
@@ -626,7 +626,7 @@ const styles = StyleSheet.create({
 
   regionChipText: {
     color: '#6B5730',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
 
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
 
   choiceText: {
     color: '#6F6558',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
 
@@ -713,7 +713,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: CourseColors.error,
     flex: 1,
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 18,
   },
 

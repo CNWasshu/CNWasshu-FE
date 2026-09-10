@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
 
   placeholderText: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: '500',
     color: '#527557',
   },
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
 
   typeBadgeText: {
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: '900',
     color: '#3f7d46',
   },
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   },
 
   regionTagText: {
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: '900',
     color: '#3f7d46',
   },
@@ -287,15 +287,15 @@ const styles = StyleSheet.create({
   },
 
   categoryTagText: {
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: '900',
     color: '#6b5730',
   },
 
   title: {
     minHeight: 24,
-    fontSize: 15,
-    lineHeight: 19,
+    fontSize: 16,
+    lineHeight: 20,
     fontWeight: '900',
     letterSpacing: -0.3,
     color: '#29251e',
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
 
   operatingTime: {
     marginTop: 2,
-    fontSize: 10,
+    fontSize: 13,
     fontWeight: '500',
     color: '#766749',
   },
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   },
 
   reservationText: {
-    fontSize: 10,
+    fontSize: 13,
     fontWeight: '500',
     color: '#a66400',
   },
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   },
 
   detailHint: {
-    fontSize: 10,
+    fontSize: 13,
     fontWeight: '500',
     color: '#8a8378',
   },

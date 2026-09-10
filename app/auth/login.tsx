@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   },
   heroBadge: {
     color: '#E6F3E3',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
     letterSpacing: 1.2,
   },
@@ -283,10 +283,10 @@ const styles = StyleSheet.create({
   },
   loginButtonText: { color: CourseColors.white, fontWeight: '900', fontSize: 15 },
   signupLink: { alignItems: 'center', paddingVertical: 6 },
-  signupLinkText: { color: CourseColors.primary, fontSize: 13, fontWeight: '700' },
+  signupLinkText: { color: CourseColors.primary, fontSize: 14, fontWeight: '700' },
   dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   dividerLine: { flex: 1, height: 1, backgroundColor: CourseColors.border },
-  dividerText: { color: CourseColors.muted, fontSize: 12, fontWeight: '700' },
+  dividerText: { color: CourseColors.muted, fontSize: 13, fontWeight: '700' },
   disabled: { opacity: 0.55 },
   kakaoButton: {
     minHeight: 56,
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   error: { color: CourseColors.error, textAlign: 'center' },
   debugRedirectUri: {
     color: CourseColors.muted,
-    fontSize: 11,
+    fontSize: 12,
     textAlign: 'center',
     marginTop: 4,
   },

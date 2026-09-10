@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
 
   statusText: {
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: '900',
     color: '#3f7d46',
   },
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
 
   time: {
     marginTop: 2,
-    fontSize: 10.5,
+    fontSize: 13,
     fontWeight: '700',
     color: '#527557',
   },
@@ -154,8 +154,8 @@ const styles = StyleSheet.create({
 
   title: {
     minHeight: 24,
-    fontSize: 15,
-    lineHeight: 19,
+    fontSize: 16,
+    lineHeight: 20,
     fontWeight: '900',
     color: '#29251e',
   },
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
 
   metaText: {
-    fontSize: 10,
+    fontSize: 13,
     fontWeight: '700',
     color: '#766749',
   },
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
 
   cancelButtonText: {
-    fontSize: 10,
+    fontSize: 13,
     fontWeight: '900',
     color: '#a95050',
   },

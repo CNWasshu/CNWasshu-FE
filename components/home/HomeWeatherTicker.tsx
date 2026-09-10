@@ -242,22 +242,22 @@ const styles = StyleSheet.create({
 
   region: {
     color: '#5F5A52',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
 
   temperature: {
     color: '#29251E',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '800',
   },
 
   icon: {
-    fontSize: 14,
+    fontSize: 15,
   },
 
   placeholder: {
     color: '#999999',
-    fontSize: 12,
+    fontSize: 13,
   },
 });

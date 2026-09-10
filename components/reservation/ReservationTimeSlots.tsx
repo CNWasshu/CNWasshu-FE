@@ -146,14 +146,14 @@ const styles = StyleSheet.create({
 
   unavailable: {
     marginTop: 2,
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: '600',
     color: '#aaa7a0',
   },
 
   notice: {
     marginTop: 9,
-    fontSize: 11.5,
+    fontSize: 13,
     color: '#8a806f',
   },
 
@@ -165,14 +165,14 @@ const styles = StyleSheet.create({
   },
 
   emptyText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
     color: '#6b5730',
   },
 
   emptySub: {
     marginTop: 4,
-    fontSize: 11,
+    fontSize: 13,
     color: '#8a7d67',
   },
 });

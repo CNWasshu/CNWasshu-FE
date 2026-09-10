@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   date: {
     marginTop: 9,
     color: '#766749',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
   },
 
@@ -145,14 +145,14 @@ const styles = StyleSheet.create({
   meta: {
     marginTop: 6,
     color: '#8A7450',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
 
   description: {
     marginTop: 17,
     color: '#766749',
-    fontSize: 12.5,
+    fontSize: 14,
     lineHeight: 20,
   },
 
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
 
   confirmText: {
     color: '#FFFFFF',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
   },
 });

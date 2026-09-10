@@ -170,5 +170,5 @@ const styles = StyleSheet.create({
   submitButtonText: { color: CourseColors.white, fontWeight: '900', fontSize: 15 },
   disabled: { opacity: 0.55 },
   loginLink: { alignItems: 'center', paddingVertical: 8 },
-  loginLinkText: { color: CourseColors.primary, fontSize: 13, fontWeight: '700' },
+  loginLinkText: { color: CourseColors.primary, fontSize: 14, fontWeight: '700' },
 });

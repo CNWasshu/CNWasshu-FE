@@ -60,8 +60,8 @@ const styles = StyleSheet.create({
 
   subtitle: {
     marginTop: 8,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 14,
+    lineHeight: 21,
     color: 'rgba(255,255,255,0.90)',
   },
 });

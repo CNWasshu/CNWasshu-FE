@@ -514,8 +514,8 @@ const styles =
     errorMessage: {
       marginTop: 8,
       color: '#777777',
-      fontSize: 13,
-      lineHeight: 20,
+      fontSize: 14,
+      lineHeight: 21,
       textAlign: 'center',
     },
 
@@ -575,7 +575,7 @@ const styles =
 
     resultCount: {
       color: '#777777',
-      fontSize: 11,
+      fontSize: 13,
       fontWeight: '700',
     },
 
@@ -620,14 +620,14 @@ const styles =
 
     emptyTitle: {
       color: '#29251E',
-      fontSize: 15,
+      fontSize: 16,
       fontWeight: '800',
     },
 
     emptyDescription: {
       marginTop: 6,
       color: '#777777',
-      fontSize: 12,
+      fontSize: 14,
       textAlign: 'center',
     },
   });

@@ -50,15 +50,15 @@ const styles = StyleSheet.create({
 
   description: {
     marginTop: 5,
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '400',
-    lineHeight: 18,
+    lineHeight: 20,
     color: '#ffffff',
   },
 
   count: {
     marginTop: 15,
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '500',
     color: '#ffffff',
   },
