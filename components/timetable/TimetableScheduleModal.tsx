@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -100,6 +101,8 @@ export function TimetableScheduleModal({
   visible,
 }: TimetableScheduleModalProps) {
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const isCompact = width < 768;
   const [title, setTitle] = useState('');
   const [startTime, setStartTime] = useState(INITIAL_START_TIME);
   const [endTime, setEndTime] = useState(INITIAL_END_TIME);
@@ -244,8 +247,8 @@ export function TimetableScheduleModal({
     <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.overlay}>
-        <View accessibilityViewIsModal style={styles.sheet}>
+        style={[styles.overlay, isCompact && styles.overlayCompact]}>
+        <View accessibilityViewIsModal style={[styles.sheet, isCompact && styles.sheetCompact]}>
           <ScrollView
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
@@ -531,12 +534,13 @@ const styles = StyleSheet.create({
   headingRow: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between' },
   headingText: { flex: 1, paddingRight: 12 },
   hint: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 8 },
-  iconButton: { alignItems: 'center', backgroundColor: '#F2EADB', borderRadius: 20, height: 40, justifyContent: 'center', width: 40 },
+  iconButton: { alignItems: 'center', backgroundColor: '#F2EADB', borderRadius: 22, height: 44, justifyContent: 'center', width: 44 },
   input: { backgroundColor: '#FFFCF6', borderColor: TIMETABLE_COLORS.border, borderRadius: 12, borderWidth: 1, color: TIMETABLE_COLORS.text, fontSize: 15, marginTop: 7, paddingHorizontal: 13, paddingVertical: 12 },
   label: { color: TIMETABLE_COLORS.text, fontSize: 12, fontWeight: '700' },
   moreActivitiesButton: { alignItems: 'center', backgroundColor: '#F2E8D5', borderRadius: 13, marginTop: 12, paddingVertical: 13 },
   moreActivitiesButtonText: { color: TIMETABLE_COLORS.text, fontSize: 13, fontWeight: '800' },
-  overlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.48)', flex: 1, justifyContent: 'flex-end' },
+  overlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.44)', flex: 1, justifyContent: 'flex-end' },
+  overlayCompact: { paddingHorizontal: 16 },
   reservationButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, flexBasis: 0, justifyContent: 'center', minHeight: 46, paddingHorizontal: 10 },
   reservationButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   reservationIcon: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primaryLight, borderRadius: 24, height: 48, justifyContent: 'center', width: 48 },
@@ -547,6 +551,7 @@ const styles = StyleSheet.create({
   selectActivityButtonText: { color: TIMETABLE_COLORS.primary, fontSize: 12, fontWeight: '800' },
   selectedActivitySummary: { alignItems: 'center', backgroundColor: '#F4FAF2', borderColor: '#BDD7BF', borderRadius: 16, borderWidth: 1, flexDirection: 'row', gap: 10, marginTop: 10, padding: 10 },
   sheet: { backgroundColor: TIMETABLE_COLORS.background, borderTopLeftRadius: 26, borderTopRightRadius: 26, maxHeight: '92%', maxWidth: 430, overflow: 'hidden', paddingTop: 4, width: '100%' },
+  sheetCompact: { maxHeight: '90%' },
   submitButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, paddingVertical: 14 },
   submitButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   timeRow: { flexDirection: 'row', gap: 10, marginTop: 14 },
