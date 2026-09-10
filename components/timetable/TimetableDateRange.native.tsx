@@ -86,9 +86,7 @@ export function TimetableDateRange({
         />
       ) : null}
 
-      <Text style={[styles.helperText, errorMessage && styles.errorText]}>
-        {errorMessage ?? '선택한 여행 기간에 따라 Day 탭이 자동으로 생성됩니다.'}
-      </Text>
+      {errorMessage ? <Text style={[styles.helperText, styles.errorText]}>{errorMessage}</Text> : null}
     </View>
   );
 }

@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -49,6 +50,27 @@ type TimetableScheduleModalProps = {
 
 const INITIAL_START_TIME = '09:00';
 const INITIAL_END_TIME = '10:00';
+
+function SavedPlaceThumbnail({ place }: { place: SavedPlace }) {
+  const [hasImageError, setHasImageError] = useState(false);
+  const showImage = Boolean(place.thumbnailUrl) && !hasImageError;
+
+  return (
+    <View style={styles.activityIcon}>
+      {showImage ? (
+        <Image
+          accessibilityLabel={`${place.title} 이미지`}
+          contentFit="cover"
+          onError={() => setHasImageError(true)}
+          source={{ uri: place.thumbnailUrl! }}
+          style={styles.activityThumbnail}
+        />
+      ) : (
+        <Text style={styles.activityEmoji}>{place.icon}</Text>
+      )}
+    </View>
+  );
+}
 
 function formatDuration(startTime: string, endTime: string) {
   const [startHour, startMinute] = startTime.split(':').map(Number);
@@ -317,9 +339,7 @@ export function TimetableScheduleModal({
 
                 {selectedActivity && !isActivityListVisible ? (
                   <View style={styles.selectedActivitySummary}>
-                    <View style={styles.activityIcon}>
-                      <Text style={styles.activityEmoji}>{selectedActivity.icon}</Text>
-                    </View>
+                    <SavedPlaceThumbnail place={selectedActivity} />
                     <View style={styles.activityText}>
                       <Text style={styles.activityTitle}>{selectedActivity.title}</Text>
                       <Text style={styles.activityMetadata}>
@@ -374,9 +394,7 @@ export function TimetableScheduleModal({
                             key={activity.id}
                             onPress={() => handleSelectActivity(activity)}
                             style={styles.activityCard}>
-                            <View style={styles.activityIcon}>
-                              <Text style={styles.activityEmoji}>{activity.icon}</Text>
-                            </View>
+                            <SavedPlaceThumbnail place={activity} />
                             <View style={styles.activityText}>
                               <Text style={styles.activityTitle}>{activity.title}</Text>
                               <Text style={styles.activityMetadata}>
@@ -500,6 +518,7 @@ const styles = StyleSheet.create({
   activityDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 14, lineHeight: 20 },
   activityEmoji: { fontSize: 26 },
   activityIcon: { alignItems: 'center', backgroundColor: '#DDEFD9', borderRadius: 14, height: 44, justifyContent: 'center', width: 44 },
+  activityThumbnail: { borderRadius: 14, height: '100%', width: '100%' },
   activityList: { backgroundColor: '#F8F2E7', borderColor: '#EFE2CD', borderRadius: 18, borderWidth: 1, gap: 9, marginTop: 7, padding: 6 },
   activityListContainer: { marginTop: 12 },
   activityListHeading: { marginTop: 10, paddingHorizontal: 2 },
