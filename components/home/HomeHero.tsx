@@ -17,6 +17,7 @@ import {
   View,
 } from 'react-native';
 import { Image } from 'expo-image';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { PAGE_LAYOUT } from '@/constants/layout';
 
@@ -242,11 +243,15 @@ export function HomeHero({
     );
 
   return (
-    <View style={styles.hero}>
+    <View style={[styles.hero, isDesktopWeb && styles.heroDesktop]}>
+      <View style={styles.heroInner}>
       <View style={styles.statusRow}>
-        <Text style={styles.statusTitle}>
-          충남 체험 백과사전
-        </Text>
+        <View style={styles.statusTitleRow}>
+          <Ionicons color="#FFFFFF" name="leaf-outline" size={isDesktopWeb ? 19 : 16} />
+          <Text style={[styles.statusTitle, isDesktopWeb && styles.statusTitleDesktop]}>
+            충남 체험 백과사전
+          </Text>
+        </View>
 
         <View style={styles.headerActions}>
           {!isDesktopWeb ? <Pressable
@@ -257,9 +262,7 @@ export function HomeHero({
               onNotificationPress
             }
           >
-            <Text style={styles.headerIcon}>
-              🔔
-            </Text>
+            <Ionicons color="#FFFFFF" name="notifications-outline" size={21} />
 
             {unreadNotificationCount >
             0 ? (
@@ -283,15 +286,14 @@ export function HomeHero({
 
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="장바구니"
-            style={styles.headerButton}
+            accessibilityLabel="담은 장소 목록 열기"
+            style={[styles.headerButton, isDesktopWeb && styles.bookmarkButtonDesktop]}
             onPress={
               onBookmarkPress
             }
           >
-            <Text style={styles.headerIcon}>
-              ♡
-            </Text>
+            <Ionicons color="#FFFFFF" name="heart-outline" size={21} />
+            {isDesktopWeb ? <Text style={styles.bookmarkLabel}>담은 장소</Text> : null}
           </Pressable>
         </View>
       </View>
@@ -335,7 +337,8 @@ export function HomeHero({
             >
               <View
                 style={[
-                  styles.bannerCard,
+                styles.bannerCard,
+                  isDesktopWeb && styles.bannerCardDesktop,
                   styles.introCard,
                 ]}
               >
@@ -390,7 +393,8 @@ export function HomeHero({
             >
               <View
                 style={[
-                  styles.bannerCard,
+                styles.bannerCard,
+                  isDesktopWeb && styles.bannerCardDesktop,
                   styles.aiCard,
                 ]}
               >
@@ -429,7 +433,8 @@ export function HomeHero({
             >
               <View
                 style={[
-                  styles.bannerCard,
+                styles.bannerCard,
+                  isDesktopWeb && styles.bannerCardDesktop,
                   styles.promotionCard,
                 ]}
               >
@@ -492,6 +497,7 @@ export function HomeHero({
           )
         )}
       </View>
+      </View>
     </View>
   );
 }
@@ -508,6 +514,19 @@ const styles =
       borderBottomRightRadius: 28,
     },
 
+    heroDesktop: {
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
+      paddingHorizontal: 24,
+      paddingTop: 20,
+    },
+
+    heroInner: {
+      alignSelf: 'center',
+      maxWidth: PAGE_LAYOUT.desktopHeroMaxWidth,
+      width: '100%',
+    },
+
     statusRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -515,10 +534,21 @@ const styles =
         'space-between',
     },
 
+    statusTitleRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 7,
+    },
+
     statusTitle: {
       color: '#FFFFFF',
       fontSize: 13,
       fontWeight: '800',
+    },
+
+    statusTitleDesktop: {
+      fontSize: 16,
+      fontWeight: '900',
     },
 
     headerActions: {
@@ -538,11 +568,17 @@ const styles =
       position: 'relative',
     },
 
-    headerIcon: {
+    bookmarkButtonDesktop: {
+      flexDirection: 'row',
+      gap: 7,
+      paddingHorizontal: 14,
+      width: 'auto',
+    },
+
+    bookmarkLabel: {
       color: '#FFFFFF',
-      fontSize: 23,
-      fontWeight: '700',
-      lineHeight: 25,
+      fontSize: 13,
+      fontWeight: '800',
     },
 
     notificationBadge: {
@@ -593,9 +629,13 @@ const styles =
       flexDirection: 'row',
     },
 
+    bannerCardDesktop: {
+      height: 280,
+      padding: 28,
+    },
+
     introCard: {
-      backgroundColor:
-        'rgba(255, 255, 255, 0.15)',
+      backgroundColor: '#659B69',
     },
 
     bannerBadge: {
@@ -645,8 +685,7 @@ const styles =
     },
 
     aiCard: {
-      backgroundColor:
-        '#3F7447',
+      backgroundColor: '#397446',
     },
 
     aiTitle: {
@@ -683,8 +722,7 @@ const styles =
     },
 
     promotionCard: {
-      backgroundColor:
-        '#DDEEDB',
+      backgroundColor: '#6F9F68',
     },
 
     promotionBadge: {
@@ -705,7 +743,7 @@ const styles =
 
     promotionTitle: {
       marginTop: 20,
-      color: '#315F38',
+      color: '#FFFFFF',
       fontSize: 26,
       fontWeight: '900',
       letterSpacing: -0.7,
@@ -714,7 +752,7 @@ const styles =
 
     promotionDescription: {
       marginTop: 8,
-      color: '#55725A',
+      color: 'rgba(255, 255, 255, 0.9)',
       fontSize: 12,
       lineHeight: 18,
     },
@@ -727,6 +765,9 @@ const styles =
       marginTop: 17,
       paddingVertical: 7,
       paddingRight: 10,
+      paddingLeft: 13,
+      borderRadius: 14,
+      backgroundColor: '#FFFFFF',
     },
 
     promotionActionText: {
@@ -746,8 +787,8 @@ const styles =
     },
 
     bannerArtworkDesktop: {
-      bottom: -34,
-      height: 310,
+      bottom: -40,
+      height: 330,
       position: 'absolute',
       right: -6,
       width: '50%',
