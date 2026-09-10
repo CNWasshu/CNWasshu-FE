@@ -19,6 +19,7 @@ import {
 import { Image } from 'expo-image';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import { CourseColors } from '@/constants/course-colors';
 import { PAGE_LAYOUT } from '@/constants/layout';
 
 type HomeHeroProps = {
@@ -508,8 +509,7 @@ const styles =
       paddingHorizontal: 18,
       paddingTop: 16,
       paddingBottom: 16,
-      backgroundColor:
-        '#4C884D',
+      backgroundColor: CourseColors.hero,
       borderBottomLeftRadius: 28,
       borderBottomRightRadius: 28,
     },
@@ -594,8 +594,7 @@ const styles =
       backgroundColor:
         '#E25C3E',
       borderWidth: 1.5,
-      borderColor:
-        '#4C884D',
+      borderColor: CourseColors.hero,
     },
 
     notificationBadgeText: {

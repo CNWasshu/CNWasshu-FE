@@ -1,5 +1,6 @@
 import { CourseListItem } from '@/components/course/CourseListItem';
 import { CourseColors } from '@/constants/course-colors';
+import { PageHero } from '@/components/layout';
 import { PAGE_LAYOUT } from '@/constants/layout';
 import { useCourses } from '@/hooks/useCourse';
 import { filterCourses, getTripStatus, type CourseFilter, type CourseStatusFilter, type TripStatus } from '@/utils/course-list';
@@ -30,11 +31,7 @@ export default function CourseListScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.hero}>
-          <View style={styles.heroTop}><Text style={styles.heroTitle}>코스</Text><Text style={styles.heroBadge}>저장 코스 / AI 추천</Text></View>
-          <Text style={styles.heroHeadline}>나만의 코스를 관리해요</Text>
-          <Text style={styles.heroDescription}>저장한 일정을 확인하고 새로운 AI 코스를 만들어보세요.</Text>
-        </View>
+        <PageHero description="저장한 일정을 확인하고 새로운 AI 코스를 만들어보세요." eyebrow="나의 여행 코스" icon="map-outline" title="나만의 코스를 관리해요" />
         <View style={styles.body}>
           {loading ? <View style={styles.loadingCard}><ActivityIndicator size="large" color={CourseColors.primary} /><Text style={styles.loadingText}>저장된 코스를 불러오고 있어요.</Text></View> : null}
           {!loading && error ? <View style={styles.stateCard}><Text style={styles.stateIcon}>!</Text><Text style={styles.error}>{error}</Text><Pressable style={styles.outlineButton} onPress={() => void refetch()}><Text style={styles.outlineButtonText}>다시 시도</Text></Pressable></View> : null}

@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { getStampErrorMessage, stampApi } from '@/api/stampApi';
 import { CourseColors } from '@/constants/course-colors';
+import { PageHero } from '@/components/layout';
 import { PAGE_LAYOUT } from '@/constants/layout';
 import type { StampResponse } from '@/types/stamp';
 import { clearTokens, getAccessToken, isSessionExpiredError } from '@/utils/auth';
@@ -64,12 +65,7 @@ export default function StampListScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.hero}>
-          <Text style={styles.heroTitle}>스탬프</Text>
-          <Text style={styles.heroDescription}>
-            체험지를 방문해서 QR 인증하면{`\n`}스탬프를 모을 수 있어요.
-          </Text>
-        </View>
+        <PageHero description="체험지를 방문해서 QR 인증하고 충남 여행 기록을 완성해보세요." eyebrow="충남 여행 기록" icon="ribbon-outline" title="스탬프를 모아보세요" />
 
         <View style={styles.body}>
           <View style={styles.whiteCard}>

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeleteAccountModal } from '@/components/auth/DeleteAccountModal';
-import { BackHeader } from '@/components/common/BackHeader';
+import { PageHero } from '@/components/layout';
 import { CourseActionModal } from '@/components/course/CourseActionModal';
 import { CourseColors } from '@/constants/course-colors';
 import { PAGE_LAYOUT } from '@/constants/layout';
@@ -191,16 +191,7 @@ export default function MyPageScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.hero}>
-          <BackHeader />
-          <View style={styles.heroTop}>
-            <Text style={styles.heroTitle}>마이</Text>
-            <Text style={styles.heroBadge}>체험 기록</Text>
-          </View>
-          <Text style={styles.heroDescription}>
-            내 정보와 알림 설정을{`\n`}이곳에서 관리할 수 있어요.
-          </Text>
-        </View>
+        <PageHero description="내 정보와 알림 설정, 여행 기록을 한곳에서 관리할 수 있어요." eyebrow="내 여행 정보" icon="person-outline" title="마이페이지" />
 
         <View style={styles.body}>
           {meLoading ? (
