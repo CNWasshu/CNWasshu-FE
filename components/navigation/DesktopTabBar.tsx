@@ -10,10 +10,10 @@ import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-noti
 
 const TAB_LABELS: Record<string, string> = {
   index: '홈',
-  timetable: '타임테이블',
+  timetable: '일정',
   course: '코스',
   stamp: '스탬프',
-  mypage: '마이페이지',
+  mypage: '내 정보',
 };
 
 export function DesktopTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
