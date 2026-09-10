@@ -8,8 +8,8 @@ import { PAGE_LAYOUT } from '@/constants/layout';
 
 type PageHeroProps = {
   description: string;
-  eyebrow: string;
-  icon: ComponentProps<typeof Ionicons>['name'];
+  eyebrow?: string;
+  icon?: ComponentProps<typeof Ionicons>['name'];
   title: string;
   badge?: string;
   showBack?: boolean;
@@ -33,13 +33,15 @@ export function PageHero({
     <View style={[styles.hero, isDesktopWeb && styles.heroDesktop]}>
       <View style={styles.inner}>
         {showBack ? <BackHeader /> : null}
-        <View style={styles.topRow}>
-          <View style={styles.eyebrowRow}>
-            <Ionicons color="#EAF5E7" name={icon} size={17} />
-            <Text style={styles.eyebrow}>{eyebrow}</Text>
+        {icon || eyebrow || badge || trailing ? (
+          <View style={styles.topRow}>
+            <View style={styles.eyebrowRow}>
+              {icon ? <Ionicons color="#EAF5E7" name={icon} size={17} /> : null}
+              {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
+            </View>
+            {badge ? <Text style={styles.badge}>{badge}</Text> : trailing}
           </View>
-          {badge ? <Text style={styles.badge}>{badge}</Text> : trailing}
-        </View>
+        ) : null}
         <Text style={[styles.title, isDesktopWeb && styles.titleDesktop]}>{title}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>

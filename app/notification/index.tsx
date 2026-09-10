@@ -3,7 +3,7 @@ import { type Href, useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BackHeader } from '@/components/common/BackHeader';
+import { PageHero } from '@/components/layout';
 import { NotificationListItem } from '@/components/notification/NotificationListItem';
 import { CourseColors } from '@/constants/course-colors';
 import { PAGE_LAYOUT } from '@/constants/layout';
@@ -51,13 +51,7 @@ export default function NotificationScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.hero}>
-          <BackHeader />
-          <Text style={styles.heroTitle}>알림함</Text>
-          <Text style={styles.heroDescription}>
-            코스, 예약, 만족도 조사 알림을{`\n`}이곳에서 확인할 수 있어요.
-          </Text>
-        </View>
+        <PageHero description="코스, 예약, 만족도 조사 알림을 이곳에서 확인할 수 있어요." showBack title="알림함" />
 
         <View style={styles.body}>
           {loading ? (
@@ -156,7 +150,7 @@ const styles = StyleSheet.create({
     maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 18,
-    marginTop: -18,
+    marginTop: 24,
   },
   loadingCard: {
     minHeight: 220,
