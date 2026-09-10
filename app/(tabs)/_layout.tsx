@@ -22,6 +22,15 @@ export default function TabLayout() {
         headerShown: false,
         sceneStyle: isDesktopWeb ? { paddingTop: PAGE_LAYOUT.desktopNavigationHeight } : undefined,
         tabBarButton: isDesktopWeb ? undefined : HapticTab,
+        tabBarIconStyle: isDesktopWeb ? undefined : { marginTop: -2 },
+        tabBarLabelStyle: isDesktopWeb ? undefined : { fontSize: 12, lineHeight: 16, marginBottom: 2 },
+        tabBarStyle: isDesktopWeb
+          ? undefined
+          : {
+              height: Platform.OS === 'ios' ? 84 : 68,
+              paddingBottom: Platform.OS === 'ios' ? 12 : 8,
+              paddingTop: 4,
+            },
       }}>
       <Tabs.Screen
         name="index"
