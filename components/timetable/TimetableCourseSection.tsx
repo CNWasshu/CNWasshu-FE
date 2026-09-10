@@ -1,0 +1,150 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+
+import { TimetableDayTabs } from '@/components/timetable/TimetableDayTabs';
+import { TimetableTimeline } from '@/components/timetable/TimetableTimeline';
+import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
+import type { TimetableDay, TimetableSchedule } from '@/types/timetable';
+
+type TimetableCourseSectionProps = {
+  days: TimetableDay[];
+  onAddSchedule: () => void;
+  onSave: () => void;
+  onSelectDay: (dayId: string) => void;
+  onSelectSchedule: (schedule: TimetableSchedule) => void;
+  selectedDayId: string;
+  selectedSchedules: TimetableSchedule[];
+  saveErrorMessage: string | null;
+};
+
+export function TimetableCourseSection({
+  days,
+  onAddSchedule,
+  onSave,
+  onSelectDay,
+  onSelectSchedule,
+  selectedDayId,
+  selectedSchedules,
+  saveErrorMessage,
+}: TimetableCourseSectionProps) {
+  const { width } = useWindowDimensions();
+  const isCompact = width < 360;
+
+  return (
+    <View style={styles.container}>
+      <View style={[styles.headingRow, isCompact && styles.compactHeadingRow]}>
+        <View style={[styles.headingText, isCompact && styles.compactHeadingText]}>
+          <Text style={styles.title}>시간대별 일정 구성</Text>
+          <Text style={styles.description}>
+            시간에 맞춰 자유 일정이나 담아둔 체험 및 음식점을 추가해 보세요.
+          </Text>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          onPress={onAddSchedule}
+          style={[styles.addButton, isCompact && styles.compactAddButton]}>
+          <Ionicons color="#FFFFFF" name="add" size={17} />
+          <Text style={styles.addButtonText}>일정 추가</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.dayTabs}>
+        <TimetableDayTabs
+          days={days}
+          onSelectDay={onSelectDay}
+          selectedDayId={selectedDayId}
+        />
+      </View>
+
+      <TimetableTimeline onSelectSchedule={onSelectSchedule} schedules={selectedSchedules} />
+
+      {saveErrorMessage ? (
+        <Text accessibilityRole="alert" style={styles.saveError}>
+          {saveErrorMessage}
+        </Text>
+      ) : null}
+
+      <Pressable accessibilityRole="button" onPress={onSave} style={styles.saveButton}>
+        <Text style={styles.saveButtonText}>코스 저장하기</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  addButton: {
+    alignItems: 'center',
+    backgroundColor: TIMETABLE_COLORS.primary,
+    borderRadius: 999,
+    flexDirection: 'row',
+    paddingHorizontal: 13,
+    paddingVertical: 10,
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  container: {
+    backgroundColor: TIMETABLE_COLORS.card,
+    borderColor: TIMETABLE_COLORS.border,
+    borderRadius: 22,
+    borderWidth: 1,
+    marginHorizontal: 16,
+    marginTop: 14,
+    padding: 14,
+  },
+  compactAddButton: {
+    alignSelf: 'flex-end',
+  },
+  compactHeadingRow: {
+    alignItems: 'stretch',
+  },
+  compactHeadingText: {
+    flexBasis: '100%',
+  },
+  dayTabs: {
+    marginHorizontal: -14,
+    marginVertical: 12,
+  },
+  description: {
+    color: TIMETABLE_COLORS.secondaryText,
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 3,
+  },
+  headingRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    justifyContent: 'space-between',
+  },
+  headingText: {
+    flex: 1,
+    minWidth: 180,
+  },
+  saveButton: {
+    alignItems: 'center',
+    backgroundColor: TIMETABLE_COLORS.primary,
+    borderRadius: 14,
+    marginTop: 14,
+    paddingVertical: 14,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  saveError: {
+    color: '#B84738',
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 14,
+  },
+  title: {
+    color: TIMETABLE_COLORS.text,
+    fontSize: 18,
+    fontWeight: '800',
+  },
+});
