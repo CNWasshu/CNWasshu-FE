@@ -325,6 +325,17 @@ export default function MyPageScreen() {
                 </Pressable>
               </View>
 
+              <View style={styles.menuCard}>
+                <Pressable
+                  accessibilityHint="충남왔슈의 주요 기능 안내를 다시 확인합니다."
+                  accessibilityRole="button"
+                  onPress={() => router.push('/onboarding')}
+                  style={[styles.menuRow, styles.menuRowLast]}>
+                  <Text style={styles.menuLabel}>온보딩 다시 보기</Text>
+                  <Text style={styles.menuValue}>사용법 다시 확인하기 ›</Text>
+                </Pressable>
+              </View>
+
               <View style={styles.whiteCard}>
                 <View style={styles.sectionHeading}>
                   <Text style={styles.cardTitle}>코스 목록</Text>
