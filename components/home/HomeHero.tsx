@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -15,6 +16,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import { Image } from 'expo-image';
 
 import { PAGE_LAYOUT } from '@/constants/layout';
 
@@ -28,6 +30,11 @@ type HomeHeroProps = {
 
 const BANNER_COUNT = 3;
 const SWIPE_THRESHOLD = 50;
+const HERO_IMAGES = {
+  discover: require('@/assets/images/home-hero/discover.png'),
+  aiCourse: require('@/assets/images/home-hero/ai-course.png'),
+  cheongyang: require('@/assets/images/home-hero/cheongyang.png'),
+} as const;
 
 export function HomeHero({
   onAiRecommend,
@@ -82,7 +89,7 @@ export function HomeHero({
     translateX,
   ]);
 
-  const moveToBanner = (
+  const moveToBanner = useCallback((
     index: number
   ) => {
     const targetIndex =
@@ -112,7 +119,7 @@ export function HomeHero({
         tension: 80,
       }
     ).start();
-  };
+  }, [translateX]);
 
   const panResponder =
     useMemo(
@@ -231,7 +238,7 @@ export function HomeHero({
               );
             },
         }),
-      [translateX]
+      [moveToBanner, translateX]
     );
 
   return (
@@ -333,24 +340,11 @@ export function HomeHero({
                 ]}
               >
                 <View
-                  style={
-                    styles.bannerBadge
-                  }
+                  style={[styles.bannerCopy, isDesktopWeb && styles.bannerCopyDesktop]}
                 >
-                  <Text
-                    style={
-                      styles.bannerBadgeText
-                    }
-                  >
-                    충남왔슈
-                  </Text>
-                </View>
-
-                <View
-                  style={
-                    styles.introContent
-                  }
-                >
+                  <View style={styles.bannerBadge}>
+                    <Text style={styles.bannerBadgeText}>충남왔슈</Text>
+                  </View>
                   <Text
                     style={
                       styles.introTitle
@@ -373,6 +367,15 @@ export function HomeHero({
                     만들어보세요.
                   </Text>
                 </View>
+                <Image
+                  accessibilityLabel="충남의 바다와 농촌, 백제 문화유산을 여행하는 가족"
+                  contentFit="contain"
+                  source={HERO_IMAGES.discover}
+                  style={[
+                    styles.bannerArtwork,
+                    isDesktopWeb ? styles.bannerArtworkDesktop : styles.bannerArtworkMobile,
+                  ]}
+                />
               </View>
             </View>
 
@@ -391,57 +394,27 @@ export function HomeHero({
                   styles.aiCard,
                 ]}
               >
-                <View
-                  style={
-                    styles.bannerBadge
-                  }
-                >
-                  <Text
-                    style={
-                      styles.bannerBadgeText
-                    }
-                  >
-                    AI 추천
+                <View style={[styles.bannerCopy, isDesktopWeb && styles.bannerCopyDesktop]}>
+                  <View style={styles.bannerBadge}>
+                    <Text style={styles.bannerBadgeText}>AI 추천</Text>
+                  </View>
+                  <Text style={styles.aiTitle}>어디 갈지{'\n'}고민된다면?</Text>
+                  <Text style={styles.aiDescription}>
+                    날짜와 취향만 알려주면{`\n`}AI가 충남 여행 코스를 만들어드려요.
                   </Text>
+                  <Pressable accessibilityRole="button" style={styles.bannerButton} onPress={onAiRecommend}>
+                    <Text style={styles.aiButtonText}>AI 코스 만들기</Text>
+                  </Pressable>
                 </View>
-
-                <Text
-                  style={
-                    styles.aiTitle
-                  }
-                >
-                  어디 갈지
-                  {'\n'}
-                  고민된다면?
-                </Text>
-
-                <Text
-                  style={
-                    styles.aiDescription
-                  }
-                >
-                  여행 조건에 맞는
-                  충남 코스를 AI에게
-                  추천받아보세요.
-                </Text>
-
-                <Pressable
-                  accessibilityRole="button"
-                  style={
-                    styles.aiButton
-                  }
-                  onPress={
-                    onAiRecommend
-                  }
-                >
-                  <Text
-                    style={
-                      styles.aiButtonText
-                    }
-                  >
-                    AI 추천받기
-                  </Text>
-                </Pressable>
+                <Image
+                  accessibilityLabel="충남의 명소와 체험, 맛집이 경로로 연결된 여행 지도"
+                  contentFit="contain"
+                  source={HERO_IMAGES.aiCourse}
+                  style={[
+                    styles.bannerArtwork,
+                    isDesktopWeb ? styles.bannerArtworkDesktop : styles.bannerArtworkMobile,
+                  ]}
+                />
               </View>
             </View>
 
@@ -460,82 +433,32 @@ export function HomeHero({
                   styles.promotionCard,
                 ]}
               >
-                <View
-                  style={
-                    styles.promotionTop
-                  }
-                >
-                  <View
-                    style={
-                      styles.promotionBadge
-                    }
-                  >
-                    <Text
-                      style={
-                        styles.promotionBadgeText
-                      }
-                    >
-                      이번 주 추천 지역
-                    </Text>
+                <View style={[styles.bannerCopy, isDesktopWeb && styles.bannerCopyDesktop]}>
+                  <View style={styles.promotionBadge}>
+                    <Text style={styles.promotionBadgeText}>이번 주 추천 지역</Text>
                   </View>
-
-                  <Text
-                    style={
-                      styles.promotionEmoji
-                    }
-                  >
-                    🌶️
+                  <Text style={styles.promotionTitle}>이번 주,{`\n`}청양 어때요?</Text>
+                  <Text style={styles.promotionDescription}>
+                    청양고추로 유명한 청양에서{`\n`}특별한 농촌 체험을 만나보세요.
                   </Text>
+                  <Pressable
+                    accessibilityLabel="청양 체험 둘러보기"
+                    accessibilityRole="button"
+                    style={styles.promotionAction}
+                    onPress={onPromotionPress}>
+                    <Text style={styles.promotionActionText}>청양 체험 둘러보기</Text>
+                    <Text style={styles.promotionArrow}>→</Text>
+                  </Pressable>
                 </View>
-
-                <Text
-                  style={
-                    styles.promotionTitle
-                  }
-                >
-                  이번 주,
-                  {'\n'}
-                  청양 어때요?
-                </Text>
-
-                <Text
-                  style={
-                    styles.promotionDescription
-                  }
-                >
-                  청양고추로 유명한
-                  청양에서 즐기는
-                  {'\n'}
-                  한적하고 특별한
-                  농촌 여행
-                </Text>
-
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="청양 체험 둘러보기"
-                  style={
-                    styles.promotionAction
-                  }
-                  onPress={
-                    onPromotionPress
-                  }
-                >
-                  <Text
-                    style={
-                      styles.promotionActionText
-                    }
-                  >
-                    청양 체험 둘러보기
-                  </Text>
-
-                  <Text
-                    style={
-                      styles.promotionArrow
-                    }
-                  >
-                    →
-                  </Text>
-                </Pressable>
+                <Image
+                  accessibilityLabel="청양고추를 수확하며 농촌 체험을 즐기는 여행자"
+                  contentFit="contain"
+                  source={HERO_IMAGES.cheongyang}
+                  style={[
+                    styles.bannerArtwork,
+                    isDesktopWeb ? styles.bannerArtworkDesktop : styles.bannerArtworkMobile,
+                  ]}
+                />
               </View>
             </View>
           </Animated.View>
@@ -666,6 +589,8 @@ const styles =
       padding: 20,
       borderRadius: 24,
       overflow: 'hidden',
+      position: 'relative',
+      flexDirection: 'row',
     },
 
     introCard: {
@@ -689,11 +614,17 @@ const styles =
       fontWeight: '900',
     },
 
-    introContent: {
+    bannerCopy: {
       flex: 1,
-      justifyContent:
-        'center',
-      paddingBottom: 10,
+      justifyContent: 'center',
+      maxWidth: 480,
+      zIndex: 2,
+    },
+
+    bannerCopyDesktop: {
+      flexBasis: '52%',
+      flexGrow: 0,
+      paddingLeft: 4,
     },
 
     introTitle: {
@@ -702,6 +633,7 @@ const styles =
       fontWeight: '900',
       letterSpacing: -0.8,
       lineHeight: 34,
+      marginTop: 20,
     },
 
     introDescription: {
@@ -718,7 +650,7 @@ const styles =
     },
 
     aiTitle: {
-      marginTop: 18,
+      marginTop: 20,
       color: '#FFFFFF',
       fontSize: 27,
       fontWeight: '900',
@@ -734,10 +666,9 @@ const styles =
       lineHeight: 20,
     },
 
-    aiButton: {
-      position: 'absolute',
-      left: 20,
-      bottom: 20,
+    bannerButton: {
+      alignSelf: 'flex-start',
+      marginTop: 18,
       paddingHorizontal: 16,
       paddingVertical: 11,
       borderRadius: 14,
@@ -756,14 +687,6 @@ const styles =
         '#DDEEDB',
     },
 
-    promotionTop: {
-      flexDirection: 'row',
-      alignItems:
-        'flex-start',
-      justifyContent:
-        'space-between',
-    },
-
     promotionBadge: {
       alignSelf:
         'flex-start',
@@ -780,12 +703,8 @@ const styles =
       fontWeight: '900',
     },
 
-    promotionEmoji: {
-      fontSize: 35,
-    },
-
     promotionTitle: {
-      marginTop: 12,
+      marginTop: 20,
       color: '#315F38',
       fontSize: 26,
       fontWeight: '900',
@@ -801,14 +720,13 @@ const styles =
     },
 
     promotionAction: {
-      position: 'absolute',
-      left: 20,
-      bottom: 20,
       flexDirection: 'row',
       alignItems: 'center',
       gap: 6,
-      paddingVertical: 6,
-      paddingRight: 8,
+      alignSelf: 'flex-start',
+      marginTop: 17,
+      paddingVertical: 7,
+      paddingRight: 10,
     },
 
     promotionActionText: {
@@ -821,6 +739,27 @@ const styles =
       color: '#3F7D46',
       fontSize: 16,
       fontWeight: '800',
+    },
+
+    bannerArtwork: {
+      zIndex: 1,
+    },
+
+    bannerArtworkDesktop: {
+      bottom: -34,
+      height: 310,
+      position: 'absolute',
+      right: -6,
+      width: '50%',
+    },
+
+    bannerArtworkMobile: {
+      bottom: -18,
+      height: 190,
+      opacity: 0.32,
+      position: 'absolute',
+      right: -54,
+      width: '58%',
     },
 
     indicatorRow: {
