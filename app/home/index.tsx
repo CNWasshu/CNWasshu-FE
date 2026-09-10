@@ -470,16 +470,6 @@ export default function HomeScreen() {
   ]);
 
   useEffect(() => {
-    fetchHomeItems(
-      0,
-      false,
-      false
-    );
-  }, [
-    fetchHomeItems,
-  ]);
-
-  useEffect(() => {
     fetchWeather();
   }, [
     fetchWeather,
@@ -487,10 +477,16 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      fetchHomeItems(
+        0,
+        false,
+        false
+      );
       fetchBookmarks();
       fetchUnreadNotificationCount();
     }, [
       fetchBookmarks,
+      fetchHomeItems,
       fetchUnreadNotificationCount,
     ])
   );
