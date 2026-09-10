@@ -11,14 +11,11 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// 모든 유저의 프로필 사진을 이 마스코트 이미지로 고정한다 (개별 업로드/변경 기능 없음).
-const PROFILE_IMAGE = require('@/assets/images/충남마스코트.jpg');
-
 import { DeleteAccountModal } from '@/components/auth/DeleteAccountModal';
 import { BackHeader } from '@/components/common/BackHeader';
 import { CourseActionModal } from '@/components/course/CourseActionModal';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useDeleteAccount } from '@/hooks/auth/use-delete-account';
 import { useLogout } from '@/hooks/auth/use-logout';
 import { useMe } from '@/hooks/auth/use-me';
@@ -28,6 +25,9 @@ import { useMyStampCount } from '@/hooks/stamp/use-my-stamp-count';
 import { useCourses } from '@/hooks/useCourse';
 import type { CourseSummary } from '@/types/course';
 import { getAccessToken } from '@/utils/auth';
+
+// 모든 유저의 프로필 사진을 이 마스코트 이미지로 고정한다 (개별 업로드/변경 기능 없음).
+const PROFILE_IMAGE = require('@/assets/images/충남마스코트.jpg');
 
 // 팀 결정: 만족도조사 로직과 충돌 우려로 수정 기능 비활성화, 코드는 참고용으로 유지.
 // (app/course/edit/[id].tsx 및 관련 PUT /api/timetables/{courseId} 호출부는 그대로 남겨두되,
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
   heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22 },
   body: {
     width: '100%',
-    maxWidth: 760,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 18,
     marginTop: -18,

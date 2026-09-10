@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { getStampErrorMessage, stampApi } from '@/api/stampApi';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import type { StampResponse } from '@/types/stamp';
 import { clearTokens, getAccessToken, isSessionExpiredError } from '@/utils/auth';
 
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
   heroDescription: { color: '#E4EFE1', fontSize: 13, lineHeight: 20 },
   body: {
     width: '100%',
-    maxWidth: 760,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 18,
     marginTop: -18,

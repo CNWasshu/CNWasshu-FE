@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 
 export default function SurveyResultScreen() {
   const router = useRouter();
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
     backgroundColor: CourseColors.background,
     flex: 1,
     justifyContent: 'space-between',
-    maxWidth: 430,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     paddingBottom: 34,
     paddingHorizontal: 22,
     paddingTop: 80,

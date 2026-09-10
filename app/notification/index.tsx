@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackHeader } from '@/components/common/BackHeader';
 import { NotificationListItem } from '@/components/notification/NotificationListItem';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useNotifications } from '@/hooks/notification/use-notifications';
 import { getAccessToken } from '@/utils/auth';
 
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
   heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22 },
   body: {
     width: '100%',
-    maxWidth: 760,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 18,
     marginTop: -18,

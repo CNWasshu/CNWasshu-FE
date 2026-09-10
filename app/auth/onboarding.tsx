@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useUpdateNickname } from '@/hooks/auth/use-update-nickname';
 import { getAccessToken } from '@/utils/auth';
 
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     width: '100%',
-    maxWidth: 480,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 22,
     marginTop: 40,

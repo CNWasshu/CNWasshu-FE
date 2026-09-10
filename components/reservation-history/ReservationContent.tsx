@@ -10,6 +10,7 @@ import { ReservationEmpty } from '@/components/reservation-history/ReservationEm
 import { ReservationError } from '@/components/reservation-history/ReservationError';
 import { ReservationHeader } from '@/components/reservation-history/ReservationHeader';
 import { ReservationLoading } from '@/components/reservation-history/ReservationLoading';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import type { ReservationResponse } from '@/types/reservation';
 
 interface ReservationContentProps {
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
 
   screen: {
     width: '100%',
-    maxWidth: 430,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     flex: 1,
     paddingHorizontal: 18,
     paddingTop: 14,

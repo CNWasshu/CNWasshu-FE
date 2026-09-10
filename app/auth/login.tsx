@@ -14,6 +14,7 @@ import { Link, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useKakaoLogin } from '@/hooks/auth/use-kakao-login';
 import { useLogin } from '@/hooks/auth/use-login';
 
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     width: '100%',
-    maxWidth: 480,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 22,
     marginTop: 40,

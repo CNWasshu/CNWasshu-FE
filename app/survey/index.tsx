@@ -8,6 +8,7 @@ import { AiSurveyForm } from '@/components/survey/AiSurveyForm';
 import { ManualSurveyForm } from '@/components/survey/ManualSurveyForm';
 import { SurveyHeader } from '@/components/survey/SurveyHeader';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import type { SurveyDetailResponse, SurveyDraftRequest } from '@/types/survey';
 import { clearTokens, getAccessToken, isSessionExpiredError } from '@/utils/auth';
 
@@ -239,11 +240,10 @@ const styles = StyleSheet.create({
   screen: {
     backgroundColor: CourseColors.background,
     flex: 1,
-    maxWidth: 430,
     paddingBottom: 44,
     width: '100%',
   },
-  body: { marginTop: -18, paddingHorizontal: 18, width: '100%' },
+  body: { alignSelf: 'center', marginTop: -18, maxWidth: PAGE_LAYOUT.desktopMaxWidth, paddingHorizontal: 18, width: '100%' },
   stateCard: {
     alignItems: 'center', backgroundColor: CourseColors.white, borderColor: CourseColors.border,
     borderRadius: 26, borderWidth: 1, gap: 14, justifyContent: 'center', minHeight: 250, padding: 26,

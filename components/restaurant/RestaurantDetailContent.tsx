@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { RestaurantDetailActions } from '@/components/restaurant/RestaurantDetailActions';
 import { RestaurantDetailHero } from '@/components/restaurant/RestaurantDetailHero';
 import { RestaurantDetailInfo } from '@/components/restaurant/RestaurantDetailInfo';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import type { RestaurantDetailResponse } from '@/types/restaurant';
 
 type RestaurantDetailContentProps = {
@@ -183,7 +184,6 @@ const styles = StyleSheet.create({
 
   screen: {
     width: '100%',
-    maxWidth: 430,
     flex: 1,
     backgroundColor: '#FFFAF1',
   },
@@ -220,6 +220,9 @@ const styles = StyleSheet.create({
   },
 
   content: {
+    width: '100%',
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
+    alignSelf: 'center',
     padding: 18,
     paddingBottom: 40,
   },

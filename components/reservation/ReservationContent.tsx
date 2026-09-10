@@ -9,6 +9,7 @@ import {
 
 import type { ActivityDetailResponse } from '@/types/activity';
 import type { ReservationTimeSlot } from '@/types/reservation';
+import { PAGE_LAYOUT } from '@/constants/layout';
 
 import { ReservationActivityCard } from './ReservationActivityCard';
 import { ReservationBottomBar } from './ReservationBottomBar';
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
   app: {
     flex: 1,
     width: '100%',
-    maxWidth: 430,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     backgroundColor: '#fffaf1',
   },
 
@@ -374,7 +375,7 @@ const styles = StyleSheet.create({
   center: {
     flex: 1,
     width: '100%',
-    maxWidth: 430,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,

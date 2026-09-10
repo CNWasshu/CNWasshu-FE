@@ -16,6 +16,8 @@ import {
   SafeAreaView,
 } from 'react-native-safe-area-context';
 
+import { PAGE_LAYOUT } from '@/constants/layout';
+
 import {
   HomeFilterSection,
 } from '@/components/home/HomeFilterSection';
@@ -488,8 +490,6 @@ const styles =
 
     screen: {
       width: '100%',
-      maxWidth: 430,
-      alignSelf: 'center',
       position: 'relative',
       zIndex: 100,
       overflow: 'visible',
@@ -540,6 +540,9 @@ const styles =
     },
 
     content: {
+      width: '100%',
+      maxWidth: PAGE_LAYOUT.desktopMaxWidth,
+      alignSelf: 'center',
       paddingHorizontal: 18,
       paddingTop: 18,
       position: 'relative',
@@ -583,7 +586,7 @@ const styles =
 
     itemWrapper: {
       width: '100%',
-      maxWidth: 430,
+      maxWidth: PAGE_LAYOUT.desktopMaxWidth,
       alignSelf: 'center',
       paddingHorizontal: 18,
       position: 'relative',
@@ -596,7 +599,7 @@ const styles =
 
     footerWrapper: {
       width: '100%',
-      maxWidth: 430,
+      maxWidth: PAGE_LAYOUT.desktopMaxWidth,
       alignSelf: 'center',
       paddingHorizontal: 18,
       paddingTop: 13,
@@ -604,7 +607,7 @@ const styles =
 
     emptyWrapper: {
       width: '100%',
-      maxWidth: 430,
+      maxWidth: PAGE_LAYOUT.desktopMaxWidth,
       alignSelf: 'center',
       paddingHorizontal: 18,
     },

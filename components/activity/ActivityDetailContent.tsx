@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityDetailActions } from '@/components/activity/ActivityDetailActions';
 import { ActivityDetailHero } from '@/components/activity/ActivityDetailHero';
 import { ActivityDetailInfo } from '@/components/activity/ActivityDetailInfo';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import type { ActivityDetailResponse } from '@/types/activity';
 
 type ActivityDetailContentProps = {
@@ -193,7 +194,6 @@ const styles = StyleSheet.create({
 
   screen: {
     width: '100%',
-    maxWidth: 430,
     flex: 1,
     backgroundColor: '#FFFAF1',
   },
@@ -230,6 +230,9 @@ const styles = StyleSheet.create({
   },
 
   content: {
+    width: '100%',
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
+    alignSelf: 'center',
     padding: 18,
     paddingBottom: 40,
   },

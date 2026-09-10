@@ -2,6 +2,7 @@ import { courseApi, getCourseErrorMessage } from '@/api/courseApi';
 import { CourseMap } from '@/components/course/CourseMap';
 import { CourseSchedule } from '@/components/course/CourseSchedule';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useCourse } from '@/hooks/useCourse';
 import { getAccessToken } from '@/utils/auth';
 import { shareCourse } from '@/utils/courseShare';
@@ -116,7 +117,7 @@ export default function CourseDetailScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: CourseColors.background }, container: { paddingBottom: 46 },
   hero: { backgroundColor: CourseColors.primary, paddingHorizontal: 22, paddingTop: 7, paddingBottom: 26, borderBottomLeftRadius: 26, borderBottomRightRadius: 26, gap: 10 }, typeBadge: { alignSelf: 'flex-start', color: CourseColors.primaryDark, backgroundColor: '#E9F4E6', borderRadius: 10, paddingHorizontal: 9, paddingVertical: 4, fontWeight: '800', fontSize: 12, overflow: 'hidden' }, titleRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 12 }, title: { color: CourseColors.white, flex: 1, fontSize: 25, fontWeight: '900', lineHeight: 32 }, summaryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 }, summaryItem: { alignItems: 'center', flexDirection: 'row', gap: 5 }, summaryText: { color: '#F4FAF2', fontSize: 12, fontWeight: '700' },
-  content: { width: '100%', maxWidth: 760, alignSelf: 'center', paddingHorizontal: 16, marginTop: 16, gap: 22 }, mapSection: { backgroundColor: CourseColors.white, borderRadius: 18, borderWidth: 1, borderColor: CourseColors.border, padding: 15, gap: 13 }, scheduleSection: { gap: 13 }, sectionHeading: { flexDirection: 'row', alignItems: 'center', gap: 8 }, sectionTitle: { color: CourseColors.text, fontSize: 19, fontWeight: '900' },
+  content: { width: '100%', maxWidth: PAGE_LAYOUT.desktopMaxWidth, alignSelf: 'center', paddingHorizontal: 16, marginTop: 16, gap: 22 }, mapSection: { backgroundColor: CourseColors.white, borderRadius: 18, borderWidth: 1, borderColor: CourseColors.border, padding: 15, gap: 13 }, scheduleSection: { gap: 13 }, sectionHeading: { flexDirection: 'row', alignItems: 'center', gap: 8 }, sectionTitle: { color: CourseColors.text, fontSize: 19, fontWeight: '900' },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 9, padding: 28 }, state: { alignItems: 'center', justifyContent: 'center', padding: 30, gap: 9 }, stateTitle: { color: CourseColors.text, fontSize: 16, fontWeight: '900', textAlign: 'center' }, stateDescription: { color: CourseColors.muted, fontSize: 13, lineHeight: 19, textAlign: 'center' }, retryButton: { minHeight: 44, borderWidth: 1, borderColor: CourseColors.primary, borderRadius: 12, justifyContent: 'center', marginTop: 5, paddingHorizontal: 20 }, retry: { color: CourseColors.primary, fontSize: 13, fontWeight: '900' },
   courseActions: { flexDirection: 'row', flexShrink: 0, gap: 8 }, actionButton: { alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.28)', borderRadius: 12, borderWidth: 1, height: 42, justifyContent: 'center', width: 42 }, deleteButton: { backgroundColor: 'rgba(119,37,28,0.22)', borderColor: 'rgba(255,213,207,0.35)' }, actionButtonPressed: { opacity: 0.55 },
 });

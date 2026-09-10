@@ -15,6 +15,7 @@ import { BookmarkEmpty } from '@/components/bookmark/BookmarkEmpty';
 import { BookmarkError } from '@/components/bookmark/BookmarkError';
 import { BookmarkHeader } from '@/components/bookmark/BookmarkHeader';
 import { BookmarkLoading } from '@/components/bookmark/BookmarkLoading';
+import { PAGE_LAYOUT } from '@/constants/layout';
 
 import type {
   BookmarkResponse,
@@ -221,7 +222,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     width: '100%',
-    maxWidth: 430,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     paddingHorizontal: 18,
     paddingTop: 14,
     paddingBottom: 30,
