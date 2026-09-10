@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: CourseColors.muted,
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '700',
   },
   activeLabel: {

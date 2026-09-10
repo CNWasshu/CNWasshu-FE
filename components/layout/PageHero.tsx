@@ -85,14 +85,14 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: '#EAF5E7',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '800',
   },
   badge: {
     backgroundColor: 'rgba(255,255,255,0.16)',
     borderRadius: 999,
     color: CourseColors.white,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '800',
     overflow: 'hidden',
     paddingHorizontal: 10,
@@ -112,8 +112,8 @@ const styles = StyleSheet.create({
   },
   description: {
     color: '#E4EFE1',
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 14,
+    lineHeight: 22,
     marginTop: 7,
     maxWidth: 650,
   },
