@@ -6,12 +6,14 @@ import { HapticTab } from '@/components/haptic-tab';
 import { DesktopTabBar } from '@/components/navigation/DesktopTabBar';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { width } = useWindowDimensions();
-  const isDesktopWeb = Platform.OS === 'web' && width >= 1024;
+  const isDesktopWeb =
+    Platform.OS === 'web' && width >= PAGE_LAYOUT.desktopNavigationBreakpoint;
 
   return (
     <Tabs
@@ -19,7 +21,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        sceneStyle: isDesktopWeb ? { paddingTop: 68 } : undefined,
+        sceneStyle: isDesktopWeb ? { paddingTop: PAGE_LAYOUT.desktopNavigationHeight } : undefined,
         tabBarButton: isDesktopWeb ? undefined : HapticTab,
       }}>
       <Tabs.Screen

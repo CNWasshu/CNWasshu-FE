@@ -8,17 +8,20 @@ import {
 import {
   Animated,
   PanResponder,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
+
+import { PAGE_LAYOUT } from '@/constants/layout';
 
 type HomeHeroProps = {
   onAiRecommend: () => void;
   onPromotionPress: () => void;
   onBookmarkPress: () => void;
-  onMyPagePress: () => void;
   onNotificationPress: () => void;
   unreadNotificationCount: number;
 };
@@ -30,10 +33,12 @@ export function HomeHero({
   onAiRecommend,
   onPromotionPress,
   onBookmarkPress,
-  onMyPagePress,
   onNotificationPress,
   unreadNotificationCount,
 }: HomeHeroProps) {
+  const { width } = useWindowDimensions();
+  const isDesktopWeb =
+    Platform.OS === 'web' && width >= PAGE_LAYOUT.desktopNavigationBreakpoint;
   const [
     activeBannerIndex,
     setActiveBannerIndex,
@@ -237,7 +242,7 @@ export function HomeHero({
         </Text>
 
         <View style={styles.headerActions}>
-          <Pressable
+          {!isDesktopWeb ? <Pressable
             accessibilityRole="button"
             accessibilityLabel="알림함"
             style={styles.headerButton}
@@ -267,20 +272,7 @@ export function HomeHero({
                 </Text>
               </View>
             ) : null}
-          </Pressable>
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="마이페이지"
-            style={styles.headerButton}
-            onPress={
-              onMyPagePress
-            }
-          >
-            <Text style={styles.headerIcon}>
-              👤
-            </Text>
-          </Pressable>
+          </Pressable> : null}
 
           <Pressable
             accessibilityRole="button"

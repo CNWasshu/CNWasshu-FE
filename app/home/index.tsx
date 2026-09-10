@@ -890,13 +890,6 @@ export default function HomeScreen() {
       );
     };
 
-  const handleMyPagePress =
-    () => {
-      router.push(
-        '/auth/mypage'
-      );
-    };
-
   const handleNotificationPress =
     () => {
       router.push(
@@ -1028,9 +1021,6 @@ export default function HomeScreen() {
       }
       onBookmarkPress={
         handleBookmarkPress
-      }
-      onMyPagePress={
-        handleMyPagePress
       }
       onNotificationPress={
         handleNotificationPress

@@ -1,7 +1,11 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
+import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-notification-count';
 
 const TAB_LABELS: Record<string, string> = {
   index: '홈',
@@ -12,6 +16,13 @@ const TAB_LABELS: Record<string, string> = {
 };
 
 export function DesktopTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const router = useRouter();
+  const { fetchUnreadNotificationCount, unreadCount } = useUnreadNotificationCount();
+
+  useEffect(() => {
+    void fetchUnreadNotificationCount();
+  }, [fetchUnreadNotificationCount, state.index]);
+
   return (
     <View style={styles.bar}>
       <View style={styles.inner}>
@@ -20,7 +31,6 @@ export function DesktopTabBar({ state, descriptors, navigation }: BottomTabBarPr
           onPress={() => navigation.navigate('index')}
           style={styles.brand}>
           <Text style={styles.brandTitle}>충남왔슈</Text>
-          <Text style={styles.brandDescription}>충남 여행을 한곳에서</Text>
         </Pressable>
 
         <View accessibilityRole="tablist" style={styles.navigation}>
@@ -52,7 +62,7 @@ export function DesktopTabBar({ state, descriptors, navigation }: BottomTabBarPr
                   focused && styles.activeTab,
                   pressed && styles.pressedTab,
                 ]}>
-                {options.tabBarIcon?.({ color, focused, size: 21 })}
+                {options.tabBarIcon?.({ color, focused, size: 19 })}
                 <Text style={[styles.label, focused && styles.activeLabel]}>
                   {TAB_LABELS[route.name] ?? options.title ?? route.name}
                 </Text>
@@ -60,6 +70,19 @@ export function DesktopTabBar({ state, descriptors, navigation }: BottomTabBarPr
             );
           })}
         </View>
+
+        <Pressable
+          accessibilityLabel="알림함"
+          accessibilityRole="button"
+          onPress={() => router.push('/notification')}
+          style={({ pressed }) => [styles.notificationButton, pressed && styles.pressedTab]}>
+          <Text style={styles.notificationIcon}>🔔</Text>
+          {unreadCount > 0 ? (
+            <View style={styles.notificationBadge}>
+              <Text style={styles.notificationBadgeText}>{unreadCount}</Text>
+            </View>
+          ) : null}
+        </Pressable>
       </View>
     </View>
   );
@@ -67,10 +90,10 @@ export function DesktopTabBar({ state, descriptors, navigation }: BottomTabBarPr
 
 const styles = StyleSheet.create({
   bar: {
-    backgroundColor: CourseColors.white,
+    backgroundColor: CourseColors.background,
     borderBottomColor: CourseColors.border,
     borderBottomWidth: 1,
-    height: 68,
+    height: PAGE_LAYOUT.desktopNavigationHeight,
     left: 0,
     position: 'absolute',
     right: 0,
@@ -83,44 +106,38 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    maxWidth: 1200,
-    paddingHorizontal: 24,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
+    paddingHorizontal: PAGE_LAYOUT.horizontalPadding,
     width: '100%',
   },
   brand: {
     justifyContent: 'center',
-    minHeight: 48,
+    minHeight: 44,
   },
   brandTitle: {
     color: CourseColors.primaryDark,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '900',
-  },
-  brandDescription: {
-    color: CourseColors.muted,
-    fontSize: 10,
-    fontWeight: '700',
-    marginTop: 2,
   },
   navigation: {
     alignItems: 'stretch',
     alignSelf: 'stretch',
     flexDirection: 'row',
-    gap: 8,
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   tab: {
     alignItems: 'center',
     borderBottomColor: 'transparent',
-    borderBottomWidth: 3,
+    borderBottomWidth: 2,
     flexDirection: 'row',
-    gap: 6,
+    gap: 5,
     justifyContent: 'center',
-    minWidth: 104,
-    paddingHorizontal: 12,
-    paddingTop: 3,
+    minWidth: 88,
+    paddingHorizontal: 10,
+    paddingTop: 2,
   },
   activeTab: {
-    backgroundColor: CourseColors.primarySoft,
     borderBottomColor: CourseColors.primary,
   },
   pressedTab: {
@@ -128,11 +145,41 @@ const styles = StyleSheet.create({
   },
   label: {
     color: CourseColors.muted,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
   },
   activeLabel: {
     color: CourseColors.primaryDark,
+    fontWeight: '900',
+  },
+  notificationButton: {
+    alignItems: 'center',
+    height: 40,
+    justifyContent: 'center',
+    marginLeft: 10,
+    position: 'relative',
+    width: 40,
+  },
+  notificationIcon: {
+    fontSize: 20,
+  },
+  notificationBadge: {
+    alignItems: 'center',
+    backgroundColor: CourseColors.error,
+    borderColor: CourseColors.background,
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 16,
+    justifyContent: 'center',
+    minWidth: 16,
+    paddingHorizontal: 3,
+    position: 'absolute',
+    right: 0,
+    top: 1,
+  },
+  notificationBadgeText: {
+    color: CourseColors.white,
+    fontSize: 9,
     fontWeight: '900',
   },
 });
