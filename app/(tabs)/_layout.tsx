@@ -1,25 +1,31 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Platform, useWindowDimensions } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
+import { DesktopTabBar } from '@/components/navigation/DesktopTabBar';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { width } = useWindowDimensions();
+  const isDesktopWeb = Platform.OS === 'web' && width >= 1024;
 
   return (
     <Tabs
+      tabBar={isDesktopWeb ? (props) => <DesktopTabBar {...props} /> : undefined}
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
+        sceneStyle: isDesktopWeb ? { paddingTop: 68 } : undefined,
+        tabBarButton: isDesktopWeb ? undefined : HapticTab,
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: '홈',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
