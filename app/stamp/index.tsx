@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -15,6 +16,8 @@ const STAMP_GOAL = 10;
 
 export default function StampListScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isCompact = width < PAGE_LAYOUT.desktopBreakpoint;
   const [accessToken, setAccessToken] = useState<string | null | undefined>(undefined);
   const [stamps, setStamps] = useState<StampResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,20 +72,27 @@ export default function StampListScreen() {
 
         <View style={styles.body}>
           <View style={styles.whiteCard}>
-            <Text style={styles.cardTitle}>방문 인증</Text>
-            <Text style={styles.cardDesc}>
-              체험지 QR 인증 후 스탬프를 받아보세요.
-            </Text>
+            <View style={styles.cardHeadingRow}>
+              <View style={styles.cardIcon}><Ionicons color={CourseColors.primary} name="qr-code-outline" size={20} /></View>
+              <View style={styles.cardHeadingText}>
+                <Text style={styles.cardTitle}>방문 인증</Text>
+                <Text style={styles.cardDesc}>체험지 QR 인증 후 스탬프를 받아보세요.</Text>
+              </View>
+            </View>
             <Pressable
               accessibilityRole="button"
               style={styles.scanButton}
               onPress={() => router.push('/stamp/scan')}>
+              <Ionicons color={CourseColors.white} name="scan-outline" size={18} />
               <Text style={styles.scanButtonText}>QR 인증하기</Text>
             </Pressable>
           </View>
 
           <View style={styles.whiteCard}>
-            <Text style={styles.cardTitle}>내 스탬프</Text>
+            <View style={styles.stampHeadingRow}>
+              <Text style={styles.cardTitle}>내 스탬프</Text>
+              <Text style={styles.progressCount}>{stamps.length} / {STAMP_GOAL}</Text>
+            </View>
             <Text style={styles.cardDesc}>
               예: 1박 2일 동안 지역이 다른 체험 2개를 방문하면 스탬프 2개를 받을 수 있어요.
             </Text>
@@ -102,31 +112,40 @@ export default function StampListScreen() {
               </View>
             ) : (
               <>
-                <View style={styles.stampGrid}>
-                  {slots.map((stamp, index) =>
-                    stamp ? (
-                      <View key={stamp.stampId} style={[styles.stampCell, styles.stampCellDone]}>
-                        <Text style={styles.stampCellDoneText} numberOfLines={1}>
-                          {stamp.regionName}
-                        </Text>
-                      </View>
-                    ) : (
-                      <View key={`empty-${index}`} style={styles.stampCell}>
-                        <Text style={styles.stampCellText}>{index + 1}</Text>
-                      </View>
-                    )
-                  )}
+                <View style={styles.stampBoard}>
+                  <View style={styles.stampGrid}>
+                    {slots.map((stamp, index) =>
+                      stamp ? (
+                        <View key={stamp.stampId} style={[styles.stampCell, isCompact && styles.stampCellCompact, styles.stampCellDone]}>
+                          <View style={[styles.stampInner, styles.stampInnerDone]}>
+                            <Ionicons color={CourseColors.primaryDark} name="leaf" size={21} />
+                            <Text style={styles.stampCellDoneText} numberOfLines={1}>{stamp.regionName}</Text>
+                            <Text style={styles.stampNumber}>STAMP {String(index + 1).padStart(2, '0')}</Text>
+                          </View>
+                        </View>
+                      ) : (
+                        <View key={`empty-${index}`} style={[styles.stampCell, isCompact && styles.stampCellCompact]}>
+                          <View style={styles.stampInner}>
+                            <Ionicons color="#B29D73" name="footsteps-outline" size={19} />
+                            <Text style={styles.nextTripText}>다음 여행</Text>
+                            <Text style={styles.stampCellText}>STAMP {String(index + 1).padStart(2, '0')}</Text>
+                          </View>
+                        </View>
+                      )
+                    )}
+                  </View>
                 </View>
 
                 <View style={styles.coupon}>
-                  <Text style={styles.couponTitle}>
-                    {remaining > 0
-                      ? `할인 쿠폰까지 ${remaining}개 남았어요`
-                      : '할인 쿠폰을 받을 수 있어요!'}
-                  </Text>
-                  <Text style={styles.cardDesc}>
-                    {STAMP_GOAL}개 달성 시 지역화폐 또는 체험 할인 쿠폰 발급
-                  </Text>
+                  <View style={styles.couponIcon}><Ionicons color="#9B6B13" name="ticket-outline" size={21} /></View>
+                  <View style={styles.couponText}>
+                    <Text style={styles.couponTitle}>
+                      {remaining > 0
+                        ? `할인 쿠폰까지 ${remaining}개 남았어요`
+                        : '할인 쿠폰을 받을 수 있어요!'}
+                    </Text>
+                    <Text style={styles.cardDesc}>{STAMP_GOAL}개 달성 시 지역화폐 또는 체험 할인 쿠폰 발급</Text>
+                  </View>
                 </View>
               </>
             )}
@@ -167,6 +186,9 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 6,
   },
+  cardHeadingRow: { alignItems: 'center', flexDirection: 'row', gap: 11 },
+  cardHeadingText: { flex: 1, gap: 2 },
+  cardIcon: { alignItems: 'center', backgroundColor: CourseColors.primarySoft, borderRadius: 18, height: 36, justifyContent: 'center', width: 36 },
   cardTitle: { fontSize: 16, fontWeight: '900', color: CourseColors.text },
   cardDesc: { fontSize: 12.5, color: CourseColors.muted, lineHeight: 19 },
   scanButton: {
@@ -175,6 +197,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: CourseColors.primary,
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: 7,
     justifyContent: 'center',
   },
   scanButtonText: { color: CourseColors.white, fontWeight: '900', fontSize: 14 },
@@ -194,37 +218,56 @@ const styles = StyleSheet.create({
   },
   retryButtonText: { color: CourseColors.primary, fontWeight: '800', fontSize: 12 },
   stampGrid: {
-    marginTop: 10,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    justifyContent: 'space-between',
+    rowGap: 12,
+    zIndex: 1,
   },
+  stampBoard: { backgroundColor: '#EAF3DE', borderColor: '#C9DEB5', borderRadius: 24, borderWidth: 1, marginTop: 12, overflow: 'hidden', padding: 14 },
+  stampHeadingRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
+  progressCount: { backgroundColor: CourseColors.primarySoft, borderRadius: 999, color: CourseColors.primaryDark, fontSize: 12, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 10, paddingVertical: 5 },
   stampCell: {
-    width: '17.5%',
+    width: '18.5%',
     aspectRatio: 1,
     borderRadius: 999,
-    backgroundColor: CourseColors.beige,
+    backgroundColor: 'rgba(255,255,255,0.78)',
+    borderColor: '#D9C7A3',
+    borderStyle: 'dashed',
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 5,
   },
+  stampCellCompact: { width: '31%' },
   stampCellDone: {
-    backgroundColor: CourseColors.primary,
+    backgroundColor: '#D9ECD2',
+    borderColor: CourseColors.primary,
+    borderStyle: 'dashed',
   },
-  stampCellText: { color: '#a49069', fontWeight: '900', fontSize: 13 },
+  stampInner: { alignItems: 'center', borderColor: '#DDCBAA', borderRadius: 999, borderWidth: 1, gap: 2, height: '100%', justifyContent: 'center', width: '100%' },
+  stampInnerDone: { borderColor: '#86B487' },
+  nextTripText: { color: '#9C875F', fontSize: 9, fontWeight: '800' },
+  stampCellText: { color: '#8F7950', fontWeight: '900', fontSize: 9, letterSpacing: 0.2 },
   stampCellDoneText: {
-    color: CourseColors.white,
+    color: CourseColors.primaryDark,
     fontWeight: '900',
-    fontSize: 10,
+    fontSize: 11,
     paddingHorizontal: 2,
   },
+  stampNumber: { color: '#668565', fontSize: 8, fontWeight: '800', letterSpacing: 0.15 },
   coupon: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 11,
     marginTop: 14,
     padding: 14,
     borderRadius: 20,
     backgroundColor: '#FFF7DF',
     borderWidth: 1,
     borderColor: '#F0CD7B',
-    gap: 4,
   },
+  couponIcon: { alignItems: 'center', backgroundColor: '#FFE9AD', borderRadius: 18, height: 36, justifyContent: 'center', width: 36 },
+  couponText: { flex: 1, gap: 3 },
   couponTitle: { color: CourseColors.text, fontWeight: '900', fontSize: 14 },
 });
