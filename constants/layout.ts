@@ -6,4 +6,5 @@ export const PAGE_LAYOUT = {
   desktopNavigationBreakpoint: 1024,
   desktopNavigationHeight: 64,
   horizontalPadding: 16,
+  sectionSpacing: 24,
 } as const;

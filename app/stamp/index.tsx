@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 18,
-    marginTop: -18,
+    marginTop: PAGE_LAYOUT.sectionSpacing,
     gap: 12,
   },
   whiteCard: {
