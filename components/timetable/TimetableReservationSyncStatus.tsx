@@ -65,13 +65,13 @@ const styles = StyleSheet.create({
   },
   error: {
     color: '#B84738',
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
   },
   message: {
     color: TIMETABLE_COLORS.secondaryText,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
   },
   retryButton: {
     backgroundColor: TIMETABLE_COLORS.primary,
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   retryText: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '800',
   },
 });

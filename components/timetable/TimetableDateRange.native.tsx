@@ -86,9 +86,7 @@ export function TimetableDateRange({
         />
       ) : null}
 
-      <Text style={[styles.helperText, errorMessage && styles.errorText]}>
-        {errorMessage ?? '선택한 여행 기간에 따라 Day 탭이 자동으로 생성됩니다.'}
-      </Text>
+      {errorMessage ? <Text style={[styles.helperText, styles.errorText]}>{errorMessage}</Text> : null}
     </View>
   );
 }
@@ -100,7 +98,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     borderWidth: 1,
     marginHorizontal: 18,
-    marginTop: 18,
+    marginTop: 24,
     padding: 14,
   },
   dateField: {
@@ -126,7 +124,7 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     color: TIMETABLE_COLORS.secondaryText,
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '600',
   },
   fields: {
@@ -136,8 +134,8 @@ const styles = StyleSheet.create({
   },
   helperText: {
     color: TIMETABLE_COLORS.secondaryText,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     marginTop: 10,
   },
   title: {

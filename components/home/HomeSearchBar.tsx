@@ -102,6 +102,8 @@ const styles =
     input: {
       flex: 1,
       height: 48,
+      borderWidth: 0,
+      outlineStyle: 'none' as any,
       paddingVertical: 0,
       color: '#29251E',
       fontSize: 14,

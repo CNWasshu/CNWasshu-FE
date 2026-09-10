@@ -2,6 +2,7 @@ import { CourseDateField } from '@/components/course/CourseDateField';
 import { CourseColors } from '@/constants/course-colors';
 import { CHUNGNAM_REGIONS } from '@/constants/regions';
 import type { AiRecommendationRequest, Transportation, TravelStyle } from '@/types/course';
+import { formatDate } from '@/utils/timetable/date';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
 import {
@@ -10,7 +11,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
 
@@ -26,6 +26,8 @@ const STYLES: { label: string; value: TravelStyle }[] = [
   { label: '먹거리 중심', value: 'FOOD' },
   { label: '사진 명소', value: 'PHOTO_SPOT' },
 ];
+
+const TODAY = formatDate(new Date());
 
 type ValidationErrors = {
   date?: string;
@@ -44,11 +46,8 @@ export function AiCourseForm({
   onSubmit,
   onValidationError,
 }: Props) {
-  const { width } = useWindowDimensions();
-  const twoColumns = width >= 520;
-
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(TODAY);
+  const [endDate, setEndDate] = useState(TODAY);
   const [region, setRegion] = useState('');
   const [peopleCount, setPeopleCount] = useState(2);
   const [transportation, setTransportation] =
@@ -158,15 +157,9 @@ export function AiCourseForm({
           />
         </View>
 
-        <View>
-          <Text style={styles.sectionTitle}>
-            기본 조건
-          </Text>
-
-          <Text style={styles.sectionDescription}>
-            원하는 여행의 기본 정보를 알려주세요.
-          </Text>
-        </View>
+        <Text style={styles.sectionTitle}>
+          여행 정보
+        </Text>
       </View>
 
       <View
@@ -178,12 +171,7 @@ export function AiCourseForm({
         }
         style={styles.field}
       >
-        <View
-          style={[
-            styles.fieldGrid,
-            !twoColumns && styles.oneColumn,
-          ]}
-        >
+        <View style={styles.fieldGrid}>
           <CourseDateField
             error={Boolean(errors.date)}
             label="출발일"
@@ -563,20 +551,10 @@ const styles = StyleSheet.create({
     color: CourseColors.text,
   },
 
-  sectionDescription: {
-    color: CourseColors.muted,
-    fontSize: 12,
-    marginTop: 1,
-  },
-
   fieldGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
-  },
-
-  oneColumn: {
-    flexDirection: 'column',
   },
 
   field: {
@@ -586,12 +564,12 @@ const styles = StyleSheet.create({
   label: {
     color: CourseColors.text,
     fontWeight: '800',
-    fontSize: 13,
+    fontSize: 14,
   },
 
   regionGuide: {
     color: CourseColors.muted,
-    fontSize: 12,
+    fontSize: 13,
   },
 
   regionShell: {
@@ -626,7 +604,7 @@ const styles = StyleSheet.create({
 
   regionChipText: {
     color: '#6B5730',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
 
@@ -690,7 +668,7 @@ const styles = StyleSheet.create({
 
   choiceText: {
     color: '#6F6558',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
 
@@ -713,7 +691,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: CourseColors.error,
     flex: 1,
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 18,
   },
 

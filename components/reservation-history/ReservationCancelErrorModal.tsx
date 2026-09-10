@@ -105,8 +105,8 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: 8,
     textAlign: 'center',
-    fontSize: 12.5,
-    lineHeight: 19,
+    fontSize: 14,
+    lineHeight: 20,
     color: '#7d715f',
   },
 
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#ffffff',
   },

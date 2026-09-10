@@ -1,5 +1,6 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { CourseColors } from '@/constants/course-colors';
 
@@ -13,27 +14,20 @@ export function BackHeader() {
     <Pressable
       accessibilityLabel="뒤로 가기"
       accessibilityRole="button"
+      hitSlop={10}
       onPress={() => router.back()}
       style={styles.button}>
-      <Text style={styles.icon}>←</Text>
+      <Ionicons color={CourseColors.white} name="arrow-back" size={28} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
+    width: 40,
+    height: 40,
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
     alignSelf: 'flex-start',
-  },
-  icon: {
-    color: CourseColors.white,
-    fontSize: 20,
-    fontWeight: '900',
-    lineHeight: 22,
   },
 });

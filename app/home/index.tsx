@@ -470,16 +470,6 @@ export default function HomeScreen() {
   ]);
 
   useEffect(() => {
-    fetchHomeItems(
-      0,
-      false,
-      false
-    );
-  }, [
-    fetchHomeItems,
-  ]);
-
-  useEffect(() => {
     fetchWeather();
   }, [
     fetchWeather,
@@ -487,10 +477,16 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      fetchHomeItems(
+        0,
+        false,
+        false
+      );
       fetchBookmarks();
       fetchUnreadNotificationCount();
     }, [
       fetchBookmarks,
+      fetchHomeItems,
       fetchUnreadNotificationCount,
     ])
   );
@@ -890,13 +886,6 @@ export default function HomeScreen() {
       );
     };
 
-  const handleMyPagePress =
-    () => {
-      router.push(
-        '/auth/mypage'
-      );
-    };
-
   const handleNotificationPress =
     () => {
       router.push(
@@ -1028,9 +1017,6 @@ export default function HomeScreen() {
       }
       onBookmarkPress={
         handleBookmarkPress
-      }
-      onMyPagePress={
-        handleMyPagePress
       }
       onNotificationPress={
         handleNotificationPress

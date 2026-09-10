@@ -841,7 +841,7 @@ const styles = StyleSheet.create({
   dayText: {
     color:
       CourseColors.muted,
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '800',
   },
 

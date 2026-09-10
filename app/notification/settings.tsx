@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BackHeader } from '@/components/common/BackHeader';
+import { PageHero } from '@/components/layout';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useNotificationSettings } from '@/hooks/notification/use-notification-settings';
 import type { NotificationSettingResponse } from '@/types/notification';
 import { getAccessToken } from '@/utils/auth';
@@ -70,13 +71,11 @@ export default function NotificationSettingsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.hero}>
-          <BackHeader />
-          <Text style={styles.heroTitle}>알림톡 설정</Text>
-          <Text style={styles.heroDescription}>
-            코스와 예약 일정을 카카오 알림톡으로{`\n`}언제 받을지 정할 수 있어요.
-          </Text>
-        </View>
+        <PageHero
+          description="코스와 예약 일정을 카카오 알림톡으로 언제 받을지 정할 수 있어요."
+          showBack
+          title="알림톡 설정"
+        />
 
         <View style={styles.body}>
           {loading ? (
@@ -160,29 +159,18 @@ export default function NotificationSettingsScreen() {
 const styles = StyleSheet.create({
   checkingSafe: {
     alignItems: 'center',
-    backgroundColor: CourseColors.primary,
+    backgroundColor: CourseColors.hero,
     flex: 1,
     justifyContent: 'center',
   },
-  safe: { flex: 1, backgroundColor: CourseColors.primary },
+  safe: { flex: 1, backgroundColor: CourseColors.hero },
   container: { flexGrow: 1, backgroundColor: CourseColors.background, paddingBottom: 44 },
-  hero: {
-    backgroundColor: CourseColors.primary,
-    paddingHorizontal: 22,
-    paddingTop: 20,
-    paddingBottom: 42,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    gap: 12,
-  },
-  heroTitle: { color: CourseColors.white, fontSize: 30, fontWeight: '900' },
-  heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22 },
   body: {
     width: '100%',
-    maxWidth: 760,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 18,
-    marginTop: -18,
+    marginTop: PAGE_LAYOUT.sectionSpacing,
     gap: 12,
   },
   loadingCard: {
@@ -238,7 +226,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   cardTitle: { fontSize: 16, fontWeight: '900', color: CourseColors.text },
-  cardDesc: { fontSize: 12.5, color: CourseColors.muted, lineHeight: 19 },
+  cardDesc: { fontSize: 14, color: CourseColors.muted, lineHeight: 20 },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -258,7 +246,7 @@ const styles = StyleSheet.create({
     borderColor: CourseColors.primary,
   },
   chipDisabled: { opacity: 0.5 },
-  chipText: { color: CourseColors.text, fontWeight: '800', fontSize: 13 },
+  chipText: { color: CourseColors.text, fontWeight: '800', fontSize: 14 },
   chipTextActive: { color: CourseColors.white },
-  saveError: { color: CourseColors.error, fontSize: 12.5, textAlign: 'center' },
+  saveError: { color: CourseColors.error, fontSize: 14, textAlign: 'center' },
 });

@@ -14,14 +14,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ONBOARDING_SLIDES } from '@/constants/onboarding-slides';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useCompleteOnboarding } from '@/hooks/onboarding/use-complete-onboarding';
-
-const CONTENT_MAX_WIDTH = 480;
 
 export function OnboardingCarousel() {
   const scrollRef = useRef<ScrollView>(null);
   const { width } = useWindowDimensions();
-  const pageWidth = Math.min(width, CONTENT_MAX_WIDTH);
+  const pageWidth = Math.min(width, PAGE_LAYOUT.desktopMaxWidth);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { completeOnboarding, errorMessage, isSubmitting } = useCompleteOnboarding();
   const isLastSlide = currentIndex === ONBOARDING_SLIDES.length - 1;

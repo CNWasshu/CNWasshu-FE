@@ -13,8 +13,9 @@ import {
 import { BookmarkCard } from '@/components/bookmark/BookmarkCard';
 import { BookmarkEmpty } from '@/components/bookmark/BookmarkEmpty';
 import { BookmarkError } from '@/components/bookmark/BookmarkError';
-import { BookmarkHeader } from '@/components/bookmark/BookmarkHeader';
 import { BookmarkLoading } from '@/components/bookmark/BookmarkLoading';
+import { PageHero } from '@/components/layout';
+import { PAGE_LAYOUT } from '@/constants/layout';
 
 import type {
   BookmarkResponse,
@@ -71,10 +72,14 @@ export function BookmarkContent({
           false
         }
       >
+        <PageHero
+          description="관심 있는 체험과 맛집을 모아서 확인해보세요."
+          showBack
+          title="담은 장소"
+        />
+
         <View style={styles.screen}>
-          <BookmarkHeader
-            count={totalBookmarkCount}
-          />
+          <Text style={styles.countSummary}>담은 장소 {totalBookmarkCount}개</Text>
 
           {!loading &&
             !errorMessage &&
@@ -221,11 +226,17 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     width: '100%',
-    maxWidth: 430,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     paddingHorizontal: 18,
-    paddingTop: 14,
+    paddingTop: 24,
     paddingBottom: 30,
     backgroundColor: '#FFFAF1',
+  },
+
+  countSummary: {
+    color: '#5F5139',
+    fontSize: 14,
+    fontWeight: '800',
   },
 
   filterSection: {
@@ -262,7 +273,7 @@ const styles = StyleSheet.create({
 
   regionChipText: {
     color: '#6F675C',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
     textAlign: 'center',
   },
@@ -292,7 +303,7 @@ const styles = StyleSheet.create({
 
   regionEmptyTitle: {
     color: '#29251E',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '800',
     textAlign: 'center',
   },
@@ -300,7 +311,7 @@ const styles = StyleSheet.create({
   regionEmptyDescription: {
     marginTop: 7,
     color: '#888178',
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
   },
 });

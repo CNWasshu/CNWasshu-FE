@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   text: {
     marginTop: 2,
     color: '#6B5730',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '800',
   },
 });

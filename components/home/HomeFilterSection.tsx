@@ -1,3 +1,5 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import type { ComponentProps } from 'react';
 import {
   useEffect,
   useRef,
@@ -36,17 +38,17 @@ type HomeFilterSectionProps = {
 const TYPE_FILTERS: {
   label: string;
   value: HomeItemType;
-  icon: string;
+  icon: ComponentProps<typeof Ionicons>['name'];
 }[] = [
   {
     label: '체험',
     value: 'ACTIVITY',
-    icon: '🧑‍🌾',
+    icon: 'compass-outline',
   },
   {
     label: '맛집',
     value: 'RESTAURANT',
-    icon: '🍲',
+    icon: 'restaurant-outline',
   },
 ];
 
@@ -54,12 +56,14 @@ type HorizontalScrollProps = {
   children: React.ReactNode;
   contentContainerStyle: any;
   scrollToX?: number | null;
+  wrap?: boolean;
 };
 
 function HorizontalScroll({
   children,
   contentContainerStyle,
   scrollToX = null,
+  wrap = false,
 }: HorizontalScrollProps) {
   const scrollRef =
     useRef<ScrollView>(null);
@@ -263,6 +267,10 @@ function HorizontalScroll({
     };
   }, []);
 
+  if (wrap) {
+    return <View style={contentContainerStyle}>{children}</View>;
+  }
+
   return (
     <ScrollView
       ref={scrollRef}
@@ -337,11 +345,11 @@ export function HomeFilterSection({
                 )
               }
             >
-              <Text
-                style={styles.typeIcon}
-              >
-                {filter.icon}
-              </Text>
+              <Ionicons
+                color={active ? '#3F7D46' : '#8A7652'}
+                name={filter.icon}
+                size={18}
+              />
 
               <Text
                 style={[
@@ -383,6 +391,7 @@ export function HomeFilterSection({
         scrollToX={
           regionScrollX
         }
+        wrap
       >
         {regions.map((region) => {
           const active =
@@ -448,32 +457,21 @@ export function HomeFilterSection({
                 return (
                   <Pressable
                     key={category}
-                    style={
-                      styles.categoryButton
-                    }
+                    style={[
+                      styles.categoryButton,
+                      active && styles.categoryButtonActive,
+                    ]}
                     onPress={() =>
                       onSelectCategory(
                         category
                       )
                     }
                   >
-                    <View
-                      style={[
-                        styles.categoryIcon,
-                        active &&
-                          styles.categoryIconActive,
-                      ]}
-                    >
-                      <Text
-                        style={
-                          styles.categoryEmoji
-                        }
-                      >
-                        {getCategoryIcon(
-                          category
-                        )}
-                      </Text>
-                    </View>
+                    <Ionicons
+                      color={active ? '#FFFFFF' : '#4C7F50'}
+                      name={getCategoryIcon(category)}
+                      size={17}
+                    />
 
                     <Text
                       style={[
@@ -483,7 +481,7 @@ export function HomeFilterSection({
                       ]}
                       numberOfLines={1}
                     >
-                      {category}
+                      {category === '전체' ? '모든 체험' : category}
                     </Text>
                   </Pressable>
                 );
@@ -498,22 +496,11 @@ export function HomeFilterSection({
 
 function getCategoryIcon(
   categoryName: string
-) {
+): ComponentProps<typeof Ionicons>['name'] {
   if (
     categoryName === '전체'
   ) {
-    return '🌾';
-  }
-
-  if (
-    categoryName.includes(
-      '농촌'
-    ) ||
-    categoryName.includes(
-      '체험'
-    )
-  ) {
-    return '🧑‍🌾';
+    return 'apps-outline';
   }
 
   if (
@@ -524,7 +511,7 @@ function getCategoryIcon(
       '행사'
     )
   ) {
-    return '🌸';
+    return 'sparkles-outline';
   }
 
   if (
@@ -538,7 +525,7 @@ function getCategoryIcon(
       '건강'
     )
   ) {
-    return '🌿';
+    return 'fitness-outline';
   }
 
   if (
@@ -546,7 +533,7 @@ function getCategoryIcon(
       '만들기'
     )
   ) {
-    return '🧶';
+    return 'color-palette-outline';
   }
 
   if (
@@ -554,7 +541,7 @@ function getCategoryIcon(
       '전통'
     )
   ) {
-    return '🏺';
+    return 'library-outline';
   }
 
   if (
@@ -565,10 +552,14 @@ function getCategoryIcon(
       '생태'
     )
   ) {
-    return '🌱';
+    return 'earth-outline';
   }
 
-  return '📍';
+  if (categoryName.includes('농촌') || categoryName.includes('체험')) {
+    return 'leaf-outline';
+  }
+
+  return 'location-outline';
 }
 
 const styles =
@@ -595,13 +586,9 @@ const styles =
       backgroundColor: '#FFFFFF',
     },
 
-    typeIcon: {
-      fontSize: 15,
-    },
-
     typeButtonText: {
       color: '#6C5A37',
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '800',
     },
 
@@ -617,13 +604,15 @@ const styles =
       marginTop: 18,
       marginBottom: 8,
       color: '#5F5139',
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: '800',
     },
 
     regionList: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
       gap: 7,
-      paddingRight: 18,
+      rowGap: 8,
     },
 
     regionChip: {
@@ -642,7 +631,7 @@ const styles =
 
     regionChipText: {
       color: '#6B5730',
-      fontSize: 12,
+      fontSize: 13,
       fontWeight: '800',
     },
 
@@ -651,45 +640,36 @@ const styles =
     },
 
     categoryList: {
-      gap: 10,
+      gap: 8,
       paddingRight: 18,
     },
 
     categoryButton: {
-      width: 67,
       alignItems: 'center',
-    },
-
-    categoryIcon: {
-      width: 50,
-      height: 50,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderWidth: 1,
-      borderColor: '#EADCC4',
-      borderRadius: 25,
       backgroundColor: '#FFFFFF',
+      borderColor: '#EADCC4',
+      borderRadius: 999,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: 6,
+      minHeight: 38,
+      paddingHorizontal: 13,
+      paddingVertical: 8,
     },
 
-    categoryIconActive: {
-      borderColor: '#ABD19C',
-      backgroundColor: '#E8F5E4',
-    },
-
-    categoryEmoji: {
-      fontSize: 22,
+    categoryButtonActive: {
+      backgroundColor: '#3F7D46',
+      borderColor: '#3F7D46',
     },
 
     categoryText: {
-      width: 67,
-      marginTop: 6,
       color: '#72664E',
-      fontSize: 10,
+      fontSize: 13,
+      lineHeight: 18,
       fontWeight: '800',
-      textAlign: 'center',
     },
 
     categoryTextActive: {
-      color: '#3F7D46',
+      color: '#FFFFFF',
     },
   });

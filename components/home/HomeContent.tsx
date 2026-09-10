@@ -16,6 +16,8 @@ import {
   SafeAreaView,
 } from 'react-native-safe-area-context';
 
+import { PAGE_LAYOUT } from '@/constants/layout';
+
 import {
   HomeFilterSection,
 } from '@/components/home/HomeFilterSection';
@@ -114,7 +116,6 @@ type HomeContentProps = {
   onAiRecommend: () => void;
   onPromotionPress: () => void;
   onBookmarkPress: () => void;
-  onMyPagePress: () => void;
   onNotificationPress: () => void;
 
   unreadNotificationCount: number;
@@ -150,7 +151,6 @@ export function HomeContent({
   onAiRecommend,
   onPromotionPress,
   onBookmarkPress,
-  onMyPagePress,
   onNotificationPress,
   unreadNotificationCount,
 }: HomeContentProps) {
@@ -279,9 +279,6 @@ export function HomeContent({
               }
               onBookmarkPress={
                 onBookmarkPress
-              }
-              onMyPagePress={
-                onMyPagePress
               }
               onNotificationPress={
                 onNotificationPress
@@ -488,8 +485,6 @@ const styles =
 
     screen: {
       width: '100%',
-      maxWidth: 430,
-      alignSelf: 'center',
       position: 'relative',
       zIndex: 100,
       overflow: 'visible',
@@ -519,8 +514,8 @@ const styles =
     errorMessage: {
       marginTop: 8,
       color: '#777777',
-      fontSize: 13,
-      lineHeight: 20,
+      fontSize: 14,
+      lineHeight: 21,
       textAlign: 'center',
     },
 
@@ -540,8 +535,11 @@ const styles =
     },
 
     content: {
+      width: '100%',
+      maxWidth: PAGE_LAYOUT.desktopMaxWidth,
+      alignSelf: 'center',
       paddingHorizontal: 18,
-      paddingTop: 18,
+      paddingTop: 24,
       position: 'relative',
       zIndex: 100,
       overflow: 'visible',
@@ -577,13 +575,13 @@ const styles =
 
     resultCount: {
       color: '#777777',
-      fontSize: 11,
+      fontSize: 13,
       fontWeight: '700',
     },
 
     itemWrapper: {
       width: '100%',
-      maxWidth: 430,
+      maxWidth: PAGE_LAYOUT.desktopMaxWidth,
       alignSelf: 'center',
       paddingHorizontal: 18,
       position: 'relative',
@@ -596,7 +594,7 @@ const styles =
 
     footerWrapper: {
       width: '100%',
-      maxWidth: 430,
+      maxWidth: PAGE_LAYOUT.desktopMaxWidth,
       alignSelf: 'center',
       paddingHorizontal: 18,
       paddingTop: 13,
@@ -604,7 +602,7 @@ const styles =
 
     emptyWrapper: {
       width: '100%',
-      maxWidth: 430,
+      maxWidth: PAGE_LAYOUT.desktopMaxWidth,
       alignSelf: 'center',
       paddingHorizontal: 18,
     },
@@ -622,14 +620,14 @@ const styles =
 
     emptyTitle: {
       color: '#29251E',
-      fontSize: 15,
+      fontSize: 16,
       fontWeight: '800',
     },
 
     emptyDescription: {
       marginTop: 6,
       color: '#777777',
-      fontSize: 12,
+      fontSize: 14,
       textAlign: 'center',
     },
   });

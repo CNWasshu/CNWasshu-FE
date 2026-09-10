@@ -106,9 +106,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   confirmButtonText: { color: CourseColors.white, fontSize: 14, fontWeight: '800' },
-  description: { color: CourseColors.muted, fontSize: 13, lineHeight: 19, marginTop: 5 },
+  description: { color: CourseColors.muted, fontSize: 14, lineHeight: 20, marginTop: 5 },
   disabled: { opacity: 0.55 },
-  error: { color: CourseColors.error, fontSize: 12, lineHeight: 17, marginTop: 14 },
+  error: { color: CourseColors.error, fontSize: 13, lineHeight: 18, marginTop: 14 },
   footer: { flexDirection: 'row', gap: 10, marginTop: 24 },
   handle: {
     alignSelf: 'center',

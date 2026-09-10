@@ -1,18 +1,22 @@
 import { courseApi, getCourseErrorMessage } from '@/api/courseApi';
+import { BackHeader } from '@/components/common/BackHeader';
 import { CourseMap } from '@/components/course/CourseMap';
 import { CourseSchedule } from '@/components/course/CourseSchedule';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useCourse } from '@/hooks/useCourse';
 import { getAccessToken } from '@/utils/auth';
 import { shareCourse } from '@/utils/courseShare';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 
 export default function CourseDetailScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isDesktopWeb = Platform.OS === 'web' && width >= PAGE_LAYOUT.desktopNavigationBreakpoint;
   const { id } = useLocalSearchParams<{ id?: string | string[] }>();
   const rawId = Array.isArray(id) ? id[0] : id;
   const parsedId = rawId && /^\d+$/.test(rawId) ? Number(rawId) : null;
@@ -63,28 +67,17 @@ export default function CourseDetailScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <Stack.Screen
-        options={{
-          title: '코스 상세',
-          headerBackVisible: false,
-          headerLeft: () => (
-            <Pressable
-              accessibilityLabel="코스 목록으로 이동"
-              accessibilityRole="button"
-              hitSlop={12}
-              onPress={() => router.replace('/(tabs)/course')}>
-              <Ionicons color={CourseColors.white} name="arrow-back" size={24} />
-            </Pressable>
-          ),
-          headerStyle: { backgroundColor: CourseColors.primary },
-          headerTintColor: CourseColors.white,
-          headerShadowVisible: false,
-        }}
+        options={{ headerShown: false }}
       />
       {loading ? <View style={styles.loading}><ActivityIndicator size="large" color={CourseColors.primary} /><Text style={styles.stateTitle}>코스를 불러오고 있어요</Text><Text style={styles.stateDescription}>저장된 지도와 일정을 준비하고 있습니다.</Text></View> : null}
       {!loading && error ? <View style={styles.state}><Ionicons color={CourseColors.error} name="alert-circle-outline" size={32} /><Text style={styles.stateTitle}>코스를 불러오지 못했어요</Text><Text style={styles.stateDescription}>{error}</Text><Pressable accessibilityRole="button" style={styles.retryButton} onPress={() => void refetch()}><Text style={styles.retry}>다시 시도</Text></Pressable></View> : null}
       {!loading && course ? (
         <ScrollView contentContainerStyle={styles.container}>
-          <View style={styles.hero}>
+          <View style={[styles.hero, isDesktopWeb && styles.heroDesktop]}>
+            <View style={styles.detailHeader}>
+              <BackHeader />
+              <Text style={styles.detailHeaderTitle}>코스 상세</Text>
+            </View>
             <Text style={styles.typeBadge}>{course.courseType === 'AI' ? 'AI 추천 코스' : '내가 만든 코스'}</Text>
             <View style={styles.titleRow}>
               <Text style={styles.title}>{course.courseName}</Text>
@@ -115,8 +108,8 @@ export default function CourseDetailScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: CourseColors.background }, container: { paddingBottom: 46 },
-  hero: { backgroundColor: CourseColors.primary, paddingHorizontal: 22, paddingTop: 7, paddingBottom: 26, borderBottomLeftRadius: 26, borderBottomRightRadius: 26, gap: 10 }, typeBadge: { alignSelf: 'flex-start', color: CourseColors.primaryDark, backgroundColor: '#E9F4E6', borderRadius: 10, paddingHorizontal: 9, paddingVertical: 4, fontWeight: '800', fontSize: 12, overflow: 'hidden' }, titleRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 12 }, title: { color: CourseColors.white, flex: 1, fontSize: 25, fontWeight: '900', lineHeight: 32 }, summaryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 }, summaryItem: { alignItems: 'center', flexDirection: 'row', gap: 5 }, summaryText: { color: '#F4FAF2', fontSize: 12, fontWeight: '700' },
-  content: { width: '100%', maxWidth: 760, alignSelf: 'center', paddingHorizontal: 16, marginTop: 16, gap: 22 }, mapSection: { backgroundColor: CourseColors.white, borderRadius: 18, borderWidth: 1, borderColor: CourseColors.border, padding: 15, gap: 13 }, scheduleSection: { gap: 13 }, sectionHeading: { flexDirection: 'row', alignItems: 'center', gap: 8 }, sectionTitle: { color: CourseColors.text, fontSize: 19, fontWeight: '900' },
-  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 9, padding: 28 }, state: { alignItems: 'center', justifyContent: 'center', padding: 30, gap: 9 }, stateTitle: { color: CourseColors.text, fontSize: 16, fontWeight: '900', textAlign: 'center' }, stateDescription: { color: CourseColors.muted, fontSize: 13, lineHeight: 19, textAlign: 'center' }, retryButton: { minHeight: 44, borderWidth: 1, borderColor: CourseColors.primary, borderRadius: 12, justifyContent: 'center', marginTop: 5, paddingHorizontal: 20 }, retry: { color: CourseColors.primary, fontSize: 13, fontWeight: '900' },
+  hero: { backgroundColor: CourseColors.hero, paddingHorizontal: 18, paddingTop: 18, paddingBottom: 26, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, gap: 10, width: '100%' }, heroDesktop: { borderBottomLeftRadius: 0, borderBottomRightRadius: 0, minHeight: 168, paddingBottom: 30, paddingHorizontal: 24, paddingTop: 24 }, detailHeader: { alignItems: 'center', flexDirection: 'row', gap: 10 }, detailHeaderTitle: { color: CourseColors.white, fontSize: 18, fontWeight: '800' }, typeBadge: { alignSelf: 'flex-start', color: CourseColors.primaryDark, backgroundColor: '#E9F4E6', borderRadius: 10, paddingHorizontal: 9, paddingVertical: 4, fontWeight: '800', fontSize: 13, overflow: 'hidden' }, titleRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 12 }, title: { color: CourseColors.white, flex: 1, fontSize: 25, fontWeight: '900', lineHeight: 32 }, summaryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 }, summaryItem: { alignItems: 'center', flexDirection: 'row', gap: 5 }, summaryText: { color: '#F4FAF2', fontSize: 13, fontWeight: '700' },
+  content: { width: '100%', maxWidth: PAGE_LAYOUT.desktopMaxWidth, alignSelf: 'center', paddingHorizontal: 16, marginTop: 16, gap: 22 }, mapSection: { backgroundColor: CourseColors.white, borderRadius: 18, borderWidth: 1, borderColor: CourseColors.border, padding: 15, gap: 13 }, scheduleSection: { gap: 13 }, sectionHeading: { flexDirection: 'row', alignItems: 'center', gap: 8 }, sectionTitle: { color: CourseColors.text, fontSize: 19, fontWeight: '900' },
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 9, padding: 28 }, state: { alignItems: 'center', justifyContent: 'center', padding: 30, gap: 9 }, stateTitle: { color: CourseColors.text, fontSize: 16, fontWeight: '900', textAlign: 'center' }, stateDescription: { color: CourseColors.muted, fontSize: 14, lineHeight: 20, textAlign: 'center' }, retryButton: { minHeight: 44, borderWidth: 1, borderColor: CourseColors.primary, borderRadius: 12, justifyContent: 'center', marginTop: 5, paddingHorizontal: 20 }, retry: { color: CourseColors.primary, fontSize: 14, fontWeight: '900' },
   courseActions: { flexDirection: 'row', flexShrink: 0, gap: 8 }, actionButton: { alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.28)', borderRadius: 12, borderWidth: 1, height: 42, justifyContent: 'center', width: 42 }, deleteButton: { backgroundColor: 'rgba(119,37,28,0.22)', borderColor: 'rgba(255,213,207,0.35)' }, actionButtonPressed: { opacity: 0.55 },
 });

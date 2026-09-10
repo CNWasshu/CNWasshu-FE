@@ -12,6 +12,7 @@ import { TimetableSaveModal } from '@/components/timetable/TimetableSaveModal';
 import { TimetableScheduleModal } from '@/components/timetable/TimetableScheduleModal';
 import { TIMETABLE_COLORS } from '@/components/timetable/timetable-colors';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useCourse } from '@/hooks/useCourse';
 import { useReservationSync } from '@/hooks/timetable/use-reservation-sync';
 import { useSavedActivities } from '@/hooks/timetable/use-saved-activities';
@@ -325,30 +326,32 @@ function CourseEditEditor({
               날짜와 일정을 수정하고 다시 저장할 수 있어요.
             </Text>
           </View>
-          <TimetableDateRange
-            endDate={endDate}
-            errorMessage={dateErrorMessage}
-            maximumEndDate={maximumEndDate}
-            minimumStartDate={minimumStartDate}
-            onChangeEndDate={handleChangeEndDate}
-            onChangeStartDate={handleChangeStartDate}
-            startDate={startDate}
-          />
-          <TimetableReservationSyncStatus
-            error={reservationSyncError}
-            isLoading={isReservationSyncing}
-            onRetry={() => void synchronizePeriodReservations()}
-          />
-          <TimetableCourseSection
-            days={days}
-            onAddSchedule={openAddScheduleModal}
-            onSave={openSaveModal}
-            onSelectDay={setSelectedDayId}
-            onSelectSchedule={openEditScheduleModal}
-            selectedDayId={selectedDayId}
-            selectedSchedules={selectedSchedules}
-            saveErrorMessage={saveErrorMessage}
-          />
+          <View style={styles.body}>
+            <TimetableDateRange
+              endDate={endDate}
+              errorMessage={dateErrorMessage}
+              maximumEndDate={maximumEndDate}
+              minimumStartDate={minimumStartDate}
+              onChangeEndDate={handleChangeEndDate}
+              onChangeStartDate={handleChangeStartDate}
+              startDate={startDate}
+            />
+            <TimetableReservationSyncStatus
+              error={reservationSyncError}
+              isLoading={isReservationSyncing}
+              onRetry={() => void synchronizePeriodReservations()}
+            />
+            <TimetableCourseSection
+              days={days}
+              onAddSchedule={openAddScheduleModal}
+              onSave={openSaveModal}
+              onSelectDay={setSelectedDayId}
+              onSelectSchedule={openEditScheduleModal}
+              selectedDayId={selectedDayId}
+              selectedSchedules={selectedSchedules}
+              saveErrorMessage={saveErrorMessage}
+            />
+          </View>
         </View>
       </ScrollView>
       <TimetableScheduleModal
@@ -414,8 +417,12 @@ const styles = StyleSheet.create({
   screen: {
     backgroundColor: TIMETABLE_COLORS.background,
     flex: 1,
-    maxWidth: 430,
     paddingBottom: 32,
+    width: '100%',
+  },
+  body: {
+    alignSelf: 'center',
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     width: '100%',
   },
   header: {

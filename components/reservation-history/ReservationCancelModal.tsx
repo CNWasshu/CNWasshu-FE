@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   },
 
   badgeText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '800',
     color: '#a95050',
   },
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
 
   activity: {
     marginTop: 7,
-    fontSize: 13,
+    fontSize: 14,
     color: '#766749',
   },
 
@@ -210,21 +210,21 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#827563',
   },
 
   value: {
     flex: 1,
     textAlign: 'right',
-    fontSize: 12.5,
+    fontSize: 13,
     fontWeight: '700',
     color: '#3f4937',
   },
 
   notice: {
     marginTop: 14,
-    fontSize: 11.5,
+    fontSize: 13,
     lineHeight: 18,
     color: '#8c6b64',
   },
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   },
 
   closeText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#5d4a2a',
   },
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   },
 
   confirmText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#ffffff',
   },

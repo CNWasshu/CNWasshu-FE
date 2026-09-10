@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
 
   badgeText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '800',
     color: '#3f7d46',
   },
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
 
   activity: {
     marginTop: 7,
-    fontSize: 13,
+    fontSize: 14,
     color: '#766749',
   },
 
@@ -232,14 +232,14 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#827563',
   },
 
   value: {
     flex: 1,
     textAlign: 'right',
-    fontSize: 12.5,
+    fontSize: 13,
     fontWeight: '700',
     color: '#3f4937',
   },
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
 
   cancelText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#5d4a2a',
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   },
 
   confirmText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#ffffff',
   },

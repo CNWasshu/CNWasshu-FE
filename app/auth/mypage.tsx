@@ -11,14 +11,11 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// 모든 유저의 프로필 사진을 이 마스코트 이미지로 고정한다 (개별 업로드/변경 기능 없음).
-const PROFILE_IMAGE = require('@/assets/images/충남마스코트.jpg');
-
 import { DeleteAccountModal } from '@/components/auth/DeleteAccountModal';
-import { BackHeader } from '@/components/common/BackHeader';
+import { PageHero } from '@/components/layout';
 import { CourseActionModal } from '@/components/course/CourseActionModal';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useDeleteAccount } from '@/hooks/auth/use-delete-account';
 import { useLogout } from '@/hooks/auth/use-logout';
 import { useMe } from '@/hooks/auth/use-me';
@@ -28,6 +25,9 @@ import { useMyStampCount } from '@/hooks/stamp/use-my-stamp-count';
 import { useCourses } from '@/hooks/useCourse';
 import type { CourseSummary } from '@/types/course';
 import { getAccessToken } from '@/utils/auth';
+
+// 모든 유저의 프로필 사진을 이 마스코트 이미지로 고정한다 (개별 업로드/변경 기능 없음).
+const PROFILE_IMAGE = require('@/assets/images/충남마스코트.jpg');
 
 // 팀 결정: 만족도조사 로직과 충돌 우려로 수정 기능 비활성화, 코드는 참고용으로 유지.
 // (app/course/edit/[id].tsx 및 관련 PUT /api/timetables/{courseId} 호출부는 그대로 남겨두되,
@@ -190,17 +190,8 @@ export default function MyPageScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.hero}>
-          <BackHeader />
-          <View style={styles.heroTop}>
-            <Text style={styles.heroTitle}>마이</Text>
-            <Text style={styles.heroBadge}>체험 기록</Text>
-          </View>
-          <Text style={styles.heroDescription}>
-            내 정보와 알림 설정을{`\n`}이곳에서 관리할 수 있어요.
-          </Text>
-        </View>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        <PageHero description="내 정보와 알림 설정, 여행 기록을 한곳에서 관리할 수 있어요." eyebrow="내 여행 정보" icon="person-outline" title="마이페이지" />
 
         <View style={styles.body}>
           {meLoading ? (
@@ -479,7 +470,7 @@ const styles = StyleSheet.create({
   heroTitle: { color: CourseColors.white, fontSize: 30, fontWeight: '900' },
   heroBadge: {
     color: '#E6F3E3',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
     borderLeftWidth: 1,
     borderLeftColor: '#8DB392',
@@ -488,10 +479,10 @@ const styles = StyleSheet.create({
   heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22 },
   body: {
     width: '100%',
-    maxWidth: 760,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 18,
-    marginTop: -18,
+    marginTop: PAGE_LAYOUT.sectionSpacing,
     gap: 12,
   },
   loadingCard: {
@@ -563,14 +554,14 @@ const styles = StyleSheet.create({
   profileInfo: { flex: 1, gap: 4 },
   profileNameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   profileName: { fontSize: 19, fontWeight: '900', color: CourseColors.text },
-  profileMeta: { fontSize: 12, color: CourseColors.muted, lineHeight: 18, marginTop: 4 },
+  profileMeta: { fontSize: 13, color: CourseColors.muted, lineHeight: 18, marginTop: 4 },
   editButton: {
     backgroundColor: CourseColors.primarySoft,
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
-  editButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 12 },
+  editButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 14 },
   nicknameInput: {
     borderWidth: 1,
     borderColor: CourseColors.border,
@@ -581,7 +572,7 @@ const styles = StyleSheet.create({
     color: CourseColors.text,
     backgroundColor: CourseColors.background,
   },
-  nicknameError: { color: CourseColors.error, fontSize: 12, marginTop: 6 },
+  nicknameError: { color: CourseColors.error, fontSize: 13, marginTop: 6 },
   nicknameActions: { flexDirection: 'row', gap: 8, marginTop: 8 },
   nicknameCancelButton: {
     flex: 1,
@@ -590,7 +581,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: CourseColors.beige,
   },
-  nicknameCancelText: { color: CourseColors.text, fontWeight: '800', fontSize: 13 },
+  nicknameCancelText: { color: CourseColors.text, fontWeight: '800', fontSize: 14 },
   nicknameSaveButton: {
     flex: 1,
     alignItems: 'center',
@@ -598,7 +589,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: CourseColors.primary,
   },
-  nicknameSaveText: { color: CourseColors.white, fontWeight: '800', fontSize: 13 },
+  nicknameSaveText: { color: CourseColors.white, fontWeight: '800', fontSize: 14 },
   statGrid: { flexDirection: 'row', gap: 10 },
   statCard: {
     flex: 1,
@@ -611,7 +602,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: { fontSize: 22, fontWeight: '900', color: CourseColors.primary, marginBottom: 6 },
-  statLabel: { fontSize: 12, color: CourseColors.muted, fontWeight: '700' },
+  statLabel: { fontSize: 13, color: CourseColors.muted, fontWeight: '700' },
   menuCard: {
     backgroundColor: CourseColors.white,
     borderWidth: 1,
@@ -645,8 +636,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardTitle: { fontSize: 16, fontWeight: '900', color: CourseColors.text },
-  sectionHint: { fontSize: 12, color: CourseColors.muted },
-  cardDesc: { fontSize: 12.5, color: CourseColors.muted, lineHeight: 19 },
+  sectionHint: { fontSize: 13, color: CourseColors.muted },
+  cardDesc: { fontSize: 14, color: CourseColors.muted, lineHeight: 20 },
   courseTabRow: {
     flexDirection: 'row',
     gap: 6,
@@ -662,7 +653,7 @@ const styles = StyleSheet.create({
     borderRadius: 9,
   },
   courseTabButtonActive: { backgroundColor: CourseColors.primary },
-  courseTabButtonText: { fontSize: 13, fontWeight: '800', color: CourseColors.muted },
+  courseTabButtonText: { fontSize: 14, fontWeight: '800', color: CourseColors.muted },
   courseTabButtonTextActive: { color: CourseColors.white },
   courseList: { gap: 8 },
   courseListItem: {
@@ -687,10 +678,10 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   courseActionButtonDanger: { borderColor: '#F2C9C0' },
-  courseActionButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 12 },
+  courseActionButtonText: { color: CourseColors.primaryDark, fontWeight: '800', fontSize: 14 },
   courseActionButtonDangerText: { color: CourseColors.error },
   courseListItemName: { fontSize: 14, fontWeight: '800', color: CourseColors.text },
-  courseListItemMeta: { fontSize: 12, color: CourseColors.muted },
+  courseListItemMeta: { fontSize: 13, color: CourseColors.muted },
   logoutButton: {
     minHeight: 52,
     borderWidth: 1,
@@ -702,6 +693,6 @@ const styles = StyleSheet.create({
   },
   logoutButtonText: { color: CourseColors.primary, fontWeight: '900', fontSize: 15 },
   deleteButton: { alignItems: 'center', paddingVertical: 10 },
-  deleteButtonText: { color: CourseColors.error, fontWeight: '700', fontSize: 13 },
+  deleteButtonText: { color: CourseColors.error, fontWeight: '700', fontSize: 14 },
   disabled: { opacity: 0.55 },
 });

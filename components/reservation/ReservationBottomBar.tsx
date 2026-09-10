@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   },
 
   backText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#5d4a2a',
   },
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
 
   submitText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#ffffff',
   },

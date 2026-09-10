@@ -9,6 +9,7 @@ import {
 
 import type { ActivityDetailResponse } from '@/types/activity';
 import type { ReservationTimeSlot } from '@/types/reservation';
+import { PAGE_LAYOUT } from '@/constants/layout';
 
 import { ReservationActivityCard } from './ReservationActivityCard';
 import { ReservationBottomBar } from './ReservationBottomBar';
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
   app: {
     flex: 1,
     width: '100%',
-    maxWidth: 430,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     backgroundColor: '#fffaf1',
   },
 
@@ -318,7 +319,7 @@ const styles = StyleSheet.create({
   sectionSub: {
     marginTop: 4,
     marginBottom: 11,
-    fontSize: 11.5,
+    fontSize: 13,
     color: '#817664',
   },
 
@@ -330,7 +331,7 @@ const styles = StyleSheet.create({
   },
 
   guideText: {
-    fontSize: 12.5,
+    fontSize: 14,
     fontWeight: '600',
     color: '#766749',
   },
@@ -342,7 +343,7 @@ const styles = StyleSheet.create({
 
   loadingText: {
     marginTop: 9,
-    fontSize: 12.5,
+    fontSize: 14,
     color: '#766749',
   },
 
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
   },
 
   errorText: {
-    fontSize: 12.5,
+    fontSize: 14,
     color: '#a55731',
   },
 
@@ -374,7 +375,7 @@ const styles = StyleSheet.create({
   center: {
     flex: 1,
     width: '100%',
-    maxWidth: 430,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,

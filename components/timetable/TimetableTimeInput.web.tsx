@@ -65,7 +65,7 @@ const styles = {
   },
   label: {
     color: TIMETABLE_COLORS.text,
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 700,
   },
 };

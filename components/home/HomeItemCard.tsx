@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
 
   typeBadgeText: {
     color: '#3F7D46',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '900',
   },
 
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
 
   regionTagText: {
     color: '#3F7D46',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: '900',
   },
 
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
 
   categoryTagText: {
     color: '#6B5730',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: '900',
   },
 
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
 
   todayTagText: {
     color: '#A66400',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: '900',
   },
 
@@ -402,14 +402,14 @@ const styles = StyleSheet.create({
   operatingTime: {
     marginTop: 7,
     color: '#6F6A60',
-    fontSize: 12,
+    fontSize: 13,
   },
 
   cardDescription: {
     marginTop: 9,
     color: '#777777',
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
   },
 
   weatherTagList: {
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
 
   weatherTagText: {
     color: '#446CA8',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: '800',
   },
 
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
 
   extraTagText: {
     color: '#777777',
-    fontSize: 11,
+    fontSize: 12,
   },
 
   cardFooter: {
@@ -456,14 +456,14 @@ const styles = StyleSheet.create({
 
   reservationText: {
     color: '#8A7450',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '700',
   },
 
   maxParticipantsText: {
     marginLeft: 4,
     color: '#8A7450',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '700',
   },
 
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
 
   detailButtonText: {
     color: '#3F7D46',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '900',
   },
 });

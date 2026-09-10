@@ -1,5 +1,6 @@
 export const CourseColors = {
   primary: '#3F7D46',
+  hero: '#4C884D',
   primaryDark: '#315F37',
   primarySoft: '#E8F5E4',
   background: '#FFFAF1',

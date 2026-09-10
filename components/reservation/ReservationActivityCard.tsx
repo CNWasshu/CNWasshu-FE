@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
 
   regionTagText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     color: '#3f7d46',
   },
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
 
   categoryTagText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     color: '#9b6500',
   },
@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
 
   address: {
     marginTop: 6,
-    fontSize: 12.5,
-    lineHeight: 19,
+    fontSize: 14,
+    lineHeight: 20,
     color: '#777166',
   },
 
@@ -199,13 +199,13 @@ const styles = StyleSheet.create({
 
   infoLabel: {
     marginBottom: 4,
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '700',
     color: '#3f7d46',
   },
 
   infoValue: {
-    fontSize: 12.5,
+    fontSize: 13,
     fontWeight: '600',
     color: '#4c4438',
   },
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
 
   capacityText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     color: '#4c7442',
   },

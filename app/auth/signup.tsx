@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BackHeader } from '@/components/common/BackHeader';
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
 import { useSignup } from '@/hooks/auth/use-signup';
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
   heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22, marginTop: 3 },
   body: {
     width: '100%',
-    maxWidth: 480,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 22,
     marginTop: 32,
@@ -169,5 +170,5 @@ const styles = StyleSheet.create({
   submitButtonText: { color: CourseColors.white, fontWeight: '900', fontSize: 15 },
   disabled: { opacity: 0.55 },
   loginLink: { alignItems: 'center', paddingVertical: 8 },
-  loginLinkText: { color: CourseColors.primary, fontSize: 13, fontWeight: '700' },
+  loginLinkText: { color: CourseColors.primary, fontSize: 14, fontWeight: '700' },
 });

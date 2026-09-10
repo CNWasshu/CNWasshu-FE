@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -9,6 +10,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -48,6 +50,27 @@ type TimetableScheduleModalProps = {
 
 const INITIAL_START_TIME = '09:00';
 const INITIAL_END_TIME = '10:00';
+
+function SavedPlaceThumbnail({ place }: { place: SavedPlace }) {
+  const [hasImageError, setHasImageError] = useState(false);
+  const showImage = Boolean(place.thumbnailUrl) && !hasImageError;
+
+  return (
+    <View style={styles.activityIcon}>
+      {showImage ? (
+        <Image
+          accessibilityLabel={`${place.title} 이미지`}
+          contentFit="cover"
+          onError={() => setHasImageError(true)}
+          source={{ uri: place.thumbnailUrl! }}
+          style={styles.activityThumbnail}
+        />
+      ) : (
+        <Text style={styles.activityEmoji}>{place.icon}</Text>
+      )}
+    </View>
+  );
+}
 
 function formatDuration(startTime: string, endTime: string) {
   const [startHour, startMinute] = startTime.split(':').map(Number);
@@ -100,6 +123,8 @@ export function TimetableScheduleModal({
   visible,
 }: TimetableScheduleModalProps) {
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const isCompact = width < 768;
   const [title, setTitle] = useState('');
   const [startTime, setStartTime] = useState(INITIAL_START_TIME);
   const [endTime, setEndTime] = useState(INITIAL_END_TIME);
@@ -244,8 +269,8 @@ export function TimetableScheduleModal({
     <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.overlay}>
-        <View accessibilityViewIsModal style={styles.sheet}>
+        style={[styles.overlay, isCompact && styles.overlayCompact]}>
+        <View accessibilityViewIsModal style={[styles.sheet, isCompact && styles.sheetCompact]}>
           <ScrollView
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
@@ -314,9 +339,7 @@ export function TimetableScheduleModal({
 
                 {selectedActivity && !isActivityListVisible ? (
                   <View style={styles.selectedActivitySummary}>
-                    <View style={styles.activityIcon}>
-                      <Text style={styles.activityEmoji}>{selectedActivity.icon}</Text>
-                    </View>
+                    <SavedPlaceThumbnail place={selectedActivity} />
                     <View style={styles.activityText}>
                       <Text style={styles.activityTitle}>{selectedActivity.title}</Text>
                       <Text style={styles.activityMetadata}>
@@ -371,9 +394,7 @@ export function TimetableScheduleModal({
                             key={activity.id}
                             onPress={() => handleSelectActivity(activity)}
                             style={styles.activityCard}>
-                            <View style={styles.activityIcon}>
-                              <Text style={styles.activityEmoji}>{activity.icon}</Text>
-                            </View>
+                            <SavedPlaceThumbnail place={activity} />
                             <View style={styles.activityText}>
                               <Text style={styles.activityTitle}>{activity.title}</Text>
                               <Text style={styles.activityMetadata}>
@@ -494,20 +515,21 @@ export function TimetableScheduleModal({
 const styles = StyleSheet.create({
   activityCard: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: TIMETABLE_COLORS.border, borderRadius: 18, borderWidth: 1, flexDirection: 'row', gap: 10, padding: 10 },
   activityCount: { color: TIMETABLE_COLORS.text, fontSize: 13, fontWeight: '800', lineHeight: 19 },
-  activityDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19 },
-  activityEmoji: { fontSize: 22 },
+  activityDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 14, lineHeight: 20 },
+  activityEmoji: { fontSize: 26 },
   activityIcon: { alignItems: 'center', backgroundColor: '#DDEFD9', borderRadius: 14, height: 44, justifyContent: 'center', width: 44 },
+  activityThumbnail: { borderRadius: 14, height: '100%', width: '100%' },
   activityList: { backgroundColor: '#F8F2E7', borderColor: '#EFE2CD', borderRadius: 18, borderWidth: 1, gap: 9, marginTop: 7, padding: 6 },
   activityListContainer: { marginTop: 12 },
   activityListHeading: { marginTop: 10, paddingHorizontal: 2 },
-  activityMetadata: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 3 },
-  activityNotice: { color: '#527041', fontSize: 10, lineHeight: 15, marginTop: 4 },
+  activityMetadata: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 17, marginTop: 3 },
+  activityNotice: { color: '#527041', fontSize: 12, lineHeight: 17, marginTop: 4 },
   activitySection: { marginTop: 14 },
-  activityErrorText: { color: '#B84738', fontSize: 12, lineHeight: 18, textAlign: 'center' },
+  activityErrorText: { color: '#B84738', fontSize: 13, lineHeight: 18, textAlign: 'center' },
   activityStatus: { alignItems: 'center', backgroundColor: '#F8F2E7', borderColor: '#EFE2CD', borderRadius: 18, borderWidth: 1, justifyContent: 'center', marginTop: 7, minHeight: 110, padding: 16 },
-  activityStatusText: { color: TIMETABLE_COLORS.secondaryText, fontSize: 12, lineHeight: 18, textAlign: 'center' },
+  activityStatusText: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 18, textAlign: 'center' },
   activityText: { flex: 1 },
-  activityTitle: { color: TIMETABLE_COLORS.text, fontSize: 13, fontWeight: '800', lineHeight: 19 },
+  activityTitle: { color: TIMETABLE_COLORS.text, fontSize: 15, fontWeight: '800', lineHeight: 21 },
   activityToggle: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#A8D2A7', borderRadius: 13, borderWidth: 1, flexDirection: 'row', justifyContent: 'center', paddingVertical: 13 },
   activityToggleText: { color: TIMETABLE_COLORS.primary, fontSize: 13, fontWeight: '800', marginRight: 6 },
   buttonRow: { flexDirection: 'row', gap: 10 },
@@ -517,36 +539,38 @@ const styles = StyleSheet.create({
   confirmDeleteButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   confirmationButtons: { flexDirection: 'row', gap: 10, marginTop: 20, width: '100%' },
   confirmationCard: { alignSelf: 'center', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 20, maxWidth: 340, padding: 22, width: '86%' },
-  confirmationDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19, marginTop: 7, textAlign: 'center' },
+  confirmationDescription: { color: TIMETABLE_COLORS.secondaryText, fontSize: 14, lineHeight: 20, marginTop: 7, textAlign: 'center' },
   confirmationOverlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.58)', bottom: 0, justifyContent: 'center', left: 0, position: 'absolute', right: 0, top: 0, zIndex: 10 },
   confirmationTitle: { color: TIMETABLE_COLORS.text, fontSize: 18, fontWeight: '800', marginTop: 12 },
   content: { paddingBottom: 14, paddingHorizontal: 14, paddingTop: 14 },
-  clearActivityText: { color: TIMETABLE_COLORS.primary, fontSize: 11, fontWeight: '800' },
+  clearActivityText: { color: TIMETABLE_COLORS.primary, fontSize: 13, fontWeight: '800' },
   deleteButton: { alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#C95A4A', borderRadius: 12, borderWidth: 1, justifyContent: 'center', paddingHorizontal: 22 },
   deleteButtonText: { color: '#B84738', fontSize: 14, fontWeight: '800' },
-  description: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 19, marginTop: 5 },
-  error: { color: '#B84738', fontSize: 12, lineHeight: 17, marginTop: 7 },
+  description: { color: TIMETABLE_COLORS.secondaryText, fontSize: 14, lineHeight: 20, marginTop: 5 },
+  error: { color: '#B84738', fontSize: 13, lineHeight: 17, marginTop: 7 },
   formCard: { backgroundColor: '#FFFFFF', borderColor: TIMETABLE_COLORS.border, borderRadius: 20, borderWidth: 1, marginTop: 16, padding: 14 },
   footer: { backgroundColor: TIMETABLE_COLORS.background, borderTopColor: TIMETABLE_COLORS.border, borderTopWidth: 1, paddingHorizontal: 14, paddingTop: 12 },
   headingRow: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between' },
   headingText: { flex: 1, paddingRight: 12 },
-  hint: { color: TIMETABLE_COLORS.secondaryText, fontSize: 11, lineHeight: 16, marginTop: 8 },
-  iconButton: { alignItems: 'center', backgroundColor: '#F2EADB', borderRadius: 20, height: 40, justifyContent: 'center', width: 40 },
+  hint: { color: TIMETABLE_COLORS.secondaryText, fontSize: 13, lineHeight: 17, marginTop: 8 },
+  iconButton: { alignItems: 'center', backgroundColor: '#F2EADB', borderRadius: 22, height: 44, justifyContent: 'center', width: 44 },
   input: { backgroundColor: '#FFFCF6', borderColor: TIMETABLE_COLORS.border, borderRadius: 12, borderWidth: 1, color: TIMETABLE_COLORS.text, fontSize: 15, marginTop: 7, paddingHorizontal: 13, paddingVertical: 12 },
-  label: { color: TIMETABLE_COLORS.text, fontSize: 12, fontWeight: '700' },
+  label: { color: TIMETABLE_COLORS.text, fontSize: 14, fontWeight: '700' },
   moreActivitiesButton: { alignItems: 'center', backgroundColor: '#F2E8D5', borderRadius: 13, marginTop: 12, paddingVertical: 13 },
-  moreActivitiesButtonText: { color: TIMETABLE_COLORS.text, fontSize: 13, fontWeight: '800' },
-  overlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.48)', flex: 1, justifyContent: 'flex-end' },
+  moreActivitiesButtonText: { color: TIMETABLE_COLORS.text, fontSize: 14, fontWeight: '800' },
+  overlay: { alignItems: 'center', backgroundColor: 'rgba(31, 27, 21, 0.44)', flex: 1, justifyContent: 'flex-end' },
+  overlayCompact: { paddingHorizontal: 16 },
   reservationButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, flexBasis: 0, justifyContent: 'center', minHeight: 46, paddingHorizontal: 10 },
-  reservationButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
+  reservationButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   reservationIcon: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primaryLight, borderRadius: 24, height: 48, justifyContent: 'center', width: 48 },
-  reservationScheduleNotice: { color: '#527041', fontSize: 11, fontWeight: '700', lineHeight: 17, marginTop: 9 },
+  reservationScheduleNotice: { color: '#527041', fontSize: 13, fontWeight: '700', lineHeight: 17, marginTop: 9 },
   retryActivitiesButton: { backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 10, marginTop: 10, paddingHorizontal: 14, paddingVertical: 9 },
-  retryActivitiesButtonText: { color: '#FFFFFF', fontSize: 12, fontWeight: '800' },
+  retryActivitiesButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   selectActivityButton: { borderColor: '#9FC9AD', borderRadius: 12, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 9 },
-  selectActivityButtonText: { color: TIMETABLE_COLORS.primary, fontSize: 12, fontWeight: '800' },
+  selectActivityButtonText: { color: TIMETABLE_COLORS.primary, fontSize: 14, fontWeight: '800' },
   selectedActivitySummary: { alignItems: 'center', backgroundColor: '#F4FAF2', borderColor: '#BDD7BF', borderRadius: 16, borderWidth: 1, flexDirection: 'row', gap: 10, marginTop: 10, padding: 10 },
   sheet: { backgroundColor: TIMETABLE_COLORS.background, borderTopLeftRadius: 26, borderTopRightRadius: 26, maxHeight: '92%', maxWidth: 430, overflow: 'hidden', paddingTop: 4, width: '100%' },
+  sheetCompact: { maxHeight: '90%' },
   submitButton: { alignItems: 'center', backgroundColor: TIMETABLE_COLORS.primary, borderRadius: 12, flex: 1, paddingVertical: 14 },
   submitButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   timeRow: { flexDirection: 'row', gap: 10, marginTop: 14 },

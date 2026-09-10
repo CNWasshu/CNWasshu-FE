@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   message: {
     marginTop: 12,
     color: '#8A5E5E',
-    fontSize: 13,
+    fontSize: 14,
     lineHeight: 20,
     textAlign: 'center',
   },
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
 
   retryText: {
     color: '#3F7D46',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '900',
   },
 });

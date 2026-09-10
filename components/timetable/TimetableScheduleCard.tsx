@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
   freeCard: { backgroundColor: '#FFFAF0', borderColor: '#D8C39B' },
   freeIcon: { backgroundColor: '#F3E8D2' },
   icon: { alignItems: 'center', borderRadius: 11, height: 34, justifyContent: 'center', width: 34 },
-  iconText: { fontSize: 17 },
-  metadata: { color: '#7B6D57', fontSize: 10, lineHeight: 15, marginTop: 2 },
+  iconText: { fontSize: 18 },
+  metadata: { color: '#7B6D57', fontSize: 12, lineHeight: 16, marginTop: 2 },
   textContent: { flex: 1, minWidth: 0 },
-  title: { color: '#3F3526', fontSize: 13, fontWeight: '800', lineHeight: 18 },
+  title: { color: '#3F3526', fontSize: 14, fontWeight: '800', lineHeight: 19 },
 });

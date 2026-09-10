@@ -2,18 +2,24 @@ import * as Linking from 'expo-linking';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { CourseColors } from '@/constants/course-colors';
+import { PAGE_LAYOUT } from '@/constants/layout';
+import { APP_POINT_FONT } from '@/constants/typography';
 import { useKakaoLogin } from '@/hooks/auth/use-kakao-login';
 import { useLogin } from '@/hooks/auth/use-login';
 
@@ -34,6 +40,8 @@ function buildKakaoAuthUrl(clientId: string, redirectUri: string) {
 }
 
 export default function LoginScreen() {
+  const { width } = useWindowDimensions();
+  const isDesktopWeb = Platform.OS === 'web' && width >= PAGE_LAYOUT.desktopNavigationBreakpoint;
   const params = useLocalSearchParams<{ code?: string; error?: string }>();
   const { errorMessage: loginErrorMessage, isSubmitting, login, reset } = useKakaoLogin();
   const {
@@ -134,17 +142,33 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <View style={styles.container}>
-        <View style={styles.hero}>
-          <Text style={styles.heroBadge}>CNWASSHU</Text>
-          <Text style={styles.heroTitle}>로그인</Text>
-          <Text style={styles.heroDescription}>
-            카카오 계정으로 간편하게{`\n`}시작해 보세요.
-          </Text>
+      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <View style={[styles.hero, isDesktopWeb && styles.heroDesktop]}>
+          <View style={styles.heroInner}>
+            <View style={[styles.heroCopy, isDesktopWeb && styles.heroCopyDesktop]}>
+              <View style={styles.brandRow}>
+                <Ionicons color="#EAF5E7" name="leaf-outline" size={22} />
+                <Text style={styles.heroBadge}>충남왔슈</Text>
+              </View>
+              <Text style={[styles.heroTitle, isDesktopWeb && styles.heroTitleDesktop]}>충남 여행의 시작,{`\n`}충남왔슈와 함께해요</Text>
+              <Text style={styles.heroDescription}>체험과 맛집을 발견하고, 나만의 여행 일정과 기록을 한곳에서 만들어보세요.</Text>
+            </View>
+            <Image
+              accessibilityIgnoresInvertColors
+              resizeMode="contain"
+              source={require('@/assets/images/home-hero/discover.png')}
+              style={[styles.heroImage, isDesktopWeb && styles.heroImageDesktop]}
+            />
+          </View>
         </View>
 
         <View style={styles.body}>
-          <View style={styles.basicLoginForm}>
+          <View style={styles.loginCard}>
+            <View style={styles.formHeading}>
+              <Text style={styles.formTitle}>로그인</Text>
+              <Text style={styles.formDescription}>로그인하고 나만의 충남 여행을 이어가세요.</Text>
+            </View>
+            <View style={styles.basicLoginForm}>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
@@ -189,69 +213,82 @@ export default function LoginScreen() {
                 <Text style={styles.signupLinkText}>계정이 없으신가요? 회원가입</Text>
               </Pressable>
             </Link>
-          </View>
-
-          <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>또는</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          {isSubmitting ? (
-            <View style={styles.loadingCard}>
-              <ActivityIndicator size="large" color={CourseColors.primary} />
-              <Text style={styles.loadingText}>로그인 처리 중이에요.</Text>
             </View>
-          ) : (
-            <Pressable style={styles.kakaoButton} onPress={handlePressKakaoLogin}>
-              <Text style={styles.kakaoButtonText}>카카오로 로그인</Text>
-            </Pressable>
-          )}
 
-          {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>또는</Text>
+              <View style={styles.dividerLine} />
+            </View>
 
-          {Platform.OS !== 'web' ? (
-            <Text selectable style={styles.debugRedirectUri}>
-              카카오 콘솔 Redirect URI 등록용: {nativeRedirectUri ?? '(EXPO_PUBLIC_KAKAO_NATIVE_REDIRECT_URI 미설정)'}
-              {'\n'}
-              지금 앱이 쓰는 API 주소: {process.env.EXPO_PUBLIC_API_BASE_URL ?? '(EXPO_PUBLIC_API_BASE_URL 미설정)'}
-            </Text>
-          ) : null}
+            {isSubmitting ? (
+              <View style={styles.loadingCard}>
+                <ActivityIndicator size="large" color={CourseColors.primary} />
+                <Text style={styles.loadingText}>로그인 처리 중이에요.</Text>
+              </View>
+            ) : (
+              <Pressable style={styles.kakaoButton} onPress={handlePressKakaoLogin}>
+                <Ionicons color={KAKAO_TEXT} name="chatbubble" size={18} />
+                <Text style={styles.kakaoButtonText}>카카오로 로그인</Text>
+              </Pressable>
+            )}
+
+            {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+
+            {__DEV__ && Platform.OS !== 'web' ? (
+              <Text selectable style={styles.debugRedirectUri}>
+                카카오 콘솔 Redirect URI 등록용: {nativeRedirectUri ?? '(EXPO_PUBLIC_KAKAO_NATIVE_REDIRECT_URI 미설정)'}
+                {'\n'}
+                지금 앱이 쓰는 API 주소: {process.env.EXPO_PUBLIC_API_BASE_URL ?? '(EXPO_PUBLIC_API_BASE_URL 미설정)'}
+              </Text>
+            ) : null}
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: CourseColors.primary },
-  container: { flex: 1, backgroundColor: CourseColors.background },
+  container: { flexGrow: 1, backgroundColor: CourseColors.background, paddingBottom: 48 },
   hero: {
-    backgroundColor: CourseColors.primary,
-    paddingHorizontal: 22,
-    paddingTop: 20,
-    paddingBottom: 42,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    gap: 12,
+    backgroundColor: CourseColors.hero,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    minHeight: 250,
+    overflow: 'hidden',
+    paddingHorizontal: 18,
+    paddingVertical: 22,
+    width: '100%',
   },
+  heroDesktop: { borderBottomLeftRadius: 0, borderBottomRightRadius: 0, minHeight: 280, paddingHorizontal: 24, paddingVertical: 28 },
+  heroInner: { alignSelf: 'center', flex: 1, justifyContent: 'center', maxWidth: PAGE_LAYOUT.desktopHeroMaxWidth, position: 'relative', width: '100%' },
+  heroCopy: { maxWidth: 520, width: '68%', zIndex: 1 },
+  heroCopyDesktop: { width: '52%' },
+  brandRow: { alignItems: 'center', flexDirection: 'row', gap: 7 },
   heroBadge: {
     color: '#E6F3E3',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.2,
+    fontSize: 19,
+    fontWeight: '900',
+    letterSpacing: -0.2,
   },
-  heroTitle: { color: CourseColors.white, fontSize: 30, fontWeight: '900' },
-  heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22, marginTop: 3 },
+  heroTitle: { color: CourseColors.white, fontFamily: APP_POINT_FONT, fontSize: 27, fontWeight: '900', letterSpacing: -0.7, lineHeight: 36, marginTop: 16 },
+  heroTitleDesktop: { fontSize: 34, lineHeight: 44 },
+  heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22, marginTop: 10, maxWidth: 520 },
+  heroImage: { bottom: -8, height: 175, opacity: 0.36, position: 'absolute', right: -45, width: 230 },
+  heroImageDesktop: { bottom: -28, height: 285, opacity: 1, right: 0, width: '48%' },
   body: {
-    flex: 1,
     width: '100%',
-    maxWidth: 480,
+    maxWidth: 560,
     alignSelf: 'center',
-    paddingHorizontal: 22,
-    marginTop: 40,
-    gap: 16,
+    paddingHorizontal: 18,
+    marginTop: PAGE_LAYOUT.sectionSpacing,
   },
+  loginCard: { backgroundColor: CourseColors.white, borderColor: CourseColors.border, borderRadius: 22, borderWidth: 1, gap: 16, padding: 22 },
+  formHeading: { gap: 5, marginBottom: 2 },
+  formTitle: { color: CourseColors.text, fontSize: 22, fontWeight: '900' },
+  formDescription: { color: CourseColors.muted, fontSize: 14, lineHeight: 21 },
   loadingCard: {
     minHeight: 56,
     borderRadius: 15,
@@ -282,23 +319,25 @@ const styles = StyleSheet.create({
   },
   loginButtonText: { color: CourseColors.white, fontWeight: '900', fontSize: 15 },
   signupLink: { alignItems: 'center', paddingVertical: 6 },
-  signupLinkText: { color: CourseColors.primary, fontSize: 13, fontWeight: '700' },
+  signupLinkText: { color: CourseColors.primary, fontSize: 14, fontWeight: '700' },
   dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   dividerLine: { flex: 1, height: 1, backgroundColor: CourseColors.border },
-  dividerText: { color: CourseColors.muted, fontSize: 12, fontWeight: '700' },
+  dividerText: { color: CourseColors.muted, fontSize: 13, fontWeight: '700' },
   disabled: { opacity: 0.55 },
   kakaoButton: {
     minHeight: 56,
     backgroundColor: KAKAO_YELLOW,
     borderRadius: 15,
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
     justifyContent: 'center',
   },
   kakaoButtonText: { color: KAKAO_TEXT, fontWeight: '900', fontSize: 16 },
   error: { color: CourseColors.error, textAlign: 'center' },
   debugRedirectUri: {
     color: CourseColors.muted,
-    fontSize: 11,
+    fontSize: 12,
     textAlign: 'center',
     marginTop: 4,
   },
