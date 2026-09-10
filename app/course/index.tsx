@@ -30,7 +30,7 @@ export default function CourseListScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <PageHero description="저장한 일정을 확인하고 새로운 AI 코스를 만들어보세요." eyebrow="나의 여행 코스" icon="map-outline" title="나만의 코스를 관리해요" />
         <View style={styles.body}>
           {loading ? <View style={styles.loadingCard}><ActivityIndicator size="large" color={CourseColors.primary} /><Text style={styles.loadingText}>저장된 코스를 불러오고 있어요.</Text></View> : null}

@@ -190,7 +190,7 @@ export default function MyPageScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <PageHero description="내 정보와 알림 설정, 여행 기록을 한곳에서 관리할 수 있어요." eyebrow="내 여행 정보" icon="person-outline" title="마이페이지" />
 
         <View style={styles.body}>

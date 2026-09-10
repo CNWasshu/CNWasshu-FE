@@ -67,7 +67,7 @@ export default function StampListScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <PageHero description="체험지를 방문해서 QR 인증하고 충남 여행 기록을 완성해보세요." eyebrow="충남 여행 기록" icon="ribbon-outline" title="스탬프를 모아보세요" />
 
         <View style={styles.body}>
