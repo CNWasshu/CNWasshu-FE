@@ -8,6 +8,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
@@ -54,12 +55,14 @@ type HorizontalScrollProps = {
   children: React.ReactNode;
   contentContainerStyle: any;
   scrollToX?: number | null;
+  wrap?: boolean;
 };
 
 function HorizontalScroll({
   children,
   contentContainerStyle,
   scrollToX = null,
+  wrap = false,
 }: HorizontalScrollProps) {
   const scrollRef =
     useRef<ScrollView>(null);
@@ -263,6 +266,10 @@ function HorizontalScroll({
     };
   }, []);
 
+  if (wrap) {
+    return <View style={contentContainerStyle}>{children}</View>;
+  }
+
   return (
     <ScrollView
       ref={scrollRef}
@@ -290,6 +297,8 @@ export function HomeFilterSection({
   onChangeSearchText,
   onClearSearch,
 }: HomeFilterSectionProps) {
+  const { width } = useWindowDimensions();
+  const useWrappedFilters = Platform.OS === 'web' && width >= 1024;
   const regionPositionsRef =
     useRef<
       Record<
@@ -378,11 +387,12 @@ export function HomeFilterSection({
 
       <HorizontalScroll
         contentContainerStyle={
-          styles.regionList
+          [styles.regionList, useWrappedFilters && styles.regionListDesktop]
         }
         scrollToX={
           regionScrollX
         }
+        wrap={useWrappedFilters}
       >
         {regions.map((region) => {
           const active =
@@ -624,6 +634,12 @@ const styles =
     regionList: {
       gap: 7,
       paddingRight: 18,
+    },
+
+    regionListDesktop: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      rowGap: 8,
     },
 
     regionChip: {

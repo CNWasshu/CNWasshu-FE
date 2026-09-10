@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   heroDesktop: {
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     minHeight: 168,
     paddingBottom: 30,
     paddingHorizontal: 24,

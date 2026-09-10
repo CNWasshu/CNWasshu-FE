@@ -1,4 +1,5 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -76,7 +77,7 @@ export function DesktopTabBar({ state, descriptors, navigation }: BottomTabBarPr
           accessibilityRole="button"
           onPress={() => router.push('/notification')}
           style={({ pressed }) => [styles.notificationButton, pressed && styles.pressedTab]}>
-          <Text style={styles.notificationIcon}>🔔</Text>
+          <Ionicons color={CourseColors.primaryDark} name="notifications-outline" size={20} />
           {unreadCount > 0 ? (
             <View style={styles.notificationBadge}>
               <Text style={styles.notificationBadgeText}>{unreadCount}</Text>
@@ -159,9 +160,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: 'relative',
     width: 40,
-  },
-  notificationIcon: {
-    fontSize: 20,
   },
   notificationBadge: {
     alignItems: 'center',

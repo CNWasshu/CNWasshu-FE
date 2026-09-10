@@ -539,7 +539,7 @@ const styles =
       maxWidth: PAGE_LAYOUT.desktopMaxWidth,
       alignSelf: 'center',
       paddingHorizontal: 18,
-      paddingTop: 18,
+      paddingTop: 24,
       position: 'relative',
       zIndex: 100,
       overflow: 'visible',

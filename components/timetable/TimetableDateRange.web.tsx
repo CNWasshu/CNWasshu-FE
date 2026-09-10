@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     borderWidth: 1,
     marginHorizontal: 18,
-    marginTop: 18,
+    marginTop: 24,
     padding: 14,
   },
   errorText: {
