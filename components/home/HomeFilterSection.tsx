@@ -1,3 +1,5 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import type { ComponentProps } from 'react';
 import {
   useEffect,
   useRef,
@@ -8,7 +10,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
 
@@ -37,17 +38,17 @@ type HomeFilterSectionProps = {
 const TYPE_FILTERS: {
   label: string;
   value: HomeItemType;
-  icon: string;
+  icon: ComponentProps<typeof Ionicons>['name'];
 }[] = [
   {
     label: '체험',
     value: 'ACTIVITY',
-    icon: '🧑‍🌾',
+    icon: 'compass-outline',
   },
   {
     label: '맛집',
     value: 'RESTAURANT',
-    icon: '🍲',
+    icon: 'restaurant-outline',
   },
 ];
 
@@ -297,8 +298,6 @@ export function HomeFilterSection({
   onChangeSearchText,
   onClearSearch,
 }: HomeFilterSectionProps) {
-  const { width } = useWindowDimensions();
-  const useWrappedFilters = Platform.OS === 'web' && width >= 1024;
   const regionPositionsRef =
     useRef<
       Record<
@@ -346,11 +345,11 @@ export function HomeFilterSection({
                 )
               }
             >
-              <Text
-                style={styles.typeIcon}
-              >
-                {filter.icon}
-              </Text>
+              <Ionicons
+                color={active ? '#3F7D46' : '#8A7652'}
+                name={filter.icon}
+                size={18}
+              />
 
               <Text
                 style={[
@@ -387,12 +386,12 @@ export function HomeFilterSection({
 
       <HorizontalScroll
         contentContainerStyle={
-          [styles.regionList, useWrappedFilters && styles.regionListDesktop]
+          styles.regionList
         }
         scrollToX={
           regionScrollX
         }
-        wrap={useWrappedFilters}
+        wrap
       >
         {regions.map((region) => {
           const active =
@@ -458,44 +457,31 @@ export function HomeFilterSection({
                 return (
                   <Pressable
                     key={category}
-                    style={
-                      styles.categoryButton
-                    }
+                    style={[
+                      styles.categoryButton,
+                      active && styles.categoryButtonActive,
+                    ]}
                     onPress={() =>
                       onSelectCategory(
                         category
                       )
                     }
                   >
-                    <View
-                      style={[
-                        styles.categoryIcon,
-                        active &&
-                          styles.categoryIconActive,
-                      ]}
-                    >
-                      <Text
-                        style={
-                          styles.categoryEmoji
-                        }
-                      >
-                        {getCategoryIcon(
-                          category
-                        )}
-                      </Text>
-                    </View>
+                    <Ionicons
+                      color={active ? '#FFFFFF' : '#4C7F50'}
+                      name={getCategoryIcon(category)}
+                      size={17}
+                    />
 
                     <Text
                       style={[
                         styles.categoryText,
                         active &&
                           styles.categoryTextActive,
-                        Platform.OS === 'web' &&
-                          styles.categoryTextWeb,
                       ]}
-                      numberOfLines={2}
+                      numberOfLines={1}
                     >
-                      {formatCategoryLabel(category)}
+                      {category === '전체' ? '모든 체험' : category}
                     </Text>
                   </Pressable>
                 );
@@ -508,36 +494,13 @@ export function HomeFilterSection({
   );
 }
 
-// '농작물경작체험'처럼 공백 없이 긴 카테고리명이 2줄로 넘어갈 때,
-// 글자 단위(word-break)로 아무 데서나 잘리면 "농작물경작체" / "험"처럼
-// 어색하게 끊긴다. 대부분 이름이 '체험'으로 끝나므로 그 앞에서
-// 줄바꿈을 강제해서 "농작물경작" / "체험"처럼 자연스럽게 나뉘도록 한다.
-function formatCategoryLabel(category: string) {
-  if (category.endsWith('체험') && category.length > 2) {
-    return `${category.slice(0, -2)}\n체험`;
-  }
-
-  return category;
-}
-
 function getCategoryIcon(
   categoryName: string
-) {
+): ComponentProps<typeof Ionicons>['name'] {
   if (
     categoryName === '전체'
   ) {
-    return '🌾';
-  }
-
-  if (
-    categoryName.includes(
-      '농촌'
-    ) ||
-    categoryName.includes(
-      '체험'
-    )
-  ) {
-    return '🧑‍🌾';
+    return 'apps-outline';
   }
 
   if (
@@ -548,7 +511,7 @@ function getCategoryIcon(
       '행사'
     )
   ) {
-    return '🌸';
+    return 'sparkles-outline';
   }
 
   if (
@@ -562,7 +525,7 @@ function getCategoryIcon(
       '건강'
     )
   ) {
-    return '🌿';
+    return 'fitness-outline';
   }
 
   if (
@@ -570,7 +533,7 @@ function getCategoryIcon(
       '만들기'
     )
   ) {
-    return '🧶';
+    return 'color-palette-outline';
   }
 
   if (
@@ -578,7 +541,7 @@ function getCategoryIcon(
       '전통'
     )
   ) {
-    return '🏺';
+    return 'library-outline';
   }
 
   if (
@@ -589,10 +552,14 @@ function getCategoryIcon(
       '생태'
     )
   ) {
-    return '🌱';
+    return 'earth-outline';
   }
 
-  return '📍';
+  if (categoryName.includes('농촌') || categoryName.includes('체험')) {
+    return 'leaf-outline';
+  }
+
+  return 'location-outline';
 }
 
 const styles =
@@ -619,10 +586,6 @@ const styles =
       backgroundColor: '#FFFFFF',
     },
 
-    typeIcon: {
-      fontSize: 18,
-    },
-
     typeButtonText: {
       color: '#6C5A37',
       fontSize: 14,
@@ -646,13 +609,9 @@ const styles =
     },
 
     regionList: {
-      gap: 7,
-      paddingRight: 18,
-    },
-
-    regionListDesktop: {
       flexDirection: 'row',
       flexWrap: 'wrap',
+      gap: 7,
       rowGap: 8,
     },
 
@@ -686,48 +645,31 @@ const styles =
     },
 
     categoryButton: {
-      width: 78,
       alignItems: 'center',
-    },
-
-    categoryIcon: {
-      width: 50,
-      height: 50,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderWidth: 1,
-      borderColor: '#EADCC4',
-      borderRadius: 25,
       backgroundColor: '#FFFFFF',
+      borderColor: '#EADCC4',
+      borderRadius: 999,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: 6,
+      minHeight: 38,
+      paddingHorizontal: 13,
+      paddingVertical: 8,
     },
 
-    categoryIconActive: {
-      borderColor: '#ABD19C',
-      backgroundColor: '#E8F5E4',
-    },
-
-    categoryEmoji: {
-      fontSize: 25,
+    categoryButtonActive: {
+      backgroundColor: '#3F7D46',
+      borderColor: '#3F7D46',
     },
 
     categoryText: {
-      width: 78,
-      marginTop: 6,
       color: '#72664E',
-      fontSize: 12,
-      lineHeight: 15,
+      fontSize: 13,
+      lineHeight: 18,
       fontWeight: '800',
-      textAlign: 'center',
     },
 
-    // RN Web은 공백 없는 한글 카테고리명(예: '농작물경작체험')에서
-    // 줄바꿈 지점을 못 찾아 2줄 허용을 줘도 그냥 말줄임(...)돼버린다.
-    // 강제로 글자 단위 줄바꿈을 허용해서 실제로 2줄로 내려가게 한다.
-    categoryTextWeb: {
-      wordBreak: 'break-all',
-    } as any,
-
     categoryTextActive: {
-      color: '#3F7D46',
+      color: '#FFFFFF',
     },
   });
