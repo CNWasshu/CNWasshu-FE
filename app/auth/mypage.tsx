@@ -294,10 +294,6 @@ export default function MyPageScreen() {
                   )}
                   <Text style={styles.statLabel}>저장 코스</Text>
                 </View>
-                <View style={styles.statCard}>
-                  <Text style={styles.statValue}>-</Text>
-                  <Text style={styles.statLabel}>추천 적합도</Text>
-                </View>
               </View>
 
               <View style={styles.menuCard}>
