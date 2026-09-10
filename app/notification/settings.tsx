@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BackHeader } from '@/components/common/BackHeader';
+import { PageHero } from '@/components/layout';
 import { CourseColors } from '@/constants/course-colors';
 import { PAGE_LAYOUT } from '@/constants/layout';
 import { useNotificationSettings } from '@/hooks/notification/use-notification-settings';
@@ -71,13 +71,11 @@ export default function NotificationSettingsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.hero}>
-          <BackHeader />
-          <Text style={styles.heroTitle}>알림톡 설정</Text>
-          <Text style={styles.heroDescription}>
-            코스와 예약 일정을 카카오 알림톡으로{`\n`}언제 받을지 정할 수 있어요.
-          </Text>
-        </View>
+        <PageHero
+          description="코스와 예약 일정을 카카오 알림톡으로 언제 받을지 정할 수 있어요."
+          showBack
+          title="알림톡 설정"
+        />
 
         <View style={styles.body}>
           {loading ? (
@@ -161,29 +159,18 @@ export default function NotificationSettingsScreen() {
 const styles = StyleSheet.create({
   checkingSafe: {
     alignItems: 'center',
-    backgroundColor: CourseColors.primary,
+    backgroundColor: CourseColors.hero,
     flex: 1,
     justifyContent: 'center',
   },
-  safe: { flex: 1, backgroundColor: CourseColors.primary },
+  safe: { flex: 1, backgroundColor: CourseColors.hero },
   container: { flexGrow: 1, backgroundColor: CourseColors.background, paddingBottom: 44 },
-  hero: {
-    backgroundColor: CourseColors.primary,
-    paddingHorizontal: 22,
-    paddingTop: 20,
-    paddingBottom: 42,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    gap: 12,
-  },
-  heroTitle: { color: CourseColors.white, fontSize: 30, fontWeight: '900' },
-  heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22 },
   body: {
     width: '100%',
     maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
     paddingHorizontal: 18,
-    marginTop: -18,
+    marginTop: PAGE_LAYOUT.sectionSpacing,
     gap: 12,
   },
   loadingCard: {

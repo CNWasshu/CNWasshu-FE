@@ -1,6 +1,7 @@
 import {
     ScrollView,
     StyleSheet,
+    Text,
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,8 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReservationCard } from '@/components/reservation-history/ReservationCard';
 import { ReservationEmpty } from '@/components/reservation-history/ReservationEmpty';
 import { ReservationError } from '@/components/reservation-history/ReservationError';
-import { ReservationHeader } from '@/components/reservation-history/ReservationHeader';
 import { ReservationLoading } from '@/components/reservation-history/ReservationLoading';
+import { PageHero } from '@/components/layout';
 import { PAGE_LAYOUT } from '@/constants/layout';
 import type { ReservationResponse } from '@/types/reservation';
 
@@ -51,10 +52,16 @@ export function ReservationContent({
           false
         }
       >
+        <PageHero
+          description="예정된 예약을 확인해보세요."
+          showBack
+          title="예약 내역"
+        />
+
         <View style={styles.screen}>
-          <ReservationHeader
-            count={reservations.length}
-          />
+          <Text style={styles.countSummary}>
+            총 {reservations.length}건의 예약이 있어요
+          </Text>
 
           {loading ? (
             <ReservationLoading />
@@ -126,9 +133,16 @@ const styles = StyleSheet.create({
     maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     flex: 1,
     paddingHorizontal: 18,
-    paddingTop: 14,
+    paddingTop: 24,
     paddingBottom: 30,
     backgroundColor: '#fffaf1',
+  },
+
+  countSummary: {
+    color: '#5F5139',
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 14,
   },
 
   grid: {
