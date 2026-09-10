@@ -19,6 +19,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { CourseColors } from '@/constants/course-colors';
 import { PAGE_LAYOUT } from '@/constants/layout';
+import { APP_POINT_FONT } from '@/constants/typography';
 import { useKakaoLogin } from '@/hooks/auth/use-kakao-login';
 import { useLogin } from '@/hooks/auth/use-login';
 
@@ -272,7 +273,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.2,
   },
-  heroTitle: { color: CourseColors.white, fontSize: 27, fontWeight: '900', letterSpacing: -0.7, lineHeight: 36, marginTop: 16 },
+  heroTitle: { color: CourseColors.white, fontFamily: APP_POINT_FONT, fontSize: 27, fontWeight: '900', letterSpacing: -0.7, lineHeight: 36, marginTop: 16 },
   heroTitleDesktop: { fontSize: 34, lineHeight: 44 },
   heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22, marginTop: 10, maxWidth: 520 },
   heroImage: { bottom: -8, height: 175, opacity: 0.36, position: 'absolute', right: -45, width: 230 },

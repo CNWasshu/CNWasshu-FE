@@ -1,11 +1,12 @@
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CourseColors } from '@/constants/course-colors';
 import { PAGE_LAYOUT } from '@/constants/layout';
+import { APP_NAVIGATION_FONT } from '@/constants/typography';
 import { useUnreadNotificationCount } from '@/hooks/notification/use-unread-notification-count';
 
 const TAB_LABELS: Record<string, string> = {
@@ -117,7 +118,8 @@ const styles = StyleSheet.create({
   },
   brandTitle: {
     color: CourseColors.primaryDark,
-    fontSize: 20,
+    fontFamily: APP_NAVIGATION_FONT,
+    fontSize: 30,
     fontWeight: '900',
   },
   navigation: {
@@ -146,7 +148,8 @@ const styles = StyleSheet.create({
   },
   label: {
     color: CourseColors.muted,
-    fontSize: 14,
+    fontFamily: APP_NAVIGATION_FONT,
+    fontSize: 18,
     fontWeight: '700',
   },
   activeLabel: {

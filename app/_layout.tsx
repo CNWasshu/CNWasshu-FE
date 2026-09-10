@@ -1,4 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
 import { type Href, Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
@@ -7,6 +8,7 @@ import 'react-native-reanimated';
 
 import { OnboardingApiError, onboardingApi } from '@/api/onboardingApi';
 import { CourseColors } from '@/constants/course-colors';
+import { APP_FONT_ASSETS, applyGlobalTypography } from '@/constants/typography';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { clearTokens, getAccessToken } from '@/utils/auth';
 
@@ -107,6 +109,17 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [fontsLoaded, fontError] = useFonts(APP_FONT_ASSETS);
+
+  if (!fontsLoaded && !fontError) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: CourseColors.background }}>
+        <ActivityIndicator size="large" color={CourseColors.primary} />
+      </View>
+    );
+  }
+
+  if (fontsLoaded) applyGlobalTypography();
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

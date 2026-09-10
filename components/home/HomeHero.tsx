@@ -20,6 +20,7 @@ import { Image } from 'expo-image';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { CourseColors } from '@/constants/course-colors';
+import { APP_POINT_FONT } from '@/constants/typography';
 import { PAGE_LAYOUT } from '@/constants/layout';
 
 type HomeHeroProps = {
@@ -668,6 +669,7 @@ const styles =
 
     introTitle: {
       color: '#FFFFFF',
+      fontFamily: APP_POINT_FONT,
       fontSize: 27,
       fontWeight: '900',
       letterSpacing: -0.8,
@@ -690,6 +692,7 @@ const styles =
     aiTitle: {
       marginTop: 20,
       color: '#FFFFFF',
+      fontFamily: APP_POINT_FONT,
       fontSize: 27,
       fontWeight: '900',
       letterSpacing: -0.8,
@@ -743,6 +746,7 @@ const styles =
     promotionTitle: {
       marginTop: 20,
       color: '#FFFFFF',
+      fontFamily: APP_POINT_FONT,
       fontSize: 26,
       fontWeight: '900',
       letterSpacing: -0.7,

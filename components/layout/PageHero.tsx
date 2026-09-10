@@ -5,6 +5,7 @@ import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-nat
 import { BackHeader } from '@/components/common/BackHeader';
 import { CourseColors } from '@/constants/course-colors';
 import { PAGE_LAYOUT } from '@/constants/layout';
+import { APP_POINT_FONT } from '@/constants/typography';
 
 type PageHeroProps = {
   description: string;
@@ -100,6 +101,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: CourseColors.white,
+    fontFamily: APP_POINT_FONT,
     fontSize: 27,
     fontWeight: '900',
     letterSpacing: -0.7,
