@@ -1,5 +1,5 @@
-import { Image } from 'expo-image';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image } from 'expo-image';
 import { memo } from 'react';
 import {
   Platform,
@@ -28,8 +28,11 @@ export const HomeItemCard = memo(
     onBookmarkPress,
   }: HomeItemCardProps) {
     const { width } = useWindowDimensions();
+
     const isDesktopWeb =
-      Platform.OS === 'web' && width >= PAGE_LAYOUT.desktopNavigationBreakpoint;
+      Platform.OS === 'web' &&
+      width >= PAGE_LAYOUT.desktopNavigationBreakpoint;
+
     const isActivity =
       item.type === 'ACTIVITY';
 
@@ -55,14 +58,21 @@ export const HomeItemCard = memo(
             source={{
               uri: item.thumbnail,
             }}
-            style={[styles.cardImage, isDesktopWeb && styles.cardImageDesktop]}
+            style={[
+              styles.cardImage,
+              isDesktopWeb && styles.cardImageDesktop,
+            ]}
             contentFit="cover"
             transition={200}
             cachePolicy="memory-disk"
           />
         ) : (
           <View
-            style={[styles.imagePlaceholder, isDesktopWeb && styles.imagePlaceholderDesktop]}
+            style={[
+              styles.imagePlaceholder,
+              isDesktopWeb &&
+                styles.imagePlaceholderDesktop,
+            ]}
           >
             <Text
               style={styles.placeholderEmoji}
@@ -79,7 +89,11 @@ export const HomeItemCard = memo(
               ? '장바구니에서 삭제'
               : '장바구니에 담기'
           }
-          style={[styles.heartButton, isDesktopWeb && styles.heartButtonDesktop]}
+          style={[
+            styles.heartButton,
+            isDesktopWeb &&
+              styles.heartButtonDesktop,
+          ]}
           onPress={(event) => {
             event.stopPropagation();
             onBookmarkPress(item);
@@ -96,14 +110,32 @@ export const HomeItemCard = memo(
           </Text>
         </Pressable>
 
-        <View style={[styles.typeBadge, isDesktopWeb && styles.typeBadgeDesktop]}>
+        <View
+          style={[
+            styles.typeBadge,
+            isDesktopWeb &&
+              styles.typeBadgeDesktop,
+          ]}
+        >
           <Text style={styles.typeBadgeText}>
             {isActivity ? '체험' : '맛집'}
           </Text>
         </View>
 
-        <View style={[styles.cardContent, isDesktopWeb && styles.cardContentDesktop]}>
-          <View style={[styles.tagList, isDesktopWeb && styles.tagListDesktop]}>
+        <View
+          style={[
+            styles.cardContent,
+            isDesktopWeb &&
+              styles.cardContentDesktop,
+          ]}
+        >
+          <View
+            style={[
+              styles.tagList,
+              isDesktopWeb &&
+                styles.tagListDesktop,
+            ]}
+          >
             <View
               style={[
                 styles.tag,
@@ -130,6 +162,28 @@ export const HomeItemCard = memo(
               </Text>
             </View>
 
+            {isActivity &&
+              item.weatherTags.length > 0 &&
+              item.weatherTags
+                .slice(0, 1)
+                .map((tag) => (
+                  <View
+                    key={tag}
+                    style={[
+                      styles.tag,
+                      styles.weatherTag,
+                    ]}
+                  >
+                    <Text
+                      style={
+                        styles.weatherTagText
+                      }
+                    >
+                      {tag}
+                    </Text>
+                  </View>
+                ))}
+
             {item.todayAvailable === true && (
               <View
                 style={[
@@ -146,7 +200,13 @@ export const HomeItemCard = memo(
             )}
           </View>
 
-          <Text style={[styles.cardTitle, isDesktopWeb && styles.cardTitleDesktop]}>
+          <Text
+            style={[
+              styles.cardTitle,
+              isDesktopWeb &&
+                styles.cardTitleDesktop,
+            ]}
+          >
             {item.title}
           </Text>
 
@@ -168,32 +228,6 @@ export const HomeItemCard = memo(
             </Text>
           )}
 
-          {item.weatherTags.length > 0 && (
-            <View
-              style={styles.weatherTagList}
-            >
-              {item.weatherTags
-                .slice(0, 3)
-                .map((tag) => (
-                  <View
-                    key={tag}
-                    style={[
-                      styles.tag,
-                      styles.weatherTag,
-                    ]}
-                  >
-                    <Text
-                      style={
-                        styles.weatherTagText
-                      }
-                    >
-                      {tag}
-                    </Text>
-                  </View>
-                ))}
-            </View>
-          )}
-
           {item.tags.length > 0 && (
             <View style={styles.extraTagList}>
               {item.tags
@@ -209,16 +243,31 @@ export const HomeItemCard = memo(
             </View>
           )}
 
-          <View style={[styles.cardFooter, isDesktopWeb && styles.cardFooterDesktop]}>
-            {item.reservationRequired === true ? (
-              <View style={styles.reservationInfo}>
+          <View
+            style={[
+              styles.cardFooter,
+              isDesktopWeb &&
+                styles.cardFooterDesktop,
+            ]}
+          >
+            {item.reservationRequired ===
+            true ? (
+              <View
+                style={styles.reservationInfo}
+              >
                 {isDesktopWeb ? (
-                  <Ionicons color="#8A7450" name="calendar-outline" size={15} />
+                  <Ionicons
+                    color="#8A7450"
+                    name="calendar-outline"
+                    size={15}
+                  />
                 ) : null}
+
                 <Text
                   style={[
                     styles.reservationText,
-                    isDesktopWeb && styles.reservationTextDesktop,
+                    isDesktopWeb &&
+                      styles.reservationTextDesktop,
                   ]}
                 >
                   예약 필요
@@ -228,10 +277,12 @@ export const HomeItemCard = memo(
                   <Text
                     style={[
                       styles.maxParticipantsText,
-                      isDesktopWeb && styles.maxParticipantsTextDesktop,
+                      isDesktopWeb &&
+                        styles.maxParticipantsTextDesktop,
                     ]}
                   >
-                    · 최대 {item.maxParticipants}명
+                    · 최대{' '}
+                    {item.maxParticipants}명
                   </Text>
                 )}
               </View>
@@ -241,7 +292,11 @@ export const HomeItemCard = memo(
 
             <Pressable
               accessibilityRole="button"
-              style={[styles.detailButton, isDesktopWeb && styles.detailButtonDesktop]}
+              style={[
+                styles.detailButton,
+                isDesktopWeb &&
+                  styles.detailButtonDesktop,
+              ]}
               onPress={(event) => {
                 event.stopPropagation();
                 onPress(item);
@@ -250,7 +305,8 @@ export const HomeItemCard = memo(
               <Text
                 style={styles.detailButtonText}
               >
-                상세 보기{isDesktopWeb ? '  →' : ''}
+                상세 보기
+                {isDesktopWeb ? '  →' : ''}
               </Text>
             </Pressable>
           </View>
@@ -432,6 +488,16 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
 
+  weatherTag: {
+    backgroundColor: '#EAF1FF',
+  },
+
+  weatherTagText: {
+    color: '#446CA8',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+
   todayTag: {
     backgroundColor: '#FFF0D7',
   },
@@ -464,23 +530,6 @@ const styles = StyleSheet.create({
     color: '#6F7068',
     fontSize: 14,
     lineHeight: 20,
-  },
-
-  weatherTagList: {
-    marginTop: 10,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 5,
-  },
-
-  weatherTag: {
-    backgroundColor: '#EAF1FF',
-  },
-
-  weatherTagText: {
-    color: '#446CA8',
-    fontSize: 12,
-    fontWeight: '800',
   },
 
   extraTagList: {
