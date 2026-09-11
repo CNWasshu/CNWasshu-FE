@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 17,
     fontWeight: '900',
   },

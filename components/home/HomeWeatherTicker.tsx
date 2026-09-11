@@ -17,6 +17,7 @@ import type {
 } from '@/types/home';
 
 type HomeWeatherTickerProps = {
+  light?: boolean;
   weather: WeatherResponse[];
   selectedRegion: string;
 };
@@ -36,6 +37,7 @@ const WEATHER_ICON: Record<
 };
 
 export function HomeWeatherTicker({
+  light = false,
   weather,
   selectedRegion,
 }: HomeWeatherTickerProps) {
@@ -168,7 +170,7 @@ export function HomeWeatherTicker({
     orderedWeather.length === 0
   ) {
     return (
-      <Text style={styles.placeholder}>
+      <Text style={[styles.placeholder, light && styles.lightText]}>
         충남 날씨
       </Text>
     );
@@ -208,15 +210,15 @@ export function HomeWeatherTicker({
           },
         ]}
       >
-        <Text style={styles.region}>
+        <Text style={[styles.region, light && styles.lightRegion]}>
           {regionName}
         </Text>
 
-        <Text style={styles.temperature}>
+        <Text style={[styles.temperature, light && styles.lightTemperature]}>
           {temperature}°
         </Text>
 
-        <Text style={styles.icon}>
+        <Text style={[styles.icon, light && styles.lightIcon]}>
           {icon}
         </Text>
       </Animated.View>
@@ -247,7 +249,7 @@ const styles = StyleSheet.create({
   },
 
   temperature: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 13,
     fontWeight: '800',
   },
@@ -259,5 +261,25 @@ const styles = StyleSheet.create({
   placeholder: {
     color: '#999999',
     fontSize: 13,
+  },
+
+  lightText: {
+    color: '#FFFFFF',
+  },
+
+  lightRegion: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+
+  lightTemperature: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
+  },
+
+  lightIcon: {
+    fontSize: 18,
   },
 });

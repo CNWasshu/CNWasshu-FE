@@ -114,18 +114,18 @@ export function ReservationContent({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   scroll: {
     flex: 1,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   scrollContent: {
     flexGrow: 1,
     alignItems: 'center',
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   screen: {
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 24,
     paddingBottom: 30,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   countSummary: {

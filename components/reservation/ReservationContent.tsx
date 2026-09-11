@@ -6,10 +6,12 @@ import {
     Text,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { ActivityDetailResponse } from '@/types/activity';
 import type { ReservationTimeSlot } from '@/types/reservation';
 import { PAGE_LAYOUT } from '@/constants/layout';
+import { CourseColors } from '@/constants/course-colors';
 
 import { ReservationActivityCard } from './ReservationActivityCard';
 import { ReservationBottomBar } from './ReservationBottomBar';
@@ -83,17 +85,17 @@ export function ReservationContent({
 }: ReservationContentProps) {
   if (activityLoading) {
     return (
-      <View style={styles.outer}>
+      <SafeAreaView edges={['top']} style={styles.outer}>
         <View style={styles.center}>
           <ActivityIndicator
-            color="#3f7d46"
+            color="#3F7045"
           />
 
           <Text style={styles.loadingText}>
             체험 정보를 불러오는 중입니다.
           </Text>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -102,7 +104,7 @@ export function ReservationContent({
     !activity
   ) {
     return (
-      <View style={styles.outer}>
+      <SafeAreaView edges={['top']} style={styles.outer}>
         <View style={styles.center}>
           <Text style={styles.errorText}>
             {activityErrorMessage ??
@@ -118,7 +120,7 @@ export function ReservationContent({
             </Text>
           </Pressable>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -127,7 +129,7 @@ export function ReservationContent({
     selectedTime !== null;
 
   return (
-    <View style={styles.outer}>
+    <SafeAreaView edges={['top']} style={styles.outer}>
       <View style={styles.app}>
         <ReservationHeader
         />
@@ -200,7 +202,7 @@ export function ReservationContent({
                 style={styles.loadingBox}
               >
                 <ActivityIndicator
-                  color="#3f7d46"
+                  color="#3F7045"
                 />
 
                 <Text
@@ -278,22 +280,20 @@ export function ReservationContent({
           onSubmit={onSubmit}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   outer: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#f3efe6',
+    backgroundColor: CourseColors.background,
   },
 
   app: {
     flex: 1,
     width: '100%',
-    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
-    backgroundColor: '#fffaf1',
+    backgroundColor: CourseColors.background,
   },
 
   scroll: {
@@ -301,8 +301,11 @@ const styles = StyleSheet.create({
   },
 
   content: {
+    alignSelf: 'center',
+    width: '100%',
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     paddingHorizontal: 18,
-    paddingTop: 18,
+    paddingTop: PAGE_LAYOUT.sectionSpacing,
   },
 
   section: {
@@ -313,7 +316,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '800',
     letterSpacing: -0.3,
-    color: '#29251e',
+    color: '#262822',
   },
 
   sectionSub: {
@@ -379,7 +382,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   space: {

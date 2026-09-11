@@ -1,12 +1,16 @@
 import { Image } from 'expo-image';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { memo } from 'react';
 import {
+  Platform,
   Pressable,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
+import { PAGE_LAYOUT } from '@/constants/layout';
 import type { HomeItem } from '@/types/home';
 
 type HomeItemCardProps = {
@@ -23,6 +27,9 @@ export const HomeItemCard = memo(
     onPress,
     onBookmarkPress,
   }: HomeItemCardProps) {
+    const { width } = useWindowDimensions();
+    const isDesktopWeb =
+      Platform.OS === 'web' && width >= PAGE_LAYOUT.desktopNavigationBreakpoint;
     const isActivity =
       item.type === 'ACTIVITY';
 
@@ -38,6 +45,7 @@ export const HomeItemCard = memo(
         accessibilityLabel={`${item.title} 상세 보기`}
         style={({ pressed }) => [
           styles.card,
+          isDesktopWeb && styles.cardDesktop,
           pressed && styles.cardPressed,
         ]}
         onPress={() => onPress(item)}
@@ -47,14 +55,14 @@ export const HomeItemCard = memo(
             source={{
               uri: item.thumbnail,
             }}
-            style={styles.cardImage}
+            style={[styles.cardImage, isDesktopWeb && styles.cardImageDesktop]}
             contentFit="cover"
             transition={200}
             cachePolicy="memory-disk"
           />
         ) : (
           <View
-            style={styles.imagePlaceholder}
+            style={[styles.imagePlaceholder, isDesktopWeb && styles.imagePlaceholderDesktop]}
           >
             <Text
               style={styles.placeholderEmoji}
@@ -71,7 +79,7 @@ export const HomeItemCard = memo(
               ? '장바구니에서 삭제'
               : '장바구니에 담기'
           }
-          style={styles.heartButton}
+          style={[styles.heartButton, isDesktopWeb && styles.heartButtonDesktop]}
           onPress={(event) => {
             event.stopPropagation();
             onBookmarkPress(item);
@@ -88,14 +96,14 @@ export const HomeItemCard = memo(
           </Text>
         </Pressable>
 
-        <View style={styles.typeBadge}>
+        <View style={[styles.typeBadge, isDesktopWeb && styles.typeBadgeDesktop]}>
           <Text style={styles.typeBadgeText}>
             {isActivity ? '체험' : '맛집'}
           </Text>
         </View>
 
-        <View style={styles.cardContent}>
-          <View style={styles.tagList}>
+        <View style={[styles.cardContent, isDesktopWeb && styles.cardContentDesktop]}>
+          <View style={[styles.tagList, isDesktopWeb && styles.tagListDesktop]}>
             <View
               style={[
                 styles.tag,
@@ -138,7 +146,7 @@ export const HomeItemCard = memo(
             )}
           </View>
 
-          <Text style={styles.cardTitle}>
+          <Text style={[styles.cardTitle, isDesktopWeb && styles.cardTitleDesktop]}>
             {item.title}
           </Text>
 
@@ -201,22 +209,29 @@ export const HomeItemCard = memo(
             </View>
           )}
 
-          <View style={styles.cardFooter}>
+          <View style={[styles.cardFooter, isDesktopWeb && styles.cardFooterDesktop]}>
             {item.reservationRequired === true ? (
               <View style={styles.reservationInfo}>
+                {isDesktopWeb ? (
+                  <Ionicons color="#8A7450" name="calendar-outline" size={15} />
+                ) : null}
                 <Text
-                  style={styles.reservationText}
+                  style={[
+                    styles.reservationText,
+                    isDesktopWeb && styles.reservationTextDesktop,
+                  ]}
                 >
                   예약 필요
                 </Text>
 
                 {showMaxParticipants && (
                   <Text
-                    style={
-                      styles.maxParticipantsText
-                    }
+                    style={[
+                      styles.maxParticipantsText,
+                      isDesktopWeb && styles.maxParticipantsTextDesktop,
+                    ]}
                   >
-                    · 최대 {item.maxParticipants}인
+                    · 최대 {item.maxParticipants}명
                   </Text>
                 )}
               </View>
@@ -226,7 +241,7 @@ export const HomeItemCard = memo(
 
             <Pressable
               accessibilityRole="button"
-              style={styles.detailButton}
+              style={[styles.detailButton, isDesktopWeb && styles.detailButtonDesktop]}
               onPress={(event) => {
                 event.stopPropagation();
                 onPress(item);
@@ -235,7 +250,7 @@ export const HomeItemCard = memo(
               <Text
                 style={styles.detailButtonText}
               >
-                상세 보기
+                상세 보기{isDesktopWeb ? '  →' : ''}
               </Text>
             </Pressable>
           </View>
@@ -280,7 +295,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#EFE3CE',
+    borderColor: '#E5E0D5',
     borderRadius: 22,
     backgroundColor: '#FFFFFF',
   },
@@ -289,16 +304,31 @@ const styles = StyleSheet.create({
     opacity: 0.96,
   },
 
+  cardDesktop: {
+    flexDirection: 'row',
+    minHeight: 240,
+  },
+
   cardImage: {
     width: '100%',
     height: 150,
+  },
+
+  cardImageDesktop: {
+    height: 240,
+    width: '38%',
   },
 
   imagePlaceholder: {
     height: 150,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E8F5E4',
+    backgroundColor: '#EDF3EA',
+  },
+
+  imagePlaceholderDesktop: {
+    height: 240,
+    width: '38%',
   },
 
   placeholderEmoji: {
@@ -318,8 +348,13 @@ const styles = StyleSheet.create({
       'rgba(255,255,255,0.94)',
   },
 
+  heartButtonDesktop: {
+    right: 16,
+    top: 16,
+  },
+
   heartIcon: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 24,
     fontWeight: '700',
     lineHeight: 26,
@@ -339,14 +374,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
+  typeBadgeDesktop: {
+    left: 14,
+    top: 14,
+  },
+
   typeBadgeText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 12,
     fontWeight: '900',
   },
 
   cardContent: {
     padding: 14,
+  },
+
+  cardContentDesktop: {
+    flex: 1,
+    paddingHorizontal: 22,
+    paddingVertical: 20,
   },
 
   tagList: {
@@ -356,6 +402,10 @@ const styles = StyleSheet.create({
     marginBottom: 9,
   },
 
+  tagListDesktop: {
+    paddingRight: 46,
+  },
+
   tag: {
     paddingHorizontal: 8,
     paddingVertical: 5,
@@ -363,17 +413,17 @@ const styles = StyleSheet.create({
   },
 
   regionTag: {
-    backgroundColor: '#E7F4E2',
+    backgroundColor: '#EDF3EA',
   },
 
   regionTagText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 12,
     fontWeight: '900',
   },
 
   categoryTag: {
-    backgroundColor: '#F0E6D3',
+    backgroundColor: '#EEE8DC',
   },
 
   categoryTagText: {
@@ -393,10 +443,14 @@ const styles = StyleSheet.create({
   },
 
   cardTitle: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 17,
     fontWeight: '900',
     letterSpacing: -0.3,
+  },
+
+  cardTitleDesktop: {
+    fontSize: 20,
   },
 
   operatingTime: {
@@ -407,7 +461,7 @@ const styles = StyleSheet.create({
 
   cardDescription: {
     marginTop: 9,
-    color: '#777777',
+    color: '#6F7068',
     fontSize: 14,
     lineHeight: 20,
   },
@@ -437,7 +491,7 @@ const styles = StyleSheet.create({
   },
 
   extraTagText: {
-    color: '#777777',
+    color: '#6F7068',
     fontSize: 12,
   },
 
@@ -449,9 +503,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  cardFooterDesktop: {
+    marginTop: 'auto',
+    paddingTop: 14,
+  },
+
   reservationInfo: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 4,
   },
 
   reservationText: {
@@ -460,11 +520,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
+  reservationTextDesktop: {
+    fontWeight: '800',
+  },
+
   maxParticipantsText: {
-    marginLeft: 4,
     color: '#8A7450',
     fontSize: 13,
     fontWeight: '700',
+  },
+
+  maxParticipantsTextDesktop: {
+    color: '#9A9286',
+    fontWeight: '600',
   },
 
   detailButton: {
@@ -476,8 +544,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
+  detailButtonDesktop: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    paddingRight: 0,
+  },
+
   detailButtonText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 14,
     fontWeight: '900',
   },

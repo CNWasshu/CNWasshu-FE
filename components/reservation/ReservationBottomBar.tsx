@@ -5,6 +5,7 @@ import {
     Text,
     View,
 } from 'react-native';
+import { PAGE_LAYOUT } from '@/constants/layout';
 
 interface ReservationBottomBarProps {
   canSubmit: boolean;
@@ -21,57 +22,65 @@ export function ReservationBottomBar({
 }: ReservationBottomBarProps) {
   return (
     <View style={styles.container}>
-      <Pressable
-        onPress={onBack}
-        style={styles.backButton}
-      >
-        <Text
-          style={styles.backText}
+      <View style={styles.inner}>
+        <Pressable
+          onPress={onBack}
+          style={styles.backButton}
         >
-          이전으로
-        </Text>
-      </Pressable>
-
-      <Pressable
-        disabled={
-          !canSubmit ||
-          creatingReservation
-        }
-        onPress={onSubmit}
-        style={[
-          styles.submitButton,
-
-          (!canSubmit ||
-            creatingReservation) &&
-            styles.disabled,
-        ]}
-      >
-        {creatingReservation ? (
-          <ActivityIndicator
-            color="#ffffff"
-          />
-        ) : (
           <Text
-            style={styles.submitText}
+            style={styles.backText}
           >
-            예약 확정하기
+            이전으로
           </Text>
-        )}
-      </Pressable>
+        </Pressable>
+
+        <Pressable
+          disabled={
+            !canSubmit ||
+            creatingReservation
+          }
+          onPress={onSubmit}
+          style={[
+            styles.submitButton,
+
+            (!canSubmit ||
+              creatingReservation) &&
+              styles.disabled,
+          ]}
+        >
+          {creatingReservation ? (
+            <ActivityIndicator
+              color="#ffffff"
+            />
+          ) : (
+            <Text
+              style={styles.submitText}
+            >
+              예약 확정하기
+            </Text>
+          )}
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 18,
     paddingTop: 12,
     paddingBottom: 16,
     borderTopWidth: 1,
-    borderTopColor: '#eadcc4',
-    backgroundColor: '#fffaf1',
+    borderTopColor: '#E5E0D5',
+    backgroundColor: '#FAF7F0',
+  },
+
+  inner: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
+    paddingHorizontal: 18,
+    width: '100%',
   },
 
   backButton: {
@@ -95,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 13,
     borderRadius: 13,
-    backgroundColor: '#3f7d46',
+    backgroundColor: '#3F7045',
   },
 
   disabled: {

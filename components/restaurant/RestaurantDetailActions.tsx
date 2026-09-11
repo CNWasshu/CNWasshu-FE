@@ -20,8 +20,8 @@ export function RestaurantDetailActions({
         accessibilityRole="button"
         accessibilityLabel={
           isBookmarked
-            ? '장바구니에서 삭제'
-            : '장바구니에 담기'
+            ? '담은 장소에서 삭제'
+            : '담은 장소에 추가'
         }
         style={[
           styles.bookmarkButton,
@@ -39,7 +39,7 @@ export function RestaurantDetailActions({
         >
           {isBookmarked
             ? '♥ 담았어요'
-            : '♡ 장바구니 담기'}
+            : '♡ 담아두기'}
         </Text>
       </Pressable>
     </View>
@@ -63,17 +63,17 @@ const styles = StyleSheet.create({
   },
 
   bookmarkedButton: {
-    backgroundColor: '#E7F4E2',
+    backgroundColor: '#EDF3EA',
     borderColor: '#A8CFA0',
   },
 
   bookmarkText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 13,
     fontWeight: '900',
   },
 
   bookmarkedText: {
-    color: '#3F7D46',
+    color: '#3F7045',
   },
 });

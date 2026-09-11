@@ -560,10 +560,13 @@ export default function HomeScreen() {
 
       const priorityCategories =
         [
-          '농작물경작체험',
-          '만들기체험',
-          '자연생태체험',
-          '전통문화체험',
+          '농작물',
+          '만들기',
+          '자연생태',
+          '전통문화',
+          '농축산',
+          '관광명소',
+          '축제',
           '건강',
           '기타',
         ];
@@ -591,13 +594,15 @@ export default function HomeScreen() {
               );
 
             const aIndex =
-              priorityCategories.indexOf(
-                aName
+              priorityCategories.findIndex(
+                (category) =>
+                  aName.includes(category)
               );
 
             const bIndex =
-              priorityCategories.indexOf(
-                bName
+              priorityCategories.findIndex(
+                (category) =>
+                  bName.includes(category)
               );
 
             if (

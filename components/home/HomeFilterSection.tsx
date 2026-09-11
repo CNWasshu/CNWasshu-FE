@@ -346,7 +346,7 @@ export function HomeFilterSection({
               }
             >
               <Ionicons
-                color={active ? '#3F7D46' : '#8A7652'}
+                color={active ? '#3F7045' : '#8A7652'}
                 name={filter.icon}
                 size={18}
               />
@@ -569,7 +569,7 @@ const styles =
       gap: 8,
       padding: 5,
       borderRadius: 16,
-      backgroundColor: '#F0E6D3',
+      backgroundColor: '#EEE8DC',
     },
 
     typeButton: {
@@ -593,7 +593,7 @@ const styles =
     },
 
     typeButtonTextActive: {
-      color: '#3F7D46',
+      color: '#3F7045',
     },
 
     searchWrapper: {
@@ -619,14 +619,14 @@ const styles =
       paddingHorizontal: 13,
       paddingVertical: 8,
       borderWidth: 1,
-      borderColor: '#EADCC4',
+      borderColor: '#E5E0D5',
       borderRadius: 999,
       backgroundColor: '#FFFFFF',
     },
 
     regionChipActive: {
-      borderColor: '#3F7D46',
-      backgroundColor: '#3F7D46',
+      borderColor: '#3F7045',
+      backgroundColor: '#3F7045',
     },
 
     regionChipText: {
@@ -647,7 +647,7 @@ const styles =
     categoryButton: {
       alignItems: 'center',
       backgroundColor: '#FFFFFF',
-      borderColor: '#EADCC4',
+      borderColor: '#E5E0D5',
       borderRadius: 999,
       borderWidth: 1,
       flexDirection: 'row',
@@ -658,8 +658,8 @@ const styles =
     },
 
     categoryButtonActive: {
-      backgroundColor: '#3F7D46',
-      borderColor: '#3F7D46',
+      backgroundColor: '#3F7045',
+      borderColor: '#3F7045',
     },
 
     categoryText: {

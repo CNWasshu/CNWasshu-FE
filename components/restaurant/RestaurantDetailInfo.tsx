@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 18,
     fontWeight: '900',
   },
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     minHeight: 88,
     padding: 13,
     borderWidth: 1,
-    borderColor: '#EFE3CE',
+    borderColor: '#E5E0D5',
     borderRadius: 16,
     backgroundColor: '#FFFFFF',
   },
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
 
   value: {
     marginTop: 7,
-    color: '#29251E',
+    color: '#262822',
     fontSize: 12,
     fontWeight: '700',
     lineHeight: 18,

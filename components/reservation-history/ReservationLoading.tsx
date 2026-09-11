@@ -10,7 +10,7 @@ export function ReservationLoading() {
     <View style={styles.container}>
       <ActivityIndicator
         size="large"
-        color="#3F7D46"
+        color="#3F7045"
       />
 
       <Text style={styles.text}>

@@ -42,7 +42,16 @@ export function TimetableScheduleCard({ onPress, schedule, style }: TimetableSch
       : '🚩';
 
   return (
-    <View style={[styles.card, isPlace ? styles.activityCard : styles.freeCard, style]}>
+    <View
+      style={[
+        styles.card,
+        isPlace ? styles.activityCard : styles.freeCard,
+        style,
+      ]}>
+      <View
+        pointerEvents="none"
+        style={[styles.accent, isPlace ? styles.activityAccent : styles.freeAccent]}
+      />
       <Pressable
         accessibilityHint={isSyncedReservation
           ? '예약 완료 일정의 내용을 확인합니다.'
@@ -51,14 +60,28 @@ export function TimetableScheduleCard({ onPress, schedule, style }: TimetableSch
         accessibilityRole="button"
         onPress={onPress}
         style={styles.cardContent}>
-        <View style={[styles.icon, isPlace ? styles.activityIcon : styles.freeIcon]}>
+        <View
+          style={[
+            styles.icon,
+            isPlace ? styles.activityIcon : styles.freeIcon,
+          ]}>
           <Text style={styles.iconText}>{icon}</Text>
         </View>
         <View style={styles.textContent}>
-          <Text numberOfLines={1} style={[styles.title, isPlace && styles.activityTitle]}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.title,
+              isPlace && styles.activityTitle,
+            ]}>
             {schedule.title}
           </Text>
-          <Text numberOfLines={1} style={[styles.metadata, isPlace && styles.activityMetadata]}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.metadata,
+              isPlace && styles.activityMetadata,
+            ]}>
             {metadata}
           </Text>
         </View>
@@ -69,16 +92,19 @@ export function TimetableScheduleCard({ onPress, schedule, style }: TimetableSch
 
 const styles = StyleSheet.create({
   activityCard: { backgroundColor: '#F1FAEE', borderColor: '#8BC783' },
+  activityAccent: { backgroundColor: '#5D9A55' },
   activityIcon: { backgroundColor: '#DDF1D8' },
   activityMetadata: { color: '#527348' },
   activityTitle: { color: '#244C2A' },
-  card: { alignItems: 'center', borderRadius: 14, borderWidth: 1, flexDirection: 'row', left: 62, minHeight: 56, overflow: 'hidden', paddingHorizontal: 8, position: 'absolute', right: 12, zIndex: 1 },
-  cardContent: { alignItems: 'center', flex: 1, flexDirection: 'row', gap: 9, minWidth: 0, paddingVertical: 6 },
+  accent: { bottom: 8, borderRadius: 2, left: 5, position: 'absolute', top: 8, width: 4 },
+  card: { borderRadius: 13, borderWidth: 1, flexDirection: 'row', left: 62, minHeight: 56, overflow: 'hidden', paddingLeft: 12, paddingRight: 9, position: 'absolute', right: 12, zIndex: 1 },
+  cardContent: { alignItems: 'flex-start', alignSelf: 'stretch', flex: 1, flexDirection: 'row', gap: 10, minWidth: 0, paddingVertical: 10 },
   freeCard: { backgroundColor: '#FFFAF0', borderColor: '#D8C39B' },
+  freeAccent: { backgroundColor: '#C7A66A' },
   freeIcon: { backgroundColor: '#F3E8D2' },
-  icon: { alignItems: 'center', borderRadius: 11, height: 34, justifyContent: 'center', width: 34 },
-  iconText: { fontSize: 18 },
-  metadata: { color: '#7B6D57', fontSize: 12, lineHeight: 16, marginTop: 2 },
+  icon: { alignItems: 'center', borderRadius: 10, height: 32, justifyContent: 'center', width: 32 },
+  iconText: { fontSize: 17 },
+  metadata: { color: '#7B6D57', fontSize: 12, lineHeight: 17, marginTop: 3 },
   textContent: { flex: 1, minWidth: 0 },
-  title: { color: '#3F3526', fontSize: 14, fontWeight: '800', lineHeight: 19 },
+  title: { color: '#3F3526', fontSize: 15, fontWeight: '800', lineHeight: 20 },
 });

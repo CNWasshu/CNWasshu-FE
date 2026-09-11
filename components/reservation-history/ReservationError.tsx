@@ -72,11 +72,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#3F7D46',
+    borderColor: '#3F7045',
   },
 
   retryText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 14,
     fontWeight: '900',
   },

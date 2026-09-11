@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
 
   check: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 12,
     fontWeight: '900',
   },
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   },
 
   menuItemTextActive: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontWeight: '900',
   },
 });
