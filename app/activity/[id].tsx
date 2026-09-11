@@ -40,10 +40,6 @@ export default function ActivityDetailScreen() {
     activityId
   );
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const handleBookmarkPress = async () => {
     if (!activityId) {
       return;
@@ -80,7 +76,6 @@ export default function ActivityDetailScreen() {
       loading={loading}
       errorMessage={errorMessage}
       isBookmarked={bookmarked}
-      onBack={handleBack}
       onRetry={fetchActivityDetail}
       onBookmarkPress={handleBookmarkPress}
       onReservationPress={

@@ -31,7 +31,7 @@ export function ActivityDetailActions({
           </Text>
 
           <Text style={styles.noticeDescription}>
-            방문 전 원하는 날짜와 시간을 선택해 예약해주세요.
+            방문 전 원하는 날짜와 시간을 선택해 예약해 주세요.
           </Text>
         </View>
       )}
@@ -46,7 +46,7 @@ export function ActivityDetailActions({
             <Text style={styles.bookmarkText}>
               {isBookmarked
                 ? '♥ 담았어요'
-                : '♡ 장바구니 담기'}
+                : '♡ 담아두기'}
             </Text>
           </Pressable>
 
@@ -69,7 +69,7 @@ export function ActivityDetailActions({
           <Text style={styles.bookmarkText}>
             {isBookmarked
               ? '♥ 담았어요'
-              : '♡ 장바구니 담기'}
+              : '♡ 담아두기'}
           </Text>
         </Pressable>
       )}
@@ -97,8 +97,8 @@ const styles = StyleSheet.create({
   noticeDescription: {
     marginTop: 5,
     color: '#8A6A35',
-    fontSize: 11,
-    lineHeight: 17,
+    fontSize: 12,
+    lineHeight: 19,
   },
 
   buttonRow: {

@@ -20,8 +20,8 @@ export function RestaurantDetailActions({
         accessibilityRole="button"
         accessibilityLabel={
           isBookmarked
-            ? '장바구니에서 삭제'
-            : '장바구니에 담기'
+            ? '담은 장소에서 삭제'
+            : '담은 장소에 추가'
         }
         style={[
           styles.bookmarkButton,
@@ -39,7 +39,7 @@ export function RestaurantDetailActions({
         >
           {isBookmarked
             ? '♥ 담았어요'
-            : '♡ 장바구니 담기'}
+            : '♡ 담아두기'}
         </Text>
       </Pressable>
     </View>

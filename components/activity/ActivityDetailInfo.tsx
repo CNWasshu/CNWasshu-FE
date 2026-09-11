@@ -125,7 +125,7 @@ function formatReservationInfo(
     activity.maxParticipants != null &&
     activity.maxParticipants > 0
   ) {
-    return `예약 필요 · 최대 ${activity.maxParticipants}인`;
+    return `예약 필요 · 최대 ${activity.maxParticipants}명`;
   }
 
   return '예약 필요';
@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
 
   infoItem: {
     width: '48%',
-    minHeight: 88,
-    padding: 13,
+    minHeight: 78,
+    padding: 12,
     borderWidth: 1,
     borderColor: '#EFE3CE',
     borderRadius: 16,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
 
   value: {
-    marginTop: 7,
+    marginTop: 5,
     color: '#29251E',
     fontSize: 12,
     fontWeight: '700',

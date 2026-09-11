@@ -24,7 +24,6 @@ type ActivityDetailContentProps = {
 
   isBookmarked: boolean;
 
-  onBack: () => void;
   onRetry: () => void;
   onBookmarkPress: () => void;
   onReservationPress: () => void;
@@ -35,7 +34,6 @@ export function ActivityDetailContent({
   loading,
   errorMessage,
   isBookmarked,
-  onBack,
   onRetry,
   onBookmarkPress,
   onReservationPress,
@@ -121,25 +119,22 @@ export function ActivityDetailContent({
               }
             />
 
-            <Pressable
-              accessibilityRole="button"
-              style={styles.backButton}
-              onPress={onBack}
-            >
-              <Text style={styles.backButtonText}>
-                목록으로 돌아가기
-              </Text>
-            </Pressable>
-
             {activity.description && (
               <View style={styles.descriptionSection}>
                 <Text style={styles.sectionTitle}>
                   체험 소개
                 </Text>
 
-                <Text style={styles.description}>
-                  {activity.description}
-                </Text>
+                <View style={styles.descriptionList}>
+                  {activity.description
+                    .split(/\n\s*\n/)
+                    .filter(Boolean)
+                    .map((paragraph, index) => (
+                      <Text key={index} style={styles.description}>
+                        {paragraph.trim()}
+                      </Text>
+                    ))}
+                </View>
               </View>
             )}
 
@@ -202,23 +197,6 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
 
-  backButton: {
-    marginTop: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 13,
-    borderWidth: 1,
-    borderColor: '#C7DFBE',
-    borderRadius: 13,
-    backgroundColor: '#FFFFFF',
-  },
-
-  backButtonText: {
-    color: '#3F7D46',
-    fontSize: 13,
-    fontWeight: '900',
-  },
-
   descriptionSection: {
     marginTop: 28,
     paddingTop: 22,
@@ -232,11 +210,15 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
 
-  description: {
+  descriptionList: {
+    gap: 14,
     marginTop: 12,
+  },
+
+  description: {
     color: '#5F5A51',
-    fontSize: 13,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 24,
   },
 
   imageSection: {
