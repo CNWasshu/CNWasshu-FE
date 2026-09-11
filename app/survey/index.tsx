@@ -235,18 +235,18 @@ export default function SurveyScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { backgroundColor: '#F3EFE6', flex: 1 },
-  container: { alignItems: 'center', backgroundColor: '#F3EFE6', flexGrow: 1 },
+  safe: { backgroundColor: CourseColors.primary, flex: 1 },
+  container: { alignItems: 'center', backgroundColor: CourseColors.background, flexGrow: 1 },
   screen: {
     backgroundColor: CourseColors.background,
     flex: 1,
     paddingBottom: 44,
     width: '100%',
   },
-  body: { alignSelf: 'center', marginTop: -18, maxWidth: PAGE_LAYOUT.desktopMaxWidth, paddingHorizontal: 18, width: '100%' },
+  body: { alignSelf: 'center', marginTop: PAGE_LAYOUT.sectionSpacing, maxWidth: PAGE_LAYOUT.desktopMaxWidth, paddingHorizontal: 18, width: '100%' },
   stateCard: {
     alignItems: 'center', backgroundColor: CourseColors.white, borderColor: CourseColors.border,
-    borderRadius: 26, borderWidth: 1, gap: 14, justifyContent: 'center', minHeight: 250, padding: 26,
+    borderRadius: 22, borderWidth: 1, gap: 14, justifyContent: 'center', minHeight: 250, padding: 26,
   },
   stateIcon: {
     backgroundColor: '#FFF1ED', borderRadius: 25, color: CourseColors.error, fontSize: 22,

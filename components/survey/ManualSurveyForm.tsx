@@ -228,13 +228,13 @@ export function ManualSurveyForm({ error, onSaveDraft, onSubmit, saving, survey 
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: CourseColors.white, borderColor: CourseColors.border, borderRadius: 24, borderWidth: 1, gap: 14, padding: 20 },
-  progress: { color: CourseColors.primary, fontSize: 12, fontWeight: '900' },
+  card: { backgroundColor: CourseColors.white, borderColor: CourseColors.border, borderRadius: 22, borderWidth: 1, gap: 16, padding: 22 },
+  progress: { alignSelf: 'flex-start', backgroundColor: CourseColors.primarySoft, borderRadius: 999, color: CourseColors.primaryDark, fontSize: 12, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 10, paddingVertical: 6 },
   eyebrow: { color: CourseColors.primaryDark, fontSize: 15, fontWeight: '800' },
   title: { color: CourseColors.text, fontSize: 21, fontWeight: '900', lineHeight: 29 },
   label: { color: CourseColors.text, fontSize: 14, fontWeight: '800', marginTop: 4 },
   options: { gap: 9 },
-  option: { borderColor: CourseColors.border, borderRadius: 14, borderWidth: 1, minHeight: 50, justifyContent: 'center', paddingHorizontal: 16 },
+  option: { backgroundColor: CourseColors.background, borderColor: CourseColors.border, borderRadius: 14, borderWidth: 1, minHeight: 50, justifyContent: 'center', paddingHorizontal: 16 },
   selectedOption: { backgroundColor: CourseColors.primary, borderColor: CourseColors.primary },
   optionText: { color: CourseColors.text, fontWeight: '700' },
   selectedText: { color: CourseColors.white },
@@ -247,9 +247,9 @@ const styles = StyleSheet.create({
   tag: { borderColor: CourseColors.border, borderRadius: 999, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 9 },
   selectedTag: { backgroundColor: CourseColors.primary, borderColor: CourseColors.primary },
   tagText: { color: CourseColors.text, fontSize: 12, fontWeight: '700' },
-  input: { borderColor: CourseColors.border, borderRadius: 14, borderWidth: 1, minHeight: 90, padding: 13, textAlignVertical: 'top' },
+  input: { backgroundColor: CourseColors.background, borderColor: CourseColors.border, borderRadius: 14, borderWidth: 1, color: CourseColors.text, minHeight: 100, padding: 14, textAlignVertical: 'top' },
   counter: { color: CourseColors.muted, fontSize: 11, textAlign: 'right' },
-  primaryButton: { alignItems: 'center', backgroundColor: CourseColors.primary, borderRadius: 14, minHeight: 52, justifyContent: 'center', marginTop: 2 },
+  primaryButton: { alignItems: 'center', backgroundColor: CourseColors.primary, borderRadius: 15, minHeight: 52, justifyContent: 'center', marginTop: 2 },
   primaryButtonText: { color: CourseColors.white, fontWeight: '900' },
   disabled: { opacity: 0.45 },
   skipText: { color: CourseColors.muted, fontSize: 13, fontWeight: '700', paddingVertical: 7, textAlign: 'center' },
