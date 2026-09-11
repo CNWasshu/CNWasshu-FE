@@ -12,6 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityDetailActions } from '@/components/activity/ActivityDetailActions';
 import { ActivityDetailHero } from '@/components/activity/ActivityDetailHero';
 import { ActivityDetailInfo } from '@/components/activity/ActivityDetailInfo';
+import { PageHero } from '@/components/layout';
+import { CourseColors } from '@/constants/course-colors';
 import { PAGE_LAYOUT } from '@/constants/layout';
 import type { ActivityDetailResponse } from '@/types/activity';
 
@@ -89,20 +91,13 @@ export function ActivityDetailContent({
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.screen}>
-          <View style={styles.banner}>
-            <Text style={styles.bannerStatusTitle}>
-              체험 상세
-            </Text>
-
-            <Text style={styles.bannerTitle}>
-              {activity.title}
-            </Text>
-
-            <Text style={styles.bannerDescription}>
-              체험 내용, 위치, 전화번호, 예약 가능 여부를
-              확인할 수 있어요.
-            </Text>
-          </View>
+          <PageHero
+            description="체험 내용, 위치, 전화번호, 예약 가능 여부를 확인할 수 있어요."
+            eyebrow="체험 상세"
+            icon="sparkles-outline"
+            showBack
+            title={activity.title}
+          />
 
           <View style={styles.content}>
             <ActivityDetailHero
@@ -179,7 +174,7 @@ export function ActivityDetailContent({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFAF1',
+    backgroundColor: CourseColors.background,
   },
 
   scroll: {
@@ -189,51 +184,21 @@ const styles = StyleSheet.create({
   scrollContent: {
     alignItems: 'center',
     flexGrow: 1,
-    backgroundColor: '#FFFAF1',
+    backgroundColor: CourseColors.background,
   },
 
   screen: {
     width: '100%',
     flex: 1,
-    backgroundColor: '#FFFAF1',
-  },
-
-  banner: {
-    paddingHorizontal: 18,
-    paddingTop: 18,
-    paddingBottom: 22,
-    backgroundColor: '#4C884D',
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
-  },
-
-  bannerStatusTitle: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '800',
-  },
-
-  bannerTitle: {
-    marginTop: 18,
-    color: '#FFFFFF',
-    fontSize: 25,
-    fontWeight: '900',
-    lineHeight: 32,
-    letterSpacing: -0.7,
-  },
-
-  bannerDescription: {
-    marginTop: 7,
-    color: 'rgba(255, 255, 255, 0.93)',
-    fontSize: 13,
-    lineHeight: 20,
+    backgroundColor: CourseColors.background,
   },
 
   content: {
     width: '100%',
     maxWidth: PAGE_LAYOUT.desktopMaxWidth,
     alignSelf: 'center',
-    padding: 18,
+    paddingHorizontal: 18,
+    paddingTop: PAGE_LAYOUT.sectionSpacing,
     paddingBottom: 40,
   },
 
