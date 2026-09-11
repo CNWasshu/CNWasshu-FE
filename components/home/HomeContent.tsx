@@ -11,6 +11,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import {
   SafeAreaView,
@@ -37,10 +38,6 @@ import {
 import {
   HomeSortDropdown,
 } from '@/components/home/HomeSortDropdown';
-
-import {
-  HomeWeatherTicker,
-} from '@/components/home/HomeWeatherTicker';
 
 import type {
   ActivityHomeSort,
@@ -277,15 +274,14 @@ export function HomeContent({
               onPromotionPress={
                 handlePromotionPress
               }
-              onBookmarkPress={
-                onBookmarkPress
-              }
               onNotificationPress={
                 onNotificationPress
               }
               unreadNotificationCount={
                 unreadNotificationCount
               }
+              selectedRegion={selectedRegion}
+              weather={weather}
             />
 
             <View
@@ -308,12 +304,15 @@ export function HomeContent({
                   충남에서 뭐 할까?
                 </Text>
 
-                <HomeWeatherTicker
-                  weather={weather}
-                  selectedRegion={
-                    selectedRegion
-                  }
-                />
+                <Pressable
+                  accessibilityLabel="담은 장소 목록 열기"
+                  accessibilityRole="button"
+                  onPress={onBookmarkPress}
+                  style={styles.bookmarkButton}
+                >
+                  <Ionicons color="#E64A67" name="heart" size={19} />
+                  <Text style={styles.bookmarkButtonText}>담은 장소</Text>
+                </Pressable>
               </View>
 
               <HomeFilterSection
@@ -557,6 +556,24 @@ const styles =
       color: '#29251E',
       fontSize: 19,
       fontWeight: '900',
+    },
+
+    bookmarkButton: {
+      alignItems: 'center',
+      backgroundColor: '#FFFFFF',
+      borderColor: '#EADCC4',
+      borderRadius: 999,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: 6,
+      minHeight: 36,
+      paddingHorizontal: 12,
+    },
+
+    bookmarkButtonText: {
+      color: '#5F5A52',
+      fontSize: 13,
+      fontWeight: '800',
     },
 
     resultHeader: {
