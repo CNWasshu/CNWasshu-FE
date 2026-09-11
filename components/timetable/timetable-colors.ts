@@ -1,10 +1,10 @@
 export const TIMETABLE_COLORS = {
-  background: '#FFFAF1',
-  border: '#EADCC4',
+  background: '#FAF7F0',
+  border: '#E5E0D5',
   card: '#FFFFFF',
-  emptyIcon: '#E8F5E4',
-  primary: '#3F7D46',
-  primaryLight: '#E8F5E4',
-  secondaryText: '#776B57',
-  text: '#29251E',
+  emptyIcon: '#EDF3EA',
+  primary: '#3F7045',
+  primaryLight: '#EDF3EA',
+  secondaryText: '#6F7068',
+  text: '#262822',
 } as const;

@@ -70,8 +70,8 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 16,
     borderTopWidth: 1,
-    borderTopColor: '#eadcc4',
-    backgroundColor: '#fffaf1',
+    borderTopColor: '#E5E0D5',
+    backgroundColor: '#FAF7F0',
   },
 
   inner: {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 13,
     borderRadius: 13,
-    backgroundColor: '#3f7d46',
+    backgroundColor: '#3F7045',
   },
 
   disabled: {

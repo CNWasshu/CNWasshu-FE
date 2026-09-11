@@ -461,7 +461,7 @@ const styles =
     safeArea: {
       flex: 1,
       backgroundColor:
-        '#FFFAF1',
+        '#FAF7F0',
     },
 
     list: {
@@ -472,7 +472,7 @@ const styles =
       flexGrow: 1,
       paddingBottom: 24,
       backgroundColor:
-        '#FFFAF1',
+        '#FAF7F0',
     },
 
     listHeader: {
@@ -488,7 +488,7 @@ const styles =
       zIndex: 100,
       overflow: 'visible',
       backgroundColor:
-        '#FFFAF1',
+        '#FAF7F0',
     },
 
     center: {
@@ -500,19 +500,19 @@ const styles =
 
     loadingText: {
       marginTop: 14,
-      color: '#777777',
+      color: '#6F7068',
       fontSize: 14,
     },
 
     errorTitle: {
-      color: '#29251E',
+      color: '#262822',
       fontSize: 18,
       fontWeight: '800',
     },
 
     errorMessage: {
       marginTop: 8,
-      color: '#777777',
+      color: '#6F7068',
       fontSize: 14,
       lineHeight: 21,
       textAlign: 'center',
@@ -524,7 +524,7 @@ const styles =
       paddingVertical: 11,
       borderRadius: 13,
       backgroundColor:
-        '#3F7D46',
+        '#3F7045',
     },
 
     retryButtonText: {
@@ -553,7 +553,7 @@ const styles =
     },
 
     sectionTitle: {
-      color: '#29251E',
+      color: '#262822',
       fontSize: 19,
       fontWeight: '900',
     },
@@ -561,7 +561,7 @@ const styles =
     bookmarkButton: {
       alignItems: 'center',
       backgroundColor: '#FFFFFF',
-      borderColor: '#EADCC4',
+      borderColor: '#E5E0D5',
       borderRadius: 999,
       borderWidth: 1,
       flexDirection: 'row',
@@ -591,7 +591,7 @@ const styles =
     },
 
     resultCount: {
-      color: '#777777',
+      color: '#6F7068',
       fontSize: 13,
       fontWeight: '700',
     },
@@ -629,21 +629,21 @@ const styles =
       paddingVertical: 42,
       borderWidth: 1,
       borderColor:
-        '#EFE3CE',
+        '#E5E0D5',
       borderRadius: 20,
       backgroundColor:
         '#FFFFFF',
     },
 
     emptyTitle: {
-      color: '#29251E',
+      color: '#262822',
       fontSize: 16,
       fontWeight: '800',
     },
 
     emptyDescription: {
       marginTop: 6,
-      color: '#777777',
+      color: '#6F7068',
       fontSize: 14,
       textAlign: 'center',
     },

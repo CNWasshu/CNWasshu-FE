@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#efe3ce',
     borderRadius: 24,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   badge: {
@@ -198,14 +198,14 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 
   title: {
     marginTop: 12,
     fontSize: 19,
     fontWeight: '800',
-    color: '#29251e',
+    color: '#262822',
   },
 
   activity: {
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderRadius: 13,
-    backgroundColor: '#3f7d46',
+    backgroundColor: '#3F7045',
   },
 
   confirmText: {

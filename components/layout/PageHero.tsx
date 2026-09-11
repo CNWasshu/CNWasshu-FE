@@ -53,9 +53,9 @@ export function PageHero({
 const styles = StyleSheet.create({
   hero: {
     backgroundColor: CourseColors.hero,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
-    paddingBottom: 26,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    paddingBottom: 24,
     paddingHorizontal: 18,
     paddingTop: 18,
     width: '100%',
@@ -63,8 +63,8 @@ const styles = StyleSheet.create({
   heroDesktop: {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    minHeight: 168,
-    paddingBottom: 30,
+    minHeight: 156,
+    paddingBottom: 26,
     paddingHorizontal: 24,
     paddingTop: 24,
   },
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   badge: {
     backgroundColor: 'rgba(255,255,255,0.16)',
-    borderRadius: 999,
+    borderRadius: 8,
     color: CourseColors.white,
     fontSize: 12,
     fontWeight: '800',

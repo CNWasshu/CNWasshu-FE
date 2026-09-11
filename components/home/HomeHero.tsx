@@ -650,7 +650,7 @@ const styles =
     },
 
     bannerBadgeText: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 12,
       fontWeight: '900',
     },
@@ -719,7 +719,7 @@ const styles =
     },
 
     aiButtonText: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 14,
       fontWeight: '900',
     },
@@ -739,7 +739,7 @@ const styles =
     },
 
     promotionBadgeText: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 12,
       fontWeight: '900',
     },
@@ -775,13 +775,13 @@ const styles =
     },
 
     promotionActionText: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 14,
       fontWeight: '900',
     },
 
     promotionArrow: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 16,
       fontWeight: '800',
     },

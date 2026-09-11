@@ -63,17 +63,17 @@ const styles = StyleSheet.create({
   },
 
   bookmarkedButton: {
-    backgroundColor: '#E7F4E2',
+    backgroundColor: '#EDF3EA',
     borderColor: '#A8CFA0',
   },
 
   bookmarkText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 13,
     fontWeight: '900',
   },
 
   bookmarkedText: {
-    color: '#3F7D46',
+    color: '#3F7045',
   },
 });

@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
 
   temperature: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 13,
     fontWeight: '800',
   },

@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
   month: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#29251e',
+    color: '#262822',
   },
 
   arrowButton: {
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   },
 
   selected: {
-    backgroundColor: '#3f7d46',
+    backgroundColor: '#3F7045',
   },
 
   dateText: {

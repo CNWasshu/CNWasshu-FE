@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
 
   bookmarkText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 13,
     fontWeight: '900',
   },
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: '#3F7D46',
+    backgroundColor: '#3F7045',
   },
 
   reservationText: {

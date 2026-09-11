@@ -88,7 +88,7 @@ export function ReservationContent({
       <SafeAreaView edges={['top']} style={styles.outer}>
         <View style={styles.center}>
           <ActivityIndicator
-            color="#3f7d46"
+            color="#3F7045"
           />
 
           <Text style={styles.loadingText}>
@@ -202,7 +202,7 @@ export function ReservationContent({
                 style={styles.loadingBox}
               >
                 <ActivityIndicator
-                  color="#3f7d46"
+                  color="#3F7045"
                 />
 
                 <Text
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '800',
     letterSpacing: -0.3,
-    color: '#29251e',
+    color: '#262822',
   },
 
   sectionSub: {
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   space: {

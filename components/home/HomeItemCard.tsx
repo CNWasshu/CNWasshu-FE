@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#EFE3CE',
+    borderColor: '#E5E0D5',
     borderRadius: 22,
     backgroundColor: '#FFFFFF',
   },
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     height: 150,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E8F5E4',
+    backgroundColor: '#EDF3EA',
   },
 
   imagePlaceholderDesktop: {
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   },
 
   heartIcon: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 24,
     fontWeight: '700',
     lineHeight: 26,
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   },
 
   typeBadgeText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 12,
     fontWeight: '900',
   },
@@ -413,17 +413,17 @@ const styles = StyleSheet.create({
   },
 
   regionTag: {
-    backgroundColor: '#E7F4E2',
+    backgroundColor: '#EDF3EA',
   },
 
   regionTagText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 12,
     fontWeight: '900',
   },
 
   categoryTag: {
-    backgroundColor: '#F0E6D3',
+    backgroundColor: '#EEE8DC',
   },
 
   categoryTagText: {
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
   },
 
   cardTitle: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 17,
     fontWeight: '900',
     letterSpacing: -0.3,
@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
 
   cardDescription: {
     marginTop: 9,
-    color: '#777777',
+    color: '#6F7068',
     fontSize: 14,
     lineHeight: 20,
   },
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
   },
 
   extraTagText: {
-    color: '#777777',
+    color: '#6F7068',
     fontSize: 12,
   },
 
@@ -551,7 +551,7 @@ const styles = StyleSheet.create({
   },
 
   detailButtonText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 14,
     fontWeight: '900',
   },

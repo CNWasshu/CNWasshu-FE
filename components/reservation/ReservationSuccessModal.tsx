@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#efe3ce',
     borderRadius: 24,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   icon: {
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   iconText: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 
   title: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     fontWeight: '800',
-    color: '#29251e',
+    color: '#262822',
   },
 
   subtitle: {
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   activityTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#29251e',
+    color: '#262822',
   },
 
   divider: {
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 18,
     fontWeight: '800',
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 
   meta: {
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
     paddingVertical: 13,
     borderRadius: 13,
-    backgroundColor: '#3f7d46',
+    backgroundColor: '#3F7045',
   },
 
   buttonText: {

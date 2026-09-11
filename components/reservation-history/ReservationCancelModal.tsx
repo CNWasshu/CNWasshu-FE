@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#efe3ce',
     borderRadius: 24,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   badge: {
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 19,
     fontWeight: '800',
-    color: '#29251e',
+    color: '#262822',
   },
 
   activity: {

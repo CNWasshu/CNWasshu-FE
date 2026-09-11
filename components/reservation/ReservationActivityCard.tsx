@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   regionTagText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 
   categoryTag: {
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '800',
     letterSpacing: -0.3,
-    color: '#29251e',
+    color: '#262822',
   },
 
   address: {
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 11,
     borderRadius: 15,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
     borderWidth: 1,
     borderColor: '#efe3ce',
   },
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     fontSize: 13,
     fontWeight: '700',
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 
   infoValue: {

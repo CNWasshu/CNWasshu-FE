@@ -201,11 +201,11 @@ const styles = StyleSheet.create({
     marginTop: 28,
     paddingTop: 22,
     borderTopWidth: 1,
-    borderTopColor: '#EFE3CE',
+    borderTopColor: '#E5E0D5',
   },
 
   sectionTitle: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 18,
     fontWeight: '900',
   },
@@ -241,19 +241,19 @@ const styles = StyleSheet.create({
 
   loadingText: {
     marginTop: 14,
-    color: '#777777',
+    color: '#6F7068',
     fontSize: 14,
   },
 
   errorTitle: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 18,
     fontWeight: '800',
   },
 
   errorMessage: {
     marginTop: 8,
-    color: '#777777',
+    color: '#6F7068',
     fontSize: 13,
     lineHeight: 20,
     textAlign: 'center',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 11,
     borderRadius: 13,
-    backgroundColor: '#3F7D46',
+    backgroundColor: '#3F7045',
   },
 
   retryButtonText: {
