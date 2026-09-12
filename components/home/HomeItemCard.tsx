@@ -43,44 +43,250 @@ export const HomeItemCard = memo(
       item.maxParticipants > 0;
 
     return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`${item.title} 상세 보기`}
-        style={({ pressed }) => [
+      <View
+        style={[
           styles.card,
           isDesktopWeb && styles.cardDesktop,
-          pressed && styles.cardPressed,
         ]}
-        onPress={() => onPress(item)}
       >
-        {item.thumbnail ? (
-          <Image
-            source={{
-              uri: item.thumbnail,
-            }}
-            style={[
-              styles.cardImage,
-              isDesktopWeb && styles.cardImageDesktop,
-            ]}
-            contentFit="cover"
-            transition={200}
-            cachePolicy="memory-disk"
-          />
-        ) : (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${item.title} 상세 보기`}
+          style={({ pressed }) => [
+            styles.cardPressable,
+            isDesktopWeb &&
+              styles.cardPressableDesktop,
+            pressed && styles.cardPressed,
+          ]}
+          onPress={() => onPress(item)}
+        >
+          {item.thumbnail ? (
+            <Image
+              source={{
+                uri: item.thumbnail,
+              }}
+              style={[
+                styles.cardImage,
+                isDesktopWeb &&
+                  styles.cardImageDesktop,
+              ]}
+              contentFit="cover"
+              transition={200}
+              cachePolicy="memory-disk"
+            />
+          ) : (
+            <View
+              style={[
+                styles.imagePlaceholder,
+                isDesktopWeb &&
+                  styles.imagePlaceholderDesktop,
+              ]}
+            >
+              <Text
+                style={styles.placeholderEmoji}
+              >
+                {isActivity ? '🌿' : '🍽️'}
+              </Text>
+            </View>
+          )}
+
           <View
             style={[
-              styles.imagePlaceholder,
+              styles.typeBadge,
               isDesktopWeb &&
-                styles.imagePlaceholderDesktop,
+                styles.typeBadgeDesktop,
             ]}
           >
-            <Text
-              style={styles.placeholderEmoji}
-            >
-              {isActivity ? '🌿' : '🍽️'}
+            <Text style={styles.typeBadgeText}>
+              {isActivity ? '체험' : '맛집'}
             </Text>
           </View>
-        )}
+
+          <View
+            style={[
+              styles.cardContent,
+              isDesktopWeb &&
+                styles.cardContentDesktop,
+            ]}
+          >
+            <View
+              style={[
+                styles.tagList,
+                isDesktopWeb &&
+                  styles.tagListDesktop,
+              ]}
+            >
+              <View
+                style={[
+                  styles.tag,
+                  styles.regionTag,
+                ]}
+              >
+                <Text
+                  style={styles.regionTagText}
+                >
+                  {item.regionName}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  styles.tag,
+                  styles.categoryTag,
+                ]}
+              >
+                <Text
+                  style={styles.categoryTagText}
+                >
+                  {item.categoryName}
+                </Text>
+              </View>
+
+              {isActivity &&
+                item.weatherTags.length > 0 &&
+                item.weatherTags
+                  .slice(0, 1)
+                  .map((tag) => (
+                    <View
+                      key={tag}
+                      style={[
+                        styles.tag,
+                        styles.weatherTag,
+                      ]}
+                    >
+                      <Text
+                        style={
+                          styles.weatherTagText
+                        }
+                      >
+                        {tag}
+                      </Text>
+                    </View>
+                  ))}
+
+              {item.todayAvailable === true && (
+                <View
+                  style={[
+                    styles.tag,
+                    styles.todayTag,
+                  ]}
+                >
+                  <Text
+                    style={styles.todayTagText}
+                  >
+                    당일 참여 O
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            <Text
+              style={[
+                styles.cardTitle,
+                isDesktopWeb &&
+                  styles.cardTitleDesktop,
+              ]}
+            >
+              {item.title}
+            </Text>
+
+            {(item.operatingStartTime ||
+              item.operatingEndTime) && (
+              <Text
+                style={styles.operatingTime}
+              >
+                🕒 {formatOperatingTime(item)}
+              </Text>
+            )}
+
+            {item.shortDescription && (
+              <Text
+                style={styles.cardDescription}
+                numberOfLines={2}
+              >
+                {item.shortDescription}
+              </Text>
+            )}
+
+            {item.tags.length > 0 && (
+              <View style={styles.extraTagList}>
+                {item.tags
+                  .slice(0, 3)
+                  .map((tag) => (
+                    <Text
+                      key={tag}
+                      style={styles.extraTagText}
+                    >
+                      #{tag}
+                    </Text>
+                  ))}
+              </View>
+            )}
+
+            <View
+              style={[
+                styles.cardFooter,
+                isDesktopWeb &&
+                  styles.cardFooterDesktop,
+              ]}
+            >
+              {item.reservationRequired ===
+              true ? (
+                <View
+                  style={styles.reservationInfo}
+                >
+                  {isDesktopWeb ? (
+                    <Ionicons
+                      color="#8A7450"
+                      name="calendar-outline"
+                      size={15}
+                    />
+                  ) : null}
+
+                  <Text
+                    style={[
+                      styles.reservationText,
+                      isDesktopWeb &&
+                        styles.reservationTextDesktop,
+                    ]}
+                  >
+                    예약 필요
+                  </Text>
+
+                  {showMaxParticipants && (
+                    <Text
+                      style={[
+                        styles.maxParticipantsText,
+                        isDesktopWeb &&
+                          styles.maxParticipantsTextDesktop,
+                      ]}
+                    >
+                      · 최대{' '}
+                      {item.maxParticipants}명
+                    </Text>
+                  )}
+                </View>
+              ) : (
+                <View />
+              )}
+
+              <View
+                style={[
+                  styles.detailButton,
+                  isDesktopWeb &&
+                    styles.detailButtonDesktop,
+                ]}
+              >
+                <Text
+                  style={styles.detailButtonText}
+                >
+                  상세 보기
+                  {isDesktopWeb ? '  →' : ''}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </Pressable>
 
         <Pressable
           accessibilityRole="button"
@@ -94,8 +300,7 @@ export const HomeItemCard = memo(
             isDesktopWeb &&
               styles.heartButtonDesktop,
           ]}
-          onPress={(event) => {
-            event.stopPropagation();
+          onPress={() => {
             onBookmarkPress(item);
           }}
         >
@@ -109,209 +314,7 @@ export const HomeItemCard = memo(
             {isBookmarked ? '♥' : '♡'}
           </Text>
         </Pressable>
-
-        <View
-          style={[
-            styles.typeBadge,
-            isDesktopWeb &&
-              styles.typeBadgeDesktop,
-          ]}
-        >
-          <Text style={styles.typeBadgeText}>
-            {isActivity ? '체험' : '맛집'}
-          </Text>
-        </View>
-
-        <View
-          style={[
-            styles.cardContent,
-            isDesktopWeb &&
-              styles.cardContentDesktop,
-          ]}
-        >
-          <View
-            style={[
-              styles.tagList,
-              isDesktopWeb &&
-                styles.tagListDesktop,
-            ]}
-          >
-            <View
-              style={[
-                styles.tag,
-                styles.regionTag,
-              ]}
-            >
-              <Text
-                style={styles.regionTagText}
-              >
-                {item.regionName}
-              </Text>
-            </View>
-
-            <View
-              style={[
-                styles.tag,
-                styles.categoryTag,
-              ]}
-            >
-              <Text
-                style={styles.categoryTagText}
-              >
-                {item.categoryName}
-              </Text>
-            </View>
-
-            {isActivity &&
-              item.weatherTags.length > 0 &&
-              item.weatherTags
-                .slice(0, 1)
-                .map((tag) => (
-                  <View
-                    key={tag}
-                    style={[
-                      styles.tag,
-                      styles.weatherTag,
-                    ]}
-                  >
-                    <Text
-                      style={
-                        styles.weatherTagText
-                      }
-                    >
-                      {tag}
-                    </Text>
-                  </View>
-                ))}
-
-            {item.todayAvailable === true && (
-              <View
-                style={[
-                  styles.tag,
-                  styles.todayTag,
-                ]}
-              >
-                <Text
-                  style={styles.todayTagText}
-                >
-                  당일 참여 O
-                </Text>
-              </View>
-            )}
-          </View>
-
-          <Text
-            style={[
-              styles.cardTitle,
-              isDesktopWeb &&
-                styles.cardTitleDesktop,
-            ]}
-          >
-            {item.title}
-          </Text>
-
-          {(item.operatingStartTime ||
-            item.operatingEndTime) && (
-            <Text
-              style={styles.operatingTime}
-            >
-              🕒 {formatOperatingTime(item)}
-            </Text>
-          )}
-
-          {item.shortDescription && (
-            <Text
-              style={styles.cardDescription}
-              numberOfLines={2}
-            >
-              {item.shortDescription}
-            </Text>
-          )}
-
-          {item.tags.length > 0 && (
-            <View style={styles.extraTagList}>
-              {item.tags
-                .slice(0, 3)
-                .map((tag) => (
-                  <Text
-                    key={tag}
-                    style={styles.extraTagText}
-                  >
-                    #{tag}
-                  </Text>
-                ))}
-            </View>
-          )}
-
-          <View
-            style={[
-              styles.cardFooter,
-              isDesktopWeb &&
-                styles.cardFooterDesktop,
-            ]}
-          >
-            {item.reservationRequired ===
-            true ? (
-              <View
-                style={styles.reservationInfo}
-              >
-                {isDesktopWeb ? (
-                  <Ionicons
-                    color="#8A7450"
-                    name="calendar-outline"
-                    size={15}
-                  />
-                ) : null}
-
-                <Text
-                  style={[
-                    styles.reservationText,
-                    isDesktopWeb &&
-                      styles.reservationTextDesktop,
-                  ]}
-                >
-                  예약 필요
-                </Text>
-
-                {showMaxParticipants && (
-                  <Text
-                    style={[
-                      styles.maxParticipantsText,
-                      isDesktopWeb &&
-                        styles.maxParticipantsTextDesktop,
-                    ]}
-                  >
-                    · 최대{' '}
-                    {item.maxParticipants}명
-                  </Text>
-                )}
-              </View>
-            ) : (
-              <View />
-            )}
-
-            <Pressable
-              accessibilityRole="button"
-              style={[
-                styles.detailButton,
-                isDesktopWeb &&
-                  styles.detailButtonDesktop,
-              ]}
-              onPress={(event) => {
-                event.stopPropagation();
-                onPress(item);
-              }}
-            >
-              <Text
-                style={styles.detailButtonText}
-              >
-                상세 보기
-                {isDesktopWeb ? '  →' : ''}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-      </Pressable>
+      </View>
     );
   }
 );
@@ -356,12 +359,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
+  cardPressable: {
+    width: '100%',
+  },
+
+  cardPressableDesktop: {
+    flex: 1,
+    flexDirection: 'row',
+    minHeight: 240,
+  },
+
   cardPressed: {
     opacity: 0.96,
   },
 
   cardDesktop: {
-    flexDirection: 'row',
     minHeight: 240,
   },
 
@@ -397,6 +409,8 @@ const styles = StyleSheet.create({
     right: 12,
     width: 38,
     height: 38,
+    zIndex: 10,
+    elevation: 10,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 19,

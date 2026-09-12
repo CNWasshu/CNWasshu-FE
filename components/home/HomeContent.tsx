@@ -2,6 +2,7 @@ import {
   useRef,
 } from 'react';
 
+import Ionicons from '@expo/vector-icons/Ionicons';
 import {
   ActivityIndicator,
   FlatList,
@@ -11,7 +12,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
 import {
   SafeAreaView,
@@ -182,6 +182,7 @@ export function HomeContent({
         <View style={styles.center}>
           <ActivityIndicator
             size="large"
+            color="#3F7045"
           />
 
           <Text
@@ -500,7 +501,7 @@ const styles =
 
     loadingText: {
       marginTop: 14,
-      color: '#6F7068',
+      color: '#5F6858',
       fontSize: 14,
     },
 
