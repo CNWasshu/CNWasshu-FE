@@ -8,6 +8,7 @@ import {
 
 import {
   Animated,
+  Easing,
   PanResponder,
   Platform,
   Pressable,
@@ -35,7 +36,9 @@ type HomeHeroProps = {
 };
 
 const BANNER_COUNT = 3;
+const BANNER_TRACK_COUNT = BANNER_COUNT + 1;
 const BANNER_AUTO_PLAY_INTERVAL_MS = 5000;
+const BANNER_TRANSITION_DURATION_MS = 480;
 const SWIPE_DISTANCE_RATIO = 0.12;
 const SWIPE_MIN_DISTANCE = 24;
 const SWIPE_MAX_DISTANCE = 40;
@@ -106,6 +109,29 @@ export function HomeHero({
   const moveToBanner = useCallback((
     index: number
   ) => {
+    if (index >= BANNER_COUNT) {
+      Animated.timing(
+        translateX,
+        {
+          toValue:
+            -BANNER_COUNT *
+            bannerWidthRef.current,
+          duration: BANNER_TRANSITION_DURATION_MS,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
+        }
+      ).start(({ finished }) => {
+        if (!finished) {
+          return;
+        }
+
+        translateX.setValue(0);
+        activeIndexRef.current = 0;
+        setActiveBannerIndex(0);
+      });
+      return;
+    }
+
     const targetIndex =
       Math.max(
         0,
@@ -122,15 +148,15 @@ export function HomeHero({
       targetIndex
     );
 
-    Animated.spring(
+    Animated.timing(
       translateX,
       {
         toValue:
           -targetIndex *
           bannerWidthRef.current,
+        duration: BANNER_TRANSITION_DURATION_MS,
+        easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
-        friction: 9,
-        tension: 80,
       }
     ).start();
   }, [translateX]);
@@ -363,7 +389,7 @@ export function HomeHero({
               {
                 width:
                   bannerWidth *
-                  BANNER_COUNT,
+                  BANNER_TRACK_COUNT,
                 transform: [
                   {
                     translateX,
@@ -505,6 +531,56 @@ export function HomeHero({
                   accessibilityLabel="청양고추를 수확하며 농촌 체험을 즐기는 여행자"
                   contentFit="contain"
                   source={HERO_IMAGES.cheongyang}
+                  style={[
+                    styles.bannerArtwork,
+                    isDesktopWeb ? styles.bannerArtworkDesktop : styles.bannerArtworkMobile,
+                  ]}
+                />
+              </View>
+            </View>
+
+            <View
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+              style={[
+                styles.bannerSlide,
+                {
+                  width:
+                    bannerWidth,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.bannerCard,
+                  isDesktopWeb && styles.bannerCardDesktop,
+                  styles.introCard,
+                ]}
+              >
+                <View
+                  style={[styles.bannerCopy, isDesktopWeb && styles.bannerCopyDesktop]}
+                >
+                  <View style={styles.bannerBadge}>
+                    <Text style={styles.bannerBadgeText}>충남왔슈</Text>
+                  </View>
+                  <Text style={styles.introTitle}>
+                    충남에서 뭐하지?
+                    {'\n'}
+                    충남왔슈!
+                  </Text>
+
+                  <Text style={styles.introDescription}>
+                    마음에 드는 체험과
+                    맛집을 둘러보고
+                    {'\n'}
+                    나만의 충남 여행을
+                    만들어보세요.
+                  </Text>
+                </View>
+                <Image
+                  accessibilityLabel=""
+                  contentFit="contain"
+                  source={HERO_IMAGES.discover}
                   style={[
                     styles.bannerArtwork,
                     isDesktopWeb ? styles.bannerArtworkDesktop : styles.bannerArtworkMobile,
