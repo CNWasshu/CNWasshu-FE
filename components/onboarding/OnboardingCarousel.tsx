@@ -43,7 +43,6 @@ export function OnboardingCarousel() {
 
     const nextIndex = currentIndex + 1;
     scrollRef.current?.scrollTo({ animated: true, x: nextIndex * pageWidth });
-    setCurrentIndex(nextIndex);
   };
 
   const handleScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
