@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 
   date: {
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 20,
     fontWeight: '900',
-    color: '#29251e',
+    color: '#262822',
   },
 
   meta: {

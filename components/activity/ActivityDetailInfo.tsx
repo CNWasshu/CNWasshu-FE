@@ -125,7 +125,7 @@ function formatReservationInfo(
     activity.maxParticipants != null &&
     activity.maxParticipants > 0
   ) {
-    return `예약 필요 · 최대 ${activity.maxParticipants}인`;
+    return `예약 필요 · 최대 ${activity.maxParticipants}명`;
   }
 
   return '예약 필요';
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 18,
     fontWeight: '900',
   },
@@ -151,10 +151,10 @@ const styles = StyleSheet.create({
 
   infoItem: {
     width: '48%',
-    minHeight: 88,
-    padding: 13,
+    minHeight: 78,
+    padding: 12,
     borderWidth: 1,
-    borderColor: '#EFE3CE',
+    borderColor: '#E5E0D5',
     borderRadius: 16,
     backgroundColor: '#FFFFFF',
   },
@@ -166,8 +166,8 @@ const styles = StyleSheet.create({
   },
 
   value: {
-    marginTop: 7,
-    color: '#29251E',
+    marginTop: 5,
+    color: '#262822',
     fontSize: 12,
     fontWeight: '700',
     lineHeight: 18,

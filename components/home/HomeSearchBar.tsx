@@ -41,7 +41,7 @@ export function HomeSearchBar({
         <Ionicons
           name="search-outline"
           size={20}
-          color="#3F7D46"
+          color="#3F7045"
         />
       </View>
 
@@ -70,7 +70,7 @@ export function HomeSearchBar({
           <Ionicons
             name="close"
             size={18}
-            color="#777777"
+            color="#6F7068"
           />
         </Pressable>
       )}
@@ -105,7 +105,7 @@ const styles =
       borderWidth: 0,
       outlineStyle: 'none' as any,
       paddingVertical: 0,
-      color: '#29251E',
+      color: '#262822',
       fontSize: 14,
       fontWeight: '500',
     },

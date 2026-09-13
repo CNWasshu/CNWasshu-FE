@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
 
   icon: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 28,
     fontWeight: '700',
     lineHeight: 30,

@@ -209,18 +209,18 @@ export function BookmarkContent({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFAF1',
+    backgroundColor: '#FAF7F0',
   },
 
   scroll: {
     flex: 1,
-    backgroundColor: '#FFFAF1',
+    backgroundColor: '#FAF7F0',
   },
 
   scrollContent: {
     flexGrow: 1,
     alignItems: 'center',
-    backgroundColor: '#FFFAF1',
+    backgroundColor: '#FAF7F0',
   },
 
   screen: {
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 24,
     paddingBottom: 30,
-    backgroundColor: '#FFFAF1',
+    backgroundColor: '#FAF7F0',
   },
 
   countSummary: {
@@ -267,8 +267,8 @@ const styles = StyleSheet.create({
   },
 
   regionChipSelected: {
-    borderColor: '#3F7D46',
-    backgroundColor: '#3F7D46',
+    borderColor: '#3F7045',
+    backgroundColor: '#3F7045',
   },
 
   regionChipText: {
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   },
 
   regionEmptyTitle: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 16,
     fontWeight: '800',
     textAlign: 'center',

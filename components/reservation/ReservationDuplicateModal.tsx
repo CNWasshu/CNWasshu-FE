@@ -103,13 +103,13 @@ const styles = StyleSheet.create({
     maxWidth: 350,
     padding: 22,
     borderWidth: 1,
-    borderColor: '#EFE3CE',
+    borderColor: '#E5E0D5',
     borderRadius: 22,
-    backgroundColor: '#FFFAF1',
+    backgroundColor: '#FAF7F0',
   },
 
   title: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 19,
     fontWeight: '900',
     letterSpacing: -0.4,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
 
   activityTitle: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 14,
     fontWeight: '800',
   },
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
 
   time: {
     marginTop: 3,
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 17,
     fontWeight: '900',
   },
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 12,
     borderRadius: 13,
-    backgroundColor: '#3F7D46',
+    backgroundColor: '#3F7045',
   },
 
   confirmText: {

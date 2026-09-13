@@ -2,6 +2,7 @@ import {
   useRef,
 } from 'react';
 
+import Ionicons from '@expo/vector-icons/Ionicons';
 import {
   ActivityIndicator,
   FlatList,
@@ -37,10 +38,6 @@ import {
 import {
   HomeSortDropdown,
 } from '@/components/home/HomeSortDropdown';
-
-import {
-  HomeWeatherTicker,
-} from '@/components/home/HomeWeatherTicker';
 
 import type {
   ActivityHomeSort,
@@ -185,6 +182,7 @@ export function HomeContent({
         <View style={styles.center}>
           <ActivityIndicator
             size="large"
+            color="#3F7045"
           />
 
           <Text
@@ -277,15 +275,14 @@ export function HomeContent({
               onPromotionPress={
                 handlePromotionPress
               }
-              onBookmarkPress={
-                onBookmarkPress
-              }
               onNotificationPress={
                 onNotificationPress
               }
               unreadNotificationCount={
                 unreadNotificationCount
               }
+              selectedRegion={selectedRegion}
+              weather={weather}
             />
 
             <View
@@ -308,12 +305,15 @@ export function HomeContent({
                   충남에서 뭐 할까?
                 </Text>
 
-                <HomeWeatherTicker
-                  weather={weather}
-                  selectedRegion={
-                    selectedRegion
-                  }
-                />
+                <Pressable
+                  accessibilityLabel="담은 장소 목록 열기"
+                  accessibilityRole="button"
+                  onPress={onBookmarkPress}
+                  style={styles.bookmarkButton}
+                >
+                  <Ionicons color="#E64A67" name="heart" size={19} />
+                  <Text style={styles.bookmarkButtonText}>담은 장소</Text>
+                </Pressable>
               </View>
 
               <HomeFilterSection
@@ -462,7 +462,7 @@ const styles =
     safeArea: {
       flex: 1,
       backgroundColor:
-        '#FFFAF1',
+        '#FAF7F0',
     },
 
     list: {
@@ -473,7 +473,7 @@ const styles =
       flexGrow: 1,
       paddingBottom: 24,
       backgroundColor:
-        '#FFFAF1',
+        '#FAF7F0',
     },
 
     listHeader: {
@@ -489,7 +489,7 @@ const styles =
       zIndex: 100,
       overflow: 'visible',
       backgroundColor:
-        '#FFFAF1',
+        '#FAF7F0',
     },
 
     center: {
@@ -501,19 +501,19 @@ const styles =
 
     loadingText: {
       marginTop: 14,
-      color: '#777777',
+      color: '#5F6858',
       fontSize: 14,
     },
 
     errorTitle: {
-      color: '#29251E',
+      color: '#262822',
       fontSize: 18,
       fontWeight: '800',
     },
 
     errorMessage: {
       marginTop: 8,
-      color: '#777777',
+      color: '#6F7068',
       fontSize: 14,
       lineHeight: 21,
       textAlign: 'center',
@@ -525,7 +525,7 @@ const styles =
       paddingVertical: 11,
       borderRadius: 13,
       backgroundColor:
-        '#3F7D46',
+        '#3F7045',
     },
 
     retryButtonText: {
@@ -554,9 +554,27 @@ const styles =
     },
 
     sectionTitle: {
-      color: '#29251E',
+      color: '#262822',
       fontSize: 19,
       fontWeight: '900',
+    },
+
+    bookmarkButton: {
+      alignItems: 'center',
+      backgroundColor: '#FFFFFF',
+      borderColor: '#E5E0D5',
+      borderRadius: 999,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: 6,
+      minHeight: 36,
+      paddingHorizontal: 12,
+    },
+
+    bookmarkButtonText: {
+      color: '#5F5A52',
+      fontSize: 13,
+      fontWeight: '800',
     },
 
     resultHeader: {
@@ -574,7 +592,7 @@ const styles =
     },
 
     resultCount: {
-      color: '#777777',
+      color: '#6F7068',
       fontSize: 13,
       fontWeight: '700',
     },
@@ -612,21 +630,21 @@ const styles =
       paddingVertical: 42,
       borderWidth: 1,
       borderColor:
-        '#EFE3CE',
+        '#E5E0D5',
       borderRadius: 20,
       backgroundColor:
         '#FFFFFF',
     },
 
     emptyTitle: {
-      color: '#29251E',
+      color: '#262822',
       fontSize: 16,
       fontWeight: '800',
     },
 
     emptyDescription: {
       marginTop: 6,
-      color: '#777777',
+      color: '#6F7068',
       fontSize: 14,
       textAlign: 'center',
     },

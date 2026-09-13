@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BackHeader } from '@/components/common/BackHeader';
+import { PageHero } from '@/components/layout';
 import { CourseColors } from '@/constants/course-colors';
 import { PAGE_LAYOUT } from '@/constants/layout';
 import { useSignup } from '@/hooks/auth/use-signup';
@@ -53,15 +53,20 @@ export default function SignupScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.hero}>
-          <BackHeader />
-          <Text style={styles.heroTitle}>회원가입</Text>
-          <Text style={styles.heroDescription}>
-            이메일로 가입하고{`\n`}충남 여행을 시작해 보세요.
-          </Text>
-        </View>
+        <PageHero
+          description="이메일로 가입하고 충남 여행을 시작해 보세요."
+          eyebrow="충남왔슈 시작하기"
+          icon="person-add-outline"
+          showBack
+          title="회원가입"
+        />
 
         <View style={styles.body}>
+          <View style={styles.signupCard}>
+            <View style={styles.formHeading}>
+              <Text style={styles.formTitle}>계정 정보</Text>
+              <Text style={styles.formDescription}>여행 기록에 사용할 정보를 입력해 주세요.</Text>
+            </View>
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
@@ -119,6 +124,7 @@ export default function SignupScreen() {
               <Text style={styles.loginLinkText}>이미 계정이 있으신가요? 로그인</Text>
             </Pressable>
           </Link>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -128,26 +134,25 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: CourseColors.primary },
   container: { flexGrow: 1, backgroundColor: CourseColors.background },
-  hero: {
-    backgroundColor: CourseColors.primary,
-    paddingHorizontal: 22,
-    paddingTop: 20,
-    paddingBottom: 42,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    gap: 12,
-  },
-  heroTitle: { color: CourseColors.white, fontSize: 30, fontWeight: '900' },
-  heroDescription: { color: '#E4EFE1', fontSize: 14, lineHeight: 22, marginTop: 3 },
   body: {
     width: '100%',
-    maxWidth: PAGE_LAYOUT.desktopMaxWidth,
+    maxWidth: 560,
     alignSelf: 'center',
-    paddingHorizontal: 22,
-    marginTop: 32,
+    paddingHorizontal: 18,
+    marginTop: PAGE_LAYOUT.sectionSpacing,
     paddingBottom: 40,
-    gap: 10,
   },
+  signupCard: {
+    backgroundColor: CourseColors.white,
+    borderColor: CourseColors.border,
+    borderRadius: 22,
+    borderWidth: 1,
+    gap: 10,
+    padding: 22,
+  },
+  formHeading: { gap: 5, marginBottom: 8 },
+  formTitle: { color: CourseColors.text, fontSize: 22, fontWeight: '900' },
+  formDescription: { color: CourseColors.muted, fontSize: 14, lineHeight: 21 },
   input: {
     minHeight: 52,
     borderWidth: 1,

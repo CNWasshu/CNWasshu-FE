@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 22,
-    backgroundColor: '#E8F5E4',
+    backgroundColor: '#EDF3EA',
   },
 
   placeholderEmoji: {
@@ -103,11 +103,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: '#E7F4E2',
+    backgroundColor: '#EDF3EA',
   },
 
   regionText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 10,
     fontWeight: '900',
   },
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: '#F0E6D3',
+    backgroundColor: '#EEE8DC',
   },
 
   categoryText: {
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
 
   title: {
     marginTop: 11,
-    color: '#29251E',
+    color: '#262822',
     fontSize: 20,
     fontWeight: '900',
     letterSpacing: -0.4,

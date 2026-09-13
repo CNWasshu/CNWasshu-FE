@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#efe3ce',
     borderRadius: 24,
-    backgroundColor: '#fffaf1',
+    backgroundColor: '#FAF7F0',
   },
 
   icon: {
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     fontWeight: '800',
-    color: '#29251e',
+    color: '#262822',
   },
 
   subtitle: {
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 13,
     borderRadius: 13,
-    backgroundColor: '#3f7d46',
+    backgroundColor: '#3F7045',
   },
 
   buttonText: {

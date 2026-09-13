@@ -1,12 +1,16 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { memo } from 'react';
 import {
+  Platform,
   Pressable,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
+import { PAGE_LAYOUT } from '@/constants/layout';
 import type { HomeItem } from '@/types/home';
 
 type HomeItemCardProps = {
@@ -23,6 +27,12 @@ export const HomeItemCard = memo(
     onPress,
     onBookmarkPress,
   }: HomeItemCardProps) {
+    const { width } = useWindowDimensions();
+
+    const isDesktopWeb =
+      Platform.OS === 'web' &&
+      width >= PAGE_LAYOUT.desktopNavigationBreakpoint;
+
     const isActivity =
       item.type === 'ACTIVITY';
 
@@ -33,36 +43,250 @@ export const HomeItemCard = memo(
       item.maxParticipants > 0;
 
     return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`${item.title} 상세 보기`}
-        style={({ pressed }) => [
+      <View
+        style={[
           styles.card,
-          pressed && styles.cardPressed,
+          isDesktopWeb && styles.cardDesktop,
         ]}
-        onPress={() => onPress(item)}
       >
-        {item.thumbnail ? (
-          <Image
-            source={{
-              uri: item.thumbnail,
-            }}
-            style={styles.cardImage}
-            contentFit="cover"
-            transition={200}
-            cachePolicy="memory-disk"
-          />
-        ) : (
-          <View
-            style={styles.imagePlaceholder}
-          >
-            <Text
-              style={styles.placeholderEmoji}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${item.title} 상세 보기`}
+          style={({ pressed }) => [
+            styles.cardPressable,
+            isDesktopWeb &&
+              styles.cardPressableDesktop,
+            pressed && styles.cardPressed,
+          ]}
+          onPress={() => onPress(item)}
+        >
+          {item.thumbnail ? (
+            <Image
+              source={{
+                uri: item.thumbnail,
+              }}
+              style={[
+                styles.cardImage,
+                isDesktopWeb &&
+                  styles.cardImageDesktop,
+              ]}
+              contentFit="cover"
+              transition={200}
+              cachePolicy="memory-disk"
+            />
+          ) : (
+            <View
+              style={[
+                styles.imagePlaceholder,
+                isDesktopWeb &&
+                  styles.imagePlaceholderDesktop,
+              ]}
             >
-              {isActivity ? '🌿' : '🍽️'}
+              <Text
+                style={styles.placeholderEmoji}
+              >
+                {isActivity ? '🌿' : '🍽️'}
+              </Text>
+            </View>
+          )}
+
+          <View
+            style={[
+              styles.typeBadge,
+              isDesktopWeb &&
+                styles.typeBadgeDesktop,
+            ]}
+          >
+            <Text style={styles.typeBadgeText}>
+              {isActivity ? '체험' : '맛집'}
             </Text>
           </View>
-        )}
+
+          <View
+            style={[
+              styles.cardContent,
+              isDesktopWeb &&
+                styles.cardContentDesktop,
+            ]}
+          >
+            <View
+              style={[
+                styles.tagList,
+                isDesktopWeb &&
+                  styles.tagListDesktop,
+              ]}
+            >
+              <View
+                style={[
+                  styles.tag,
+                  styles.regionTag,
+                ]}
+              >
+                <Text
+                  style={styles.regionTagText}
+                >
+                  {item.regionName}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  styles.tag,
+                  styles.categoryTag,
+                ]}
+              >
+                <Text
+                  style={styles.categoryTagText}
+                >
+                  {item.categoryName}
+                </Text>
+              </View>
+
+              {isActivity &&
+                item.weatherTags.length > 0 &&
+                item.weatherTags
+                  .slice(0, 1)
+                  .map((tag) => (
+                    <View
+                      key={tag}
+                      style={[
+                        styles.tag,
+                        styles.weatherTag,
+                      ]}
+                    >
+                      <Text
+                        style={
+                          styles.weatherTagText
+                        }
+                      >
+                        {tag}
+                      </Text>
+                    </View>
+                  ))}
+
+              {item.todayAvailable === true && (
+                <View
+                  style={[
+                    styles.tag,
+                    styles.todayTag,
+                  ]}
+                >
+                  <Text
+                    style={styles.todayTagText}
+                  >
+                    당일 참여 O
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            <Text
+              style={[
+                styles.cardTitle,
+                isDesktopWeb &&
+                  styles.cardTitleDesktop,
+              ]}
+            >
+              {item.title}
+            </Text>
+
+            {(item.operatingStartTime ||
+              item.operatingEndTime) && (
+              <Text
+                style={styles.operatingTime}
+              >
+                🕒 {formatOperatingTime(item)}
+              </Text>
+            )}
+
+            {item.shortDescription && (
+              <Text
+                style={styles.cardDescription}
+                numberOfLines={2}
+              >
+                {item.shortDescription}
+              </Text>
+            )}
+
+            {item.tags.length > 0 && (
+              <View style={styles.extraTagList}>
+                {item.tags
+                  .slice(0, 3)
+                  .map((tag) => (
+                    <Text
+                      key={tag}
+                      style={styles.extraTagText}
+                    >
+                      #{tag}
+                    </Text>
+                  ))}
+              </View>
+            )}
+
+            <View
+              style={[
+                styles.cardFooter,
+                isDesktopWeb &&
+                  styles.cardFooterDesktop,
+              ]}
+            >
+              {item.reservationRequired ===
+              true ? (
+                <View
+                  style={styles.reservationInfo}
+                >
+                  {isDesktopWeb ? (
+                    <Ionicons
+                      color="#8A7450"
+                      name="calendar-outline"
+                      size={15}
+                    />
+                  ) : null}
+
+                  <Text
+                    style={[
+                      styles.reservationText,
+                      isDesktopWeb &&
+                        styles.reservationTextDesktop,
+                    ]}
+                  >
+                    예약 필요
+                  </Text>
+
+                  {showMaxParticipants && (
+                    <Text
+                      style={[
+                        styles.maxParticipantsText,
+                        isDesktopWeb &&
+                          styles.maxParticipantsTextDesktop,
+                      ]}
+                    >
+                      · 최대{' '}
+                      {item.maxParticipants}명
+                    </Text>
+                  )}
+                </View>
+              ) : (
+                <View />
+              )}
+
+              <View
+                style={[
+                  styles.detailButton,
+                  isDesktopWeb &&
+                    styles.detailButtonDesktop,
+                ]}
+              >
+                <Text
+                  style={styles.detailButtonText}
+                >
+                  상세 보기
+                  {isDesktopWeb ? '  →' : ''}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </Pressable>
 
         <Pressable
           accessibilityRole="button"
@@ -71,9 +295,12 @@ export const HomeItemCard = memo(
               ? '장바구니에서 삭제'
               : '장바구니에 담기'
           }
-          style={styles.heartButton}
-          onPress={(event) => {
-            event.stopPropagation();
+          style={[
+            styles.heartButton,
+            isDesktopWeb &&
+              styles.heartButtonDesktop,
+          ]}
+          onPress={() => {
             onBookmarkPress(item);
           }}
         >
@@ -87,160 +314,7 @@ export const HomeItemCard = memo(
             {isBookmarked ? '♥' : '♡'}
           </Text>
         </Pressable>
-
-        <View style={styles.typeBadge}>
-          <Text style={styles.typeBadgeText}>
-            {isActivity ? '체험' : '맛집'}
-          </Text>
-        </View>
-
-        <View style={styles.cardContent}>
-          <View style={styles.tagList}>
-            <View
-              style={[
-                styles.tag,
-                styles.regionTag,
-              ]}
-            >
-              <Text
-                style={styles.regionTagText}
-              >
-                {item.regionName}
-              </Text>
-            </View>
-
-            <View
-              style={[
-                styles.tag,
-                styles.categoryTag,
-              ]}
-            >
-              <Text
-                style={styles.categoryTagText}
-              >
-                {item.categoryName}
-              </Text>
-            </View>
-
-            {item.todayAvailable === true && (
-              <View
-                style={[
-                  styles.tag,
-                  styles.todayTag,
-                ]}
-              >
-                <Text
-                  style={styles.todayTagText}
-                >
-                  당일 참여 O
-                </Text>
-              </View>
-            )}
-          </View>
-
-          <Text style={styles.cardTitle}>
-            {item.title}
-          </Text>
-
-          {(item.operatingStartTime ||
-            item.operatingEndTime) && (
-            <Text
-              style={styles.operatingTime}
-            >
-              🕒 {formatOperatingTime(item)}
-            </Text>
-          )}
-
-          {item.shortDescription && (
-            <Text
-              style={styles.cardDescription}
-              numberOfLines={2}
-            >
-              {item.shortDescription}
-            </Text>
-          )}
-
-          {item.weatherTags.length > 0 && (
-            <View
-              style={styles.weatherTagList}
-            >
-              {item.weatherTags
-                .slice(0, 3)
-                .map((tag) => (
-                  <View
-                    key={tag}
-                    style={[
-                      styles.tag,
-                      styles.weatherTag,
-                    ]}
-                  >
-                    <Text
-                      style={
-                        styles.weatherTagText
-                      }
-                    >
-                      {tag}
-                    </Text>
-                  </View>
-                ))}
-            </View>
-          )}
-
-          {item.tags.length > 0 && (
-            <View style={styles.extraTagList}>
-              {item.tags
-                .slice(0, 3)
-                .map((tag) => (
-                  <Text
-                    key={tag}
-                    style={styles.extraTagText}
-                  >
-                    #{tag}
-                  </Text>
-                ))}
-            </View>
-          )}
-
-          <View style={styles.cardFooter}>
-            {item.reservationRequired === true ? (
-              <View style={styles.reservationInfo}>
-                <Text
-                  style={styles.reservationText}
-                >
-                  예약 필요
-                </Text>
-
-                {showMaxParticipants && (
-                  <Text
-                    style={
-                      styles.maxParticipantsText
-                    }
-                  >
-                    · 최대 {item.maxParticipants}인
-                  </Text>
-                )}
-              </View>
-            ) : (
-              <View />
-            )}
-
-            <Pressable
-              accessibilityRole="button"
-              style={styles.detailButton}
-              onPress={(event) => {
-                event.stopPropagation();
-                onPress(item);
-              }}
-            >
-              <Text
-                style={styles.detailButtonText}
-              >
-                상세 보기
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-      </Pressable>
+      </View>
     );
   }
 );
@@ -280,13 +354,27 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#EFE3CE',
+    borderColor: '#E5E0D5',
     borderRadius: 22,
     backgroundColor: '#FFFFFF',
   },
 
+  cardPressable: {
+    width: '100%',
+  },
+
+  cardPressableDesktop: {
+    flex: 1,
+    flexDirection: 'row',
+    minHeight: 240,
+  },
+
   cardPressed: {
     opacity: 0.96,
+  },
+
+  cardDesktop: {
+    minHeight: 240,
   },
 
   cardImage: {
@@ -294,11 +382,21 @@ const styles = StyleSheet.create({
     height: 150,
   },
 
+  cardImageDesktop: {
+    height: 240,
+    width: '38%',
+  },
+
   imagePlaceholder: {
     height: 150,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E8F5E4',
+    backgroundColor: '#EDF3EA',
+  },
+
+  imagePlaceholderDesktop: {
+    height: 240,
+    width: '38%',
   },
 
   placeholderEmoji: {
@@ -311,6 +409,8 @@ const styles = StyleSheet.create({
     right: 12,
     width: 38,
     height: 38,
+    zIndex: 10,
+    elevation: 10,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 19,
@@ -318,8 +418,13 @@ const styles = StyleSheet.create({
       'rgba(255,255,255,0.94)',
   },
 
+  heartButtonDesktop: {
+    right: 16,
+    top: 16,
+  },
+
   heartIcon: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 24,
     fontWeight: '700',
     lineHeight: 26,
@@ -339,14 +444,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
+  typeBadgeDesktop: {
+    left: 14,
+    top: 14,
+  },
+
   typeBadgeText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 12,
     fontWeight: '900',
   },
 
   cardContent: {
     padding: 14,
+  },
+
+  cardContentDesktop: {
+    flex: 1,
+    paddingHorizontal: 22,
+    paddingVertical: 20,
   },
 
   tagList: {
@@ -356,6 +472,10 @@ const styles = StyleSheet.create({
     marginBottom: 9,
   },
 
+  tagListDesktop: {
+    paddingRight: 46,
+  },
+
   tag: {
     paddingHorizontal: 8,
     paddingVertical: 5,
@@ -363,23 +483,33 @@ const styles = StyleSheet.create({
   },
 
   regionTag: {
-    backgroundColor: '#E7F4E2',
+    backgroundColor: '#EDF3EA',
   },
 
   regionTagText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 12,
     fontWeight: '900',
   },
 
   categoryTag: {
-    backgroundColor: '#F0E6D3',
+    backgroundColor: '#EEE8DC',
   },
 
   categoryTagText: {
     color: '#6B5730',
     fontSize: 12,
     fontWeight: '900',
+  },
+
+  weatherTag: {
+    backgroundColor: '#EAF1FF',
+  },
+
+  weatherTagText: {
+    color: '#446CA8',
+    fontSize: 12,
+    fontWeight: '800',
   },
 
   todayTag: {
@@ -393,10 +523,14 @@ const styles = StyleSheet.create({
   },
 
   cardTitle: {
-    color: '#29251E',
+    color: '#262822',
     fontSize: 17,
     fontWeight: '900',
     letterSpacing: -0.3,
+  },
+
+  cardTitleDesktop: {
+    fontSize: 20,
   },
 
   operatingTime: {
@@ -407,26 +541,9 @@ const styles = StyleSheet.create({
 
   cardDescription: {
     marginTop: 9,
-    color: '#777777',
+    color: '#6F7068',
     fontSize: 14,
     lineHeight: 20,
-  },
-
-  weatherTagList: {
-    marginTop: 10,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 5,
-  },
-
-  weatherTag: {
-    backgroundColor: '#EAF1FF',
-  },
-
-  weatherTagText: {
-    color: '#446CA8',
-    fontSize: 12,
-    fontWeight: '800',
   },
 
   extraTagList: {
@@ -437,7 +554,7 @@ const styles = StyleSheet.create({
   },
 
   extraTagText: {
-    color: '#777777',
+    color: '#6F7068',
     fontSize: 12,
   },
 
@@ -449,9 +566,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  cardFooterDesktop: {
+    marginTop: 'auto',
+    paddingTop: 14,
+  },
+
   reservationInfo: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 4,
   },
 
   reservationText: {
@@ -460,11 +583,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
+  reservationTextDesktop: {
+    fontWeight: '800',
+  },
+
   maxParticipantsText: {
-    marginLeft: 4,
     color: '#8A7450',
     fontSize: 13,
     fontWeight: '700',
+  },
+
+  maxParticipantsTextDesktop: {
+    color: '#9A9286',
+    fontWeight: '600',
   },
 
   detailButton: {
@@ -476,8 +607,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
+  detailButtonDesktop: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    paddingRight: 0,
+  },
+
   detailButtonText: {
-    color: '#3F7D46',
+    color: '#3F7045',
     fontSize: 14,
     fontWeight: '900',
   },

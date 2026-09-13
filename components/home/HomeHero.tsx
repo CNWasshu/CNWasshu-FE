@@ -22,13 +22,16 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { CourseColors } from '@/constants/course-colors';
 import { APP_POINT_FONT } from '@/constants/typography';
 import { PAGE_LAYOUT } from '@/constants/layout';
+import { HomeWeatherTicker } from '@/components/home/HomeWeatherTicker';
+import type { WeatherResponse } from '@/types/home';
 
 type HomeHeroProps = {
   onAiRecommend: () => void;
   onPromotionPress: () => void;
-  onBookmarkPress: () => void;
   onNotificationPress: () => void;
   unreadNotificationCount: number;
+  selectedRegion: string;
+  weather: WeatherResponse[];
 };
 
 const BANNER_COUNT = 3;
@@ -42,9 +45,10 @@ const HERO_IMAGES = {
 export function HomeHero({
   onAiRecommend,
   onPromotionPress,
-  onBookmarkPress,
   onNotificationPress,
   unreadNotificationCount,
+  selectedRegion,
+  weather,
 }: HomeHeroProps) {
   const { width } = useWindowDimensions();
   const isDesktopWeb =
@@ -286,17 +290,13 @@ export function HomeHero({
             ) : null}
           </Pressable> : null}
 
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="담은 장소 목록 열기"
-            style={[styles.headerButton, isDesktopWeb && styles.bookmarkButtonDesktop]}
-            onPress={
-              onBookmarkPress
-            }
-          >
-            <Ionicons color="#FFFFFF" name="heart-outline" size={21} />
-            {isDesktopWeb ? <Text style={styles.bookmarkLabel}>담은 장소</Text> : null}
-          </Pressable>
+          <View style={[styles.weatherButton, isDesktopWeb && styles.weatherButtonDesktop]}>
+            <HomeWeatherTicker
+              light
+              selectedRegion={selectedRegion}
+              weather={weather}
+            />
+          </View>
         </View>
       </View>
 
@@ -569,17 +569,18 @@ const styles =
       position: 'relative',
     },
 
-    bookmarkButtonDesktop: {
-      flexDirection: 'row',
-      gap: 7,
-      paddingHorizontal: 14,
-      width: 'auto',
+    weatherButton: {
+      alignItems: 'center',
+      backgroundColor: 'rgba(255, 255, 255, 0.18)',
+      borderRadius: 18,
+      height: 40,
+      justifyContent: 'center',
+      minWidth: 94,
+      paddingHorizontal: 12,
     },
 
-    bookmarkLabel: {
-      color: '#FFFFFF',
-      fontSize: 14,
-      fontWeight: '800',
+    weatherButtonDesktop: {
+      paddingHorizontal: 14,
     },
 
     notificationBadge: {
@@ -649,7 +650,7 @@ const styles =
     },
 
     bannerBadgeText: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 12,
       fontWeight: '900',
     },
@@ -718,7 +719,7 @@ const styles =
     },
 
     aiButtonText: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 14,
       fontWeight: '900',
     },
@@ -738,7 +739,7 @@ const styles =
     },
 
     promotionBadgeText: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 12,
       fontWeight: '900',
     },
@@ -774,13 +775,13 @@ const styles =
     },
 
     promotionActionText: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 14,
       fontWeight: '900',
     },
 
     promotionArrow: {
-      color: '#3F7D46',
+      color: '#3F7045',
       fontSize: 16,
       fontWeight: '800',
     },

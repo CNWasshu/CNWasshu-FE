@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#29251e',
+    color: '#262822',
   },
 
   sub: {
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
     fontWeight: '800',
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 
   divider: {
@@ -241,13 +241,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 11,
     borderWidth: 1,
-    borderColor: '#eadcc4',
+    borderColor: '#E5E0D5',
     borderRadius: 999,
     backgroundColor: '#ffffff',
   },
 
   choiceSelected: {
-    borderColor: '#3f7d46',
+    borderColor: '#3F7045',
     backgroundColor: '#e8f5e4',
   },
 
@@ -258,6 +258,6 @@ const styles = StyleSheet.create({
   },
 
   choiceSelectedText: {
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 });

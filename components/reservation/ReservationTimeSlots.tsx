@@ -115,14 +115,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#eadcc4',
+    borderColor: '#E5E0D5',
     borderRadius: 14,
     backgroundColor: '#ffffff',
   },
 
   selected: {
-    borderColor: '#3f7d46',
-    backgroundColor: '#3f7d46',
+    borderColor: '#3F7045',
+    backgroundColor: '#3F7045',
   },
 
   disabled: {

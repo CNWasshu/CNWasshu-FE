@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   typeBadgeText: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 
   content: {
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   regionTagText: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#3f7d46',
+    color: '#3F7045',
   },
 
   categoryTag: {
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: '900',
     letterSpacing: -0.3,
-    color: '#29251e',
+    color: '#262822',
   },
 
   operatingTime: {
