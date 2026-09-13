@@ -36,7 +36,10 @@ type HomeHeroProps = {
 
 const BANNER_COUNT = 3;
 const BANNER_AUTO_PLAY_INTERVAL_MS = 5000;
-const SWIPE_THRESHOLD = 50;
+const SWIPE_DISTANCE_RATIO = 0.12;
+const SWIPE_MIN_DISTANCE = 24;
+const SWIPE_MAX_DISTANCE = 40;
+const SWIPE_VELOCITY_THRESHOLD = 0.25;
 const HERO_IMAGES = {
   discover: require('@/assets/images/home-hero/discover.png'),
   aiCourse: require('@/assets/images/home-hero/ai-course.png'),
@@ -235,17 +238,26 @@ export function HomeHero({
             const currentIndex =
               activeIndexRef.current;
 
+            const swipeThreshold =
+              Math.min(
+                SWIPE_MAX_DISTANCE,
+                Math.max(
+                  SWIPE_MIN_DISTANCE,
+                  bannerWidthRef.current * SWIPE_DISTANCE_RATIO
+                )
+              );
+
             const swipedLeft =
               gestureState.dx <=
-                -SWIPE_THRESHOLD ||
+                -swipeThreshold ||
               gestureState.vx <=
-                -0.35;
+                -SWIPE_VELOCITY_THRESHOLD;
 
             const swipedRight =
               gestureState.dx >=
-                SWIPE_THRESHOLD ||
+                swipeThreshold ||
               gestureState.vx >=
-                0.35;
+                SWIPE_VELOCITY_THRESHOLD;
 
             if (swipedLeft) {
               moveToBanner(
