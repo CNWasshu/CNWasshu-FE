@@ -35,6 +35,17 @@ export function OnboardingCarousel() {
 
   const closeOnboarding = () => void completeOnboarding('SKIPPED');
 
+  const handlePrevious = () => {
+    if (currentIndex === 0) {
+      return;
+    }
+
+    scrollRef.current?.scrollTo({
+      animated: true,
+      x: (currentIndex - 1) * pageWidth,
+    });
+  };
+
   const handleNext = () => {
     if (isLastSlide) {
       void completeOnboarding('COMPLETED');
@@ -43,7 +54,6 @@ export function OnboardingCarousel() {
 
     const nextIndex = currentIndex + 1;
     scrollRef.current?.scrollTo({ animated: true, x: nextIndex * pageWidth });
-    setCurrentIndex(nextIndex);
   };
 
   const handleScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -148,13 +158,27 @@ export function OnboardingCarousel() {
             ))}
           </View>
           {(!isMobile || isLastSlide) ? (
-            <View style={styles.buttonSlot}>
+            <View style={[styles.buttonSlot, isDesktopWeb && styles.desktopButtonRow]}>
+              {isDesktopWeb ? (
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={currentIndex === 0 || isSubmitting}
+                  onPress={handlePrevious}
+                  style={({ pressed }) => [
+                    styles.secondaryButton,
+                    pressed && styles.secondaryButtonPressed,
+                    (currentIndex === 0 || isSubmitting) && styles.disabled,
+                  ]}>
+                  <Text style={styles.secondaryButtonText}>이전</Text>
+                </Pressable>
+              ) : null}
               <Pressable
                 accessibilityRole="button"
                 disabled={isSubmitting}
                 onPress={handleNext}
                 style={({ pressed }) => [
                   styles.primaryButton,
+                  isDesktopWeb && styles.desktopPrimaryButton,
                   pressed && styles.primaryButtonPressed,
                   isSubmitting && styles.disabled,
                 ]}>
@@ -316,6 +340,10 @@ const styles = StyleSheet.create({
   buttonSlot: {
     minHeight: 56,
   },
+  desktopButtonRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
   primaryButton: {
     alignItems: 'center',
     backgroundColor: CourseColors.primary,
@@ -324,8 +352,29 @@ const styles = StyleSheet.create({
     minHeight: 56,
     width: '100%',
   },
+  desktopPrimaryButton: {
+    flex: 1,
+    width: 'auto',
+  },
   primaryButtonPressed: {
     opacity: 0.86,
+  },
+  secondaryButton: {
+    alignItems: 'center',
+    borderColor: CourseColors.primary,
+    borderRadius: 16,
+    borderWidth: 1,
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: 56,
+  },
+  secondaryButtonPressed: {
+    backgroundColor: CourseColors.primarySoft,
+  },
+  secondaryButtonText: {
+    color: CourseColors.primary,
+    fontSize: 16,
+    fontWeight: '900',
   },
   disabled: {
     opacity: 0.55,
