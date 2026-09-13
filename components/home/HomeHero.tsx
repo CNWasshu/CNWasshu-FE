@@ -35,6 +35,7 @@ type HomeHeroProps = {
 };
 
 const BANNER_COUNT = 3;
+const BANNER_AUTO_PLAY_INTERVAL_MS = 5000;
 const SWIPE_THRESHOLD = 50;
 const HERO_IMAGES = {
   discover: require('@/assets/images/home-hero/discover.png'),
@@ -73,6 +74,9 @@ export function HomeHero({
 
   const bannerWidthRef =
     useRef(0);
+
+  const autoPlayTimeoutRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     activeIndexRef.current =
@@ -128,6 +132,29 @@ export function HomeHero({
     ).start();
   }, [translateX]);
 
+  const stopAutoPlay = useCallback(() => {
+    if (autoPlayTimeoutRef.current) {
+      clearTimeout(autoPlayTimeoutRef.current);
+      autoPlayTimeoutRef.current = null;
+    }
+  }, []);
+
+  const scheduleAutoPlay = useCallback(() => {
+    stopAutoPlay();
+
+    autoPlayTimeoutRef.current = setTimeout(() => {
+      moveToBanner(
+        (activeIndexRef.current + 1) % BANNER_COUNT
+      );
+    }, BANNER_AUTO_PLAY_INTERVAL_MS);
+  }, [moveToBanner, stopAutoPlay]);
+
+  useEffect(() => {
+    scheduleAutoPlay();
+
+    return stopAutoPlay;
+  }, [activeBannerIndex, scheduleAutoPlay, stopAutoPlay]);
+
   const panResponder =
     useMemo(
       () =>
@@ -155,6 +182,7 @@ export function HomeHero({
 
           onPanResponderGrant:
             () => {
+              stopAutoPlay();
               translateX.stopAnimation();
             },
 
@@ -223,6 +251,7 @@ export function HomeHero({
               moveToBanner(
                 currentIndex + 1
               );
+              scheduleAutoPlay();
               return;
             }
 
@@ -230,12 +259,14 @@ export function HomeHero({
               moveToBanner(
                 currentIndex - 1
               );
+              scheduleAutoPlay();
               return;
             }
 
             moveToBanner(
               currentIndex
             );
+            scheduleAutoPlay();
           },
 
           onPanResponderTerminate:
@@ -243,9 +274,10 @@ export function HomeHero({
               moveToBanner(
                 activeIndexRef.current
               );
+              scheduleAutoPlay();
             },
         }),
-      [moveToBanner, translateX]
+      [moveToBanner, scheduleAutoPlay, stopAutoPlay, translateX]
     );
 
   return (
