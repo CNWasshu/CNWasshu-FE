@@ -46,7 +46,7 @@ export default function StampScanScreen() {
       setResultTitle(response.activityTitle);
       setStatus('success');
       setTimeout(() => {
-        router.replace('/stamp');
+        router.replace('/(tabs)/stamp');
       }, 1400);
     } catch (requestError) {
       if (isSessionExpiredError(requestError)) {

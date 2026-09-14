@@ -322,7 +322,7 @@ export default function MyPageScreen() {
                   accessibilityRole="button"
                   onPress={() => router.push('/onboarding')}
                   style={[styles.menuRow, styles.menuRowLast]}>
-                  <Text style={styles.menuLabel}>온보딩 다시 보기</Text>
+                  <Text style={styles.menuLabel}>서비스 이용 안내</Text>
                   <Text style={styles.menuValue}>사용법 다시 확인하기 ›</Text>
                 </Pressable>
               </View>
