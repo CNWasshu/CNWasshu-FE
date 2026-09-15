@@ -17,12 +17,25 @@ export default function CourseDetailScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const isDesktopWeb = Platform.OS === 'web' && width >= PAGE_LAYOUT.desktopNavigationBreakpoint;
-  const { id } = useLocalSearchParams<{ id?: string | string[] }>();
+  const { id, source } = useLocalSearchParams<{
+    id?: string | string[];
+    source?: string | string[];
+  }>();
   const rawId = Array.isArray(id) ? id[0] : id;
+  const rawSource = Array.isArray(source) ? source[0] : source;
   const parsedId = rawId && /^\d+$/.test(rawId) ? Number(rawId) : null;
   const { course, loading, error, refetch } = useCourse(parsedId);
   const [deleting, setDeleting] = useState(false);
   const [sharing, setSharing] = useState(false);
+
+  const handleBack = () => {
+    if (rawSource === 'timetable') {
+      router.replace('/(tabs)/course');
+      return;
+    }
+
+    router.back();
+  };
 
   const handleShare = async () => {
     if (!course || sharing) return;
@@ -76,7 +89,7 @@ export default function CourseDetailScreen() {
           <View style={[styles.hero, isDesktopWeb && styles.heroDesktop]}>
             <View style={styles.heroInner}>
             <View style={styles.detailHeader}>
-              <BackHeader />
+              <BackHeader onPress={handleBack} />
               <Text style={styles.detailHeaderTitle}>코스 상세</Text>
             </View>
             <Text style={styles.typeBadge}>{course.courseType === 'AI' ? 'AI 추천 코스' : '내가 만든 코스'}</Text>

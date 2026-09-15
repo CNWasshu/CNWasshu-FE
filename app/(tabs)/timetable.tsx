@@ -163,7 +163,10 @@ export default function TimetableScreen() {
 
   useEffect(() => {
     if (savedCourseId != null) {
-      router.replace(`/course/${savedCourseId}`);
+      router.replace({
+        pathname: '/course/[id]',
+        params: { id: savedCourseId, source: 'timetable' },
+      });
     }
   }, [router, savedCourseId]);
 
